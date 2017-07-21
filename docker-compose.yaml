@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  duckiehunt:
+    build: .
+    volumes:
+     - ./:/var/www/html
+    ports:
+      - "80:80"
+    networks:
+      - front-tier
+      - back-tier
+    environment:
+      CI_BASE_URL: 'http://localhost/'
+      CI_DATABASE_HOSTNAME: 'db'
+      CI_DATABASE_USERNAME: 'root'
+      CI_DATABASE_PASSWORD: ''
+      CI_DATABASE_DATABASE: 'duck_db'
+
+  db:
+    image: mysql
+    container_name: db
+    volumes:
+      - "./docker-db:/var/lib/mysql"
+    networks:
+      - back-tier
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    ports:
+      - "3306:3306"
+
+volumes:
+  db-data:
+
+networks:
+  front-tier:
+  back-tier:
