@@ -2,7 +2,9 @@ version: "3"
 
 services:
   duckiehunt:
-    build: .
+    build:
+      context: .
+    container_name: duckiehunt
     volumes:
      - ./:/var/www/html
     ports:

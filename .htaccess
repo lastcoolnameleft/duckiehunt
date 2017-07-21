@@ -1,0 +1,27 @@
+order allow,deny
+deny from com.mx
+deny from ne.jp
+deny from net.mx
+deny from com.cn
+deny from net.au
+deny from net.br
+deny from net.do
+deny from com.ar
+deny from uninet.net.mx
+deny from net.tr
+deny from wanadoo.fr
+deny from alicedsl.de
+deny from prodigy.net.mx
+deny from alicedsl.de
+deny from server4you.de
+deny from bredbandsbolaget.se
+deny from net.my
+deny from net.in
+deny from co.za
+deny from rr.nu
+allow from all
+
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php?$1 [L]
