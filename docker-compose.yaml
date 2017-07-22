@@ -18,6 +18,11 @@ services:
       CI_DATABASE_USERNAME: 'root'
       CI_DATABASE_PASSWORD: ''
       CI_DATABASE_DATABASE: 'duck_db'
+      FLICKR_API_KEY: ${FLICKR_API_KEY}
+      FLICKR_API_SECRET: ${FLICKR_API_SECRET}
+      FLICKR_TOKEN: ${FLICKR_TOKEN}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+
 
   db:
     image: mysql

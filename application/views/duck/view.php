@@ -46,22 +46,6 @@ font: 100 0.9em "trebuchet ms", serif;
 			<br/>
 <?php
 	}
-	if (!empty($duck_id)) {
-		$this->load->helper('form');
-		if ($is_tracking) {
-			echo form_open('view/alert/' . $duck_id . '/remove');
-			echo "Stop alerts for this duck<br/>";
-			echo form_submit('mysubmit', 'Release me!') . '<br/>';
-		}
-		else {
-			echo form_open('view/add_alert');
-			echo form_hidden('duck_id', $duck_id);
-			echo "Get alerts for this duck: ";
-			echo form_submit('mysubmit', 'Alert me!') . '<br/>';
-//			echo "<font color='black'>Requires valid login</font>";
-		}
-		echo form_close();
-	} 
 	?>
 		</td>
 	</tr>

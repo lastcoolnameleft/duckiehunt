@@ -47,28 +47,6 @@
 		echo "Modify Duck Location: ";
         echo "<input type='button' name='edit_loc' onClick='document.location=\"/mark/update/{$duck_location_id}\"' value='Edit Location' />";
     }
-    
-	if (!empty($duck_id)) {
-        echo "<table>\n";
-		$this->load->helper('form');
-		if ($is_tracking) {
-            echo "<tr><td>\n";
-			echo form_open('view/alert/' . $duck_id . '/remove');
-			echo "Stop alerts for this duck<br/>";
-			echo '</td><td>' . form_submit('remove_alert', 'Release me!') . '</td></tr>';
-            echo form_close();
-		}
-		else {
-            echo "<tr><td>\n";
-			echo form_open('view/add_alert');
-			echo form_hidden('duck_id', $duck_id);
-			echo "Get alerts for this duck: ";
-			echo '</td><td>' . form_submit('add_alert', 'Alert me!') . '</td></tr>';
-            echo form_close();
-//			echo "<font color='black'>Requires valid login</font>";
-		}
-        echo "</table>\n";
-	} 
 	?>
 		</td>
 		<td>
