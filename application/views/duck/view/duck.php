@@ -1,7 +1,6 @@
 <table>
 	<tr valign='top'>
 		<td>
-			<div id="map"></div>
 		</td>
 		<td>
 <?php	if (!empty($duck_id) && !empty($duck_info)) { ?>

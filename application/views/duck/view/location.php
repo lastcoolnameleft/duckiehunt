@@ -50,7 +50,6 @@
 	?>
 		</td>
 		<td>
-			<div id="map"></div>
 		</td>
 
 	</tr>

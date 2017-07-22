@@ -459,7 +459,7 @@ class Duck_model Extends CI_Model {
     }
     function getLocations( $duck_id )
     {
-        $this->db->select('duck_location_id, location, latitude, longitude, comments, link, flickr_photo_id')
+        $this->db->select('duck_id, duck_location_id, location, latitude, longitude, comments, link, flickr_photo_id')
 			->from('duck_location')
 			->where('duck_id', $duck_id)
 			->where('approved', 'Y')

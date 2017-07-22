@@ -25,6 +25,13 @@ class View extends CI_Controller {
             'total_duck_list' => $this->duck->getFullList(),
         );
 
+        $map_data = array(
+            'focus_lat' => 23,
+            'focus_long' => 10,
+            'focus_zoom' => 2,
+            'location_list' => array(),
+        );
+
         if (empty($duck_info)) {
             $this->load->view('header');
             $this->load->view('duck/view/dropdown', $data);
@@ -37,7 +44,7 @@ class View extends CI_Controller {
 		//  Duck Locations
 		if ( !empty($duck_id) ) {
 			$location_list = $this->duck->getLocations( $duck_id );
-
+            $map_data['location_list'] = $location_list;
             $data['location_list'] = array();
             $data['duck_location_pulldown'] = array();
 
@@ -62,7 +69,7 @@ class View extends CI_Controller {
 		$this->load->view('header');
         $this->load->view('duck/view/dropdown', $data);
 		$this->load->view('duck/view/duck', $data);
-        $this->load->view('duck/view/map', $data);
+        $this->load->view('duck/view/map', $map_data);
 		$this->load->view('footer');
 	}
     
@@ -96,6 +103,13 @@ class View extends CI_Controller {
             'links'            => $this->duck->getLocationLinks($duck_location_id),
         );
 
+        $map_data = array(
+            'focus_lat' => 23,
+            'focus_long' => 10,
+            'focus_zoom' => 2,
+            'location_list' => array(),
+        );
+
 		//  Duck Locations
 		if ( !empty($duck_id) ) {
 			$location = $this->duck->getLocation( $duck_location_id );
@@ -114,6 +128,7 @@ class View extends CI_Controller {
             $data['location_list'][] = $this->duck->renderLocation( $location );
 
 			$location_list = $this->duck->getLocations( $duck_id );
+            $map_data['location_list'] = $location_list;
 
             $data['duck_location_pulldown'] = array();
 
@@ -121,14 +136,13 @@ class View extends CI_Controller {
 			foreach ($location_list as $location) {
                 $data['duck_location_pulldown'][$location['duck_location_id']] = $location['location'];
 			}
-
 		}
         $data['duck_location_id'] = $duck_location_id;
 
 		$this->load->view('header');
         $this->load->view('duck/view/dropdown', $data);
 		$this->load->view('duck/view/location', $data);
-        $this->load->view('duck/view/map', $data);
+        $this->load->view('duck/view/map', $map_data);
 		$this->load->view('footer');
 	}
 
