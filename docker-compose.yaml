@@ -13,7 +13,7 @@ services:
       - front-tier
       - back-tier
     environment:
-      CI_BASE_URL: 'http://localhost/'
+      CI_BASE_URL: 'http://duckiehunt.local/'
       CI_DATABASE_HOSTNAME: 'db'
       CI_DATABASE_USERNAME: 'root'
       CI_DATABASE_PASSWORD: ''
