@@ -14,76 +14,49 @@ I wish I was good with words.  But that's why I <?php echo anchor('http://flickr
 <br/>
 <div id='map'></div>
 
-<style type="text/css">
-#map a:hover {
-    color:black;
-}
-
-#map div {
-    color: black;
-font: 100 0.9em "trebuchet ms", serif;
-
-}
-
-td.text {
-	color:blue;
-}
-
-#map{
-  height: 55%;
-  width: 60%;
-}
-</style>
+<style>
+ #map {
+   width: 100%;
+   height: 400px;
+   background-color: grey;
+   color: #000;
+ }
 </style>
 
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU&callback=initMap">
+</script>
 
-
-<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=<?php echo $this->config->item('y_app_id'); ?>"></script>
-<script type="text/javascript" language="JavaScript">
-var map;
-
-function StartYMap() {
-    map = new YMap(document.getElementById('map'),YAHOO_MAP_REG);
-    var cPT = new YGeoPoint(<?php echo $this->config->item('start_lat'); ?>, <?php echo $this->config->item('start_lon'); ?>);
-    map.drawZoomAndCenter(cPT,<?php echo $this->config->item('start_zoom'); ?>);
-    map.addTypeControl();
-    map.addZoomLong();
-    map.addPanControl();
-//	map.disableDragMap();
-
+<script>
+	function initMap() {
+		var uluru = {lat: 23, lng: 10};
+		var map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 2,
+			center: uluru
+		});
 <?php
 		$point_array = array();
 
 		if ( !empty($location_list) ) {
 			foreach ( $location_list as $index => $location) {
-				$js_point_name = "cPT{$index}";
+				$latlong_name = "latlong_{$index}";
+				$marker_name = "marker_{$index}";
+				$infowindow_name = "infowindow_{$index}";
 
-				$marker_name = "marker{$index}";
-				echo "\tvar {$js_point_name} = new YGeoPoint( {$location['latitude']}, {$location['longitude']} );\n";
-				echo "\tvar {$marker_name} = new YMarker({$js_point_name}, null, '{$marker_name}');\n";
-				echo "\tvar new_image = new YImage();\n";
-				echo "\tnew_image.src = '/images/icons/duck-32x32.png'\n";
-				echo "\t{$marker_name}.changeImage(new_image);\n";
-
+				echo "\tvar {$latlong_name} = { lat: {$location['latitude']}, lng: {$location['longitude']} };\n";
+				echo "\tvar {$marker_name} = new google.maps.Marker({ position: {$latlong_name}, map: map, icon: '/images/icons/duck-32x32.png' });\n";
 				if ( !empty($location['textbox']) ) {
-					$textbox = anchor('/view/duck/' . $location['duck_id'], "Duck #" . $location['duck_id'] . "<br/>");
+					$textbox = '<div id="content"><p>';
+					$textbox .= anchor('/view/duck/' . $location['duck_id'], "Duck #" . $location['duck_id'] . "<br/>");
 					$comments = preg_replace("/\n/", '<br/>', $location['textbox']);
 					$comments = (strlen($comments) > 30) ? substr($comments, 0, 30) . '...' : $comments;
 					$textbox .= $comments;
-					echo "\tYEvent.Capture({$marker_name}, EventsList.MouseOver, function(){ {$marker_name}.openSmartWindow('<div>{$textbox}</div>');  });\n";
+					$textbox .= '</p></div>';
+					echo "\tvar {$infowindow_name} = new google.maps.InfoWindow( { content: '{$textbox}' });\n";
+					echo "\t{$marker_name}.addListener('click', function() { {$infowindow_name}.open(map, {$marker_name}); });\n";
 				}
-
-				echo "\tmap.addOverlay({$marker_name});\n\n\n";
-				$point_array[] = $js_point_name;
 			}
-
-            echo "\tvar zoomcenter = map.getBestZoomAndCenter([" . implode(',', $point_array) . "]);\n\n";
-            echo "\tzoomcenter.zoomLevel = (zoomcenter.zoomLevel >= 18) ? 17 : zoomcenter.zoomLevel\n";
-            echo "\tmap.drawZoomAndCenter(zoomcenter.YGeoPoint, zoomcenter.zoomLevel );\n";
-
 		}
 ?>
-}
-window.onload = StartYMap;
+	}
 </script>
-
