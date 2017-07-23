@@ -56,7 +56,6 @@ color: #888888;
 				<tr><td>Location: <font color='black'>* <?php //echo $this->form_validation->duck_id_error; ?></font></td></tr>
 				<tr><td>
                     <?php echo form_input(array('name' => 'center', 'id' => 'center', 'size' => 20, 'value' => set_value('location', $location_info['location']))) ?>
-                    <input type='button' onClick='centerOnInput(document.getElementById("center").value);' value='Center'/>
                     <font color='black'>*</font>
 				</td></tr>
 				<tr><td>Date/Time: (MM/DD/YYYY HH:MM) <font color='black'>*</font></td></tr>

@@ -8,22 +8,32 @@
 </style>
 
 <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos&callback=initMap">
 </script>
 
 <script>
-
 	function initMap() {
 		var map = new google.maps.Map(document.getElementById('map'), {
-			zoom: 2,
-			center: { lat: 37.92686760148135, lng: -94.921875 }
+			zoom: 1,
+			center: { lat: 35, lng: -30 }
 		});
+
+        // Map auto-center and focus on location
+        $( '#center' ).focusout((e) => {
+            var location = $('#center').get(0).value;
+            var key = 'AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos';
+            var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + location + '&key=' + key;
+            $.get(url, (result) => {
+                var position = {
+                    lat: result.results[0].geometry.location.lat,
+                    lng: result.results[0].geometry.location.lng
+                };
+                map.setCenter(position);
+                map.setZoom(7);
+                var marker = new google.maps.Marker({ position: position, map: map, icon: '/images/icons/duck-32x32.png' });
+            });
+        });
+
 	}
-    function centerOnInput(center) {
-        var location = center;
-        var key = 'AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos';
-        var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + location + '&key=' + key;
-        $.get(url, (r) => { console.log(r) });
-    }
 
 </script>
