@@ -26,11 +26,12 @@ class Main extends CI_Controller {
         //  Get latest locations
         $this->load->model('duck_model', 'duck');
 
-        $location_list = $this->duck->getLatestLocations();
+        $location_list = $this->duck->getAllLocations();
         $data = array(
             'focus_lat' => 23,
             'focus_long' => 10,
             'focus_zoom' => 2,
+            'duck_location_id' => 0,
             'location_list' => array()
         );
 

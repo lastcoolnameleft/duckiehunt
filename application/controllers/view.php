@@ -26,8 +26,8 @@ class View extends CI_Controller {
         );
 
         $map_data = array(
-            'focus_lat' => 23,
-            'focus_long' => 10,
+            'focus_lat' => 0,
+            'focus_long' => 0,
             'focus_zoom' => 2,
             'location_list' => array(),
         );
@@ -104,10 +104,11 @@ class View extends CI_Controller {
         );
 
         $map_data = array(
-            'focus_lat' => 23,
-            'focus_long' => 10,
-            'focus_zoom' => 2,
-            'location_list' => array(),
+            'focus_lat'        => 0,
+            'focus_long'       => 0,
+            'focus_zoom'       => 2,
+            'location_list'    => array(),
+            'duck_location_id' => $duck_location_id
         );
 
 		//  Duck Locations

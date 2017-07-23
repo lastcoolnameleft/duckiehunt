@@ -457,12 +457,27 @@ class Duck_model Extends CI_Model {
         //print_r($location_list);
         return $location_list;
     }
+
+    function getAllLocations()
+    {
+        $this->db->select('duck_location.duck_id, name, duck_location_id, location, latitude, longitude, duck_location.comments, link, flickr_photo_id')
+			->from('duck_location')
+			->join('duck', 'duck_location.duck_id=duck.duck_id', 'left')
+			->where('duck_location.approved', 'Y')
+			->order_by('date_time', 'ASC');
+        $query = $this->db->get();
+        $location_list = $query->result_array();
+        //print_r($location_list);
+        return $location_list;
+
+    }
     function getLocations( $duck_id )
     {
-        $this->db->select('duck_id, duck_location_id, location, latitude, longitude, comments, link, flickr_photo_id')
+        $this->db->select('duck_location.duck_id, duck.name, duck_location_id, location, latitude, longitude, duck_location.comments, link, flickr_photo_id')
 			->from('duck_location')
-			->where('duck_id', $duck_id)
-			->where('approved', 'Y')
+			->join('duck', 'duck_location.duck_id=duck.duck_id', 'left')
+			->where('duck_location.duck_id', $duck_id)
+			->where('duck_location.approved', 'Y')
 			->order_by('date_time', 'ASC');
         $query = $this->db->get();
         $location_list = $query->result_array();
