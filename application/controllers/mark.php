@@ -42,8 +42,8 @@ class Mark extends CI_Controller
 
         if ($this->form_validation->run() == FALSE) {
             $this->load->view('header');
+            $this->load->view('duck/mark/map');
             $this->load->view('duck/mark/mark_main', $data);
-            $this->load->view('duck/mark/js');
             $this->load->view('footer');
         }
         else {

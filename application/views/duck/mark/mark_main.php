@@ -8,9 +8,10 @@
 <div class="width25 floatLeft leftColumn">
 	<div class='gradient'>
 			<ol>
+				<span><b>Instructions: </b></span>
 				<li><span>Provide a Duck ID <font color='black'>*</font></span></li>
-				<li><span>Provide a Date / Time <font color='black'>*</font></span></li>
 				<li><span>Enter a location and click Center <font color='black'>*</font></span></li>
+				<li><span>Provide a Date / Time <font color='black'>*</font></span></li>
 				<li><span>Click on the map to refine the marker</span></li>
 				<li><span>Provide a Story/Link/Flickr Photo</span></li>
                 <font color='black'>*</font> = Required
@@ -30,9 +31,11 @@
 
 <!-- Source file -->
 <script src="http://yui.yahooapis.com/2.5.2/build/connection/connection-min.js"></script>
+<!--
 <script src="/js/jquery-1.2.6.js" type="text/javascript" language="javascript"></script>
 <script src="/js/jquery.MultiFile.min.js" type="text/javascript" language="javascript"></script>
-
+-->
+<script src="/js/jquery-3.2.1.min.js" type="text/javascript" language="javascript"></script>
 
 <style type="text/css">
 #yswid{
@@ -44,7 +47,7 @@ color: #888888;
 </style>
    
 <br/>
-<table>
+<table id='form_table'>
 	<tr>
 		<td valign='top'>
 			<table>
@@ -86,11 +89,9 @@ color: #888888;
 				<tr><td><?php echo form_input(array('name' => 'flickr_photo_id', 'id' => 'flickr_photo_id', 'size' => 15, 'value' => set_value('flickr_photo_id', $location_info['flickr_photo_id']))) ?></td></tr> -->
 				<tr><td><input type='submit' value='Submit'></tr>
 			</table>
-		<td valign='top'>
-			<table>
-				<tr><td>
-				<div id="map"></div></td></tr>
-			</table>
+		</td>
+		<td width="75%">
+				<div id="map"></div>
 		</td>
 	</tr>
 </table>

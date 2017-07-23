@@ -27,7 +27,7 @@
 			center: { lat: focus_lat, lng: focus_long }
 		});
 		var bounds = new google.maps.LatLngBounds();
-		console.log(location_list);
+
 		location_list.forEach((location, index) => {
 			var position = new google.maps.LatLng( Number(location.latitude), Number(location.longitude) );
 			var marker = new google.maps.Marker({ position: position, map: map, icon: '/images/icons/duck-32x32.png' });
