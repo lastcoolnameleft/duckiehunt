@@ -132,13 +132,15 @@ class Duck_model Extends CI_Model {
 		$duck_data['location_id'] = $location_id;
 		
         //Add Links
-        foreach ($link_list as $link) {
-            if (!empty($link)) {
-                $link_data = array(
-                    'duck_location_id' => $location_id,
-                    'link' => $link,
-                );
-                $this->db->insert('duck_location_link', $link_data);
+        if (is_array($link_list)) {
+            foreach ($link_list as $link) {
+                if (!empty($link)) {
+                    $link_data = array(
+                        'duck_location_id' => $location_id,
+                        'link' => $link,
+                    );
+                    $this->db->insert('duck_location_link', $link_data);
+                }
             }
         }
 

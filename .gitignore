@@ -33,3 +33,4 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 docker-db/
 .env
 phpinfo.php
+uploads/

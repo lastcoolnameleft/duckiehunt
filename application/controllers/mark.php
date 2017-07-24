@@ -139,7 +139,7 @@ class Mark extends CI_Controller
 			$this->_approved
         );
 
-        $link_list = $this->_uploadFiles($duck_id, $this->input->post('comments'));
+        $link_list = $this->_uploadFile($duck_id, $this->input->post('comments'));
         for ($i=0; $i<10; $i++) {
             $link = $this->input->post('link' . $i);
             if (!empty($link)) {
@@ -150,7 +150,7 @@ class Mark extends CI_Controller
         $duck_id = $this->input->post('duck_id');
         $location_id = $this->duck->addLocation(
             $duck_id,
-            $cl_user_id,
+            2, // $cl_user_id, //TODO: Fix this
             $this->input->post('lat'),
             $this->input->post('lng'),
             $this->input->post('comments'),
@@ -191,7 +191,7 @@ class Mark extends CI_Controller
         
         $this->session->set_userdata('modifying_duck', $duck_id);
 
-        $link_list = $this->_uploadFiles($duck_id, $this->input->post('comments'));
+        $link_list = $this->_uploadFile($duck_id, $this->input->post('comments'));
         for ($i=0; $i<10; $i++) {
             $link = $this->input->post('link' . $i);
             if (!empty($link)) {
@@ -286,17 +286,25 @@ class Mark extends CI_Controller
     }
     
 
-    function _uploadFiles($duck_id, $desc)
+    function _uploadFile($duck_id, $desc)
     {
         $result = array();
-
         $config['upload_path'] = './uploads/'; // server directory
         $config['allowed_types'] = 'gif|jpg|png'; // by extension, will check for whether it is an image
 
         $this->load->library('upload', $config);
-        $this->load->library('Multi_upload');
 
-        $files = $this->multi_upload->go_upload();
+        if ( $this->upload->do_upload('userfile')) {
+            $data = $this->upload->data();
+            error_log('File upload successful');
+        } else {
+            error_log('Either file upload unsuccessful or no file uploaded');
+        }
+        return ;
+
+
+
+        $files = $this->upload->do_upload();
         
         if ( ! $files )
         {

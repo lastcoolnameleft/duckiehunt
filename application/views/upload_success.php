@@ -1,4 +1,3 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
 <html>
 <head>
 <title>Upload Form</title>
@@ -8,18 +7,12 @@
 <h3>Your file was successfully uploaded!</h3>
 
 <ul>
-<?php
- foreach($upload_data as $file) {
-    echo '<li><ul>';
-    foreach ($file as $item => $value) {
-        echo '<li>'.$item.': '.$value.'</li>';
-    }
-    echo '</ul></li>';
- } 
-?>
+<?php foreach ($upload_data as $item => $value):?>
+<li><?php echo $item;?>: <?php echo $value;?></li>
+<?php endforeach; ?>
 </ul>
 
-<p><?php echo anchor('upload', 'Upload More Files!'); ?></p>
+<p><?php echo anchor('upload', 'Upload Another File!'); ?></p>
 
 </body>
 </html>

@@ -60,9 +60,9 @@
                     <input type='button' onclick='addInput("linkDiv", "link", "link_id", "text", 30);' value='Add Another Link' />
 
                 </td></tr>
-                <tr><td>Upload Picture(s):</td></tr>
+                <tr><td>Upload Picture:</td></tr>
                 <tr><td>
-                    <input type="file" name="userfile[]" size="20" class="multi" />
+                    <input type="file" name="userfile" size="20" class="multi" />
                 </td></tr>
                 <!--<tr><td>Flickr Photo ID:</td></tr>
 				<tr><td><?php echo form_input(array('name' => 'flickr_photo_id', 'id' => 'flickr_photo_id', 'size' => 15, 'value' => set_value('flickr_photo_id', $location_info['flickr_photo_id']))) ?></td></tr> -->
