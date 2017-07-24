@@ -16,15 +16,15 @@ class Mark extends CI_Controller
 
         $this->form_validation->set_rules('duck_id', 'Duck ID', 'trim|required|numeric|callback_duck_id_check');
         $this->form_validation->set_rules('date_time', 'Date & Time', 'trim|required');
-        $this->form_validation->set_rules('lat', 'Latitude', 'trim|required|numeric|callback_latlon_check');
-        $this->form_validation->set_rules('lon', 'Longtitude', 'trim|required|numeric|callback_latlon_check');
+        $this->form_validation->set_rules('lat', 'Latitude', 'trim|required|numeric|callback_latlng_check');
+        $this->form_validation->set_rules('lng', 'Longtitude', 'trim|required|numeric|callback_latlng_check');
         $this->form_validation->set_rules('comments', 'Comments', 'xss_clean');
-        $this->form_validation->set_rules('center', 'Central Location', 'trim|required');
+        $this->form_validation->set_rules('location', 'Central Location', 'trim|required');
 
         for ($i=0; $i<10; $i++) {
             $link = $this->input->post('link' . $i);
             if (!empty($link)) {
-                $this->form_validation->set_rules('link' . $i, $link, 'xss_clean|callback_link_check');
+                $this->form_validation->set_rules('link' . $i, $link, 'xss_clean|valid_url');
             }
         }
 
@@ -87,7 +87,7 @@ class Mark extends CI_Controller
             if ($this->form_validation->run() == FALSE) {
                 $this->load->view('header');
                 $this->load->view('duck/mark/mark_main', $data);
-                $this->load->view('duck/mark/js');
+                $this->load->view('duck/mark/map');
                 $this->load->view('footer');
             }
             else {
@@ -95,13 +95,6 @@ class Mark extends CI_Controller
             }
         }
     }
-
-
-    //    function date_time_check( $date_time )
-    //    {
-    //        $date_time = $this->duck->format_date_time($date_time);
-    //
-    //    }
 
     function duck_id_check( $duck_id )
     {
@@ -117,24 +110,11 @@ class Mark extends CI_Controller
     }
 
 
-    function latlon_check( $latlon )
+    function latlng_check( $latlng )
     {
-        if (empty($latlon) )
+        if (empty($latlng) )
         {
-            $this->form_validation->set_message('latlon_check', 'Invalid %s');
-            return FALSE;
-        }
-        else
-        {
-            return TRUE;
-        }
-    }
-
-    function link_check( $link )
-    {
-        if (!preg_match('@^http://@i', $link))
-        {
-            $this->form_validation->set_message('link_check', 'Invalid Link: %s');
+            $this->form_validation->set_message('latlng_check', 'Invalid %s');
             return FALSE;
         }
         else
@@ -148,7 +128,7 @@ class Mark extends CI_Controller
         $duck_id = $this->input->post('duck_id');
 
 		//  For keeping track of anyone malicious
-		$this->duck->addActivity($this->input->user_agent(), 'add', $this->input->ip_address(), $duck_id, $this->input->post('center'), $this->input->post('comments'));
+		$this->duck->addActivity($this->input->user_agent(), 'add', $this->input->ip_address(), $duck_id, $this->input->post('location'), $this->input->post('comments'));
 
         $cl_user_id = $this->dx_auth->get_user_id();
         $this->duck->createUnlessExists(
@@ -172,11 +152,11 @@ class Mark extends CI_Controller
             $duck_id,
             $cl_user_id,
             $this->input->post('lat'),
-            $this->input->post('lon'),
+            $this->input->post('lng'),
             $this->input->post('comments'),
             $link_list,
             $this->input->post('date_time'),
-            $this->input->post('center'),
+            $this->input->post('location'),
             $this->_approved
         );
 
@@ -224,11 +204,11 @@ class Mark extends CI_Controller
             $duck_id,
             $cl_user_id,
             $this->input->post('lat'),
-            $this->input->post('lon'),
+            $this->input->post('lng'),
             $this->input->post('comments'),
             $link_list,
             $this->input->post('date_time'),
-            $this->input->post('center'),
+            $this->input->post('location'),
             'Y' //  Approved
         );
 

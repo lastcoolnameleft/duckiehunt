@@ -19,18 +19,26 @@
 		});
 
         // Map auto-center and focus on location
-        $( '#center' ).focusout((e) => {
-            var location = $('#center').get(0).value;
+        $( '#location' ).focusout(() => {
+            console.log('fetching location');
+            var location = $('#location').get(0).value;
             var key = 'AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos';
             var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + location + '&key=' + key;
             $.get(url, (result) => {
-                var position = {
-                    lat: result.results[0].geometry.location.lat,
-                    lng: result.results[0].geometry.location.lng
-                };
-                map.setCenter(position);
-                map.setZoom(7);
-                var marker = new google.maps.Marker({ position: position, map: map, icon: '/images/icons/duck-32x32.png' });
+                if (result.results.length === 0 || result.status !== "OK") {
+                    alert('Invalid location.  Please try again.');
+                } else {
+                    var position = {
+                        lat: result.results[0].geometry.location.lat,
+                        lng: result.results[0].geometry.location.lng
+                    };
+                    $('#lat')[0].value = position.lat;
+                    $('#lng')[0].value = position.lng;
+
+                    map.setCenter(position);
+                    map.setZoom(7);
+                    var marker = new google.maps.Marker({ position: position, map: map, icon: '/images/icons/duck-32x32.png' });
+                }
             });
         });
 
