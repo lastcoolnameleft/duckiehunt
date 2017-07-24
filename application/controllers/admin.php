@@ -1,10 +1,11 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Admin extends Controller {
+class Admin extends CI_Controller {
 
-	function __construct()
+	public function __construct()
 	{
-        parent::Controller();
+        parent::__construct();
         $this->dx_auth->check_uri_permissions();
 	}
 

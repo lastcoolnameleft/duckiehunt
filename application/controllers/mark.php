@@ -302,10 +302,6 @@ class Mark extends CI_Controller
         }
         return ;
 
-
-
-        $files = $this->upload->do_upload();
-        
         if ( ! $files )
         {
             $error = array('error' => $this->upload->display_errors());
