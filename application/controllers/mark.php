@@ -18,13 +18,13 @@ class Mark extends CI_Controller
         $this->form_validation->set_rules('date_time', 'Date & Time', 'trim|required');
         $this->form_validation->set_rules('lat', 'Latitude', 'trim|required|numeric|callback_latlng_check');
         $this->form_validation->set_rules('lng', 'Longtitude', 'trim|required|numeric|callback_latlng_check');
-        $this->form_validation->set_rules('comments', 'Comments', 'xss_clean');
+        //$this->form_validation->set_rules('comments', 'Comments', 'xss_clean');
         $this->form_validation->set_rules('location', 'Central Location', 'trim|required');
 
         for ($i=0; $i<10; $i++) {
             $link = $this->input->post('link' . $i);
             if (!empty($link)) {
-                $this->form_validation->set_rules('link' . $i, $link, 'xss_clean|valid_url');
+                $this->form_validation->set_rules('link' . $i, $link, 'valid_url');
             }
         }
 
@@ -37,6 +37,10 @@ class Mark extends CI_Controller
                 'longtitude' => '', 'comments' => '', 'links' => '', 'flickr_photo_id' => '', 'date_time' => date('m/d/Y H:i:s'),
                 'location' => ''
             ),
+            'duck_id' => '',
+            'location' => '',
+            'date_time' => date('m/d/Y H:i:s'),
+            'comments' => '',
             'controller' => 'mark',
         );
 
@@ -68,6 +72,10 @@ class Mark extends CI_Controller
         }
 
         $data = array(
+            'duck_id'          => $location_info['duck_id'],
+            'location'         => $location_info['location'],
+            'comments'         => $location_info['comments'],
+            'date_time'        => $location_info['date_time'],
             'duck_location_id' => $duck_location_id,
             'location_info'    => $location_info,
             'controller'       => "mark/update/{$duck_location_id}",
@@ -80,8 +88,6 @@ class Mark extends CI_Controller
             $this->load->view('footer');
         }
         else {
-//            $this->dx_auth->check();
-
             $location_info = $this->duck->getLocationInfo($duck_location_id);
 
             if ($this->form_validation->run() == FALSE) {
@@ -130,7 +136,7 @@ class Mark extends CI_Controller
 		//  For keeping track of anyone malicious
 		$this->duck->addActivity($this->input->user_agent(), 'add', $this->input->ip_address(), $duck_id, $this->input->post('location'), $this->input->post('comments'));
 
-        $cl_user_id = $this->dx_auth->get_user_id();
+        $cl_user_id = $this->ion_auth->get_user_id();
         $this->duck->createUnlessExists(
             $duck_id,
             $cl_user_id,
@@ -176,7 +182,7 @@ class Mark extends CI_Controller
             $this->load->view('duck/mark/not_named', array('duck_id' => $duck_id));
         }
 
-        if (!$this->dx_auth->is_logged_in() ) {
+        if (!$this->ion_auth->logged_in() ) {
             $this->load->view('duck/mark/not_reg');
         }
 
@@ -186,7 +192,7 @@ class Mark extends CI_Controller
 
     private function _update( $duck_location_id )
     {
-        $cl_user_id = $this->dx_auth->get_user_id();
+        $cl_user_id = $this->ion_auth->get_user_id();
         $duck_id = $this->input->post('duck_id');
         
         $this->session->set_userdata('modifying_duck', $duck_id);
@@ -220,7 +226,7 @@ class Mark extends CI_Controller
             $this->load->view('duck/mark/not_named', array('duck_id' => $duck_id));
         }
 
-        if (!$this->dx_auth->is_logged_in() ) {
+        if (!$this->ion_auth->is_logged_in() ) {
             $this->load->view('duck/mark/not_reg');
         }
 

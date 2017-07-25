@@ -25,22 +25,37 @@
 
 <script src="/js/jquery-3.2.1.min.js" type="text/javascript" language="javascript"></script>
 
+<script>
+	function addInput( div, name, count, type, size) {
+		if ( document.getElementById(count).value < 9) {
+			document.getElementById(count).value = Number(document.getElementById(count).value) + 1;
+			var d = document.createElement("div");
+			var link = document.createElement("input");
+			link.setAttribute("type", type);
+			link.setAttribute('size', size);
+			link.setAttribute("name", name + document.getElementById(count).value);
+			d.appendChild(link);
+			document.getElementById(div).appendChild(d);
+		}
+	}
+</script>
+
 <br/>
 <table id='form_table'>
 	<tr>
 		<td valign='top'>
 			<table>
 				<tr><td>Duck: <font color='black'>*</font></td></tr>
-				<tr><td><input type="text" name="duck_id" value="<?php echo set_value('duck_id'); ?>" size="10" /></td></tr>
+				<tr><td><input type="text" name="duck_id" value="<?php echo set_value('duck_id', $duck_id); ?>" size="10" /></td></tr>
 
 				<tr><td>Location: <font color='black'>*</font></td></tr>
-				<tr><td><input type="text" name="location" id="location" value="<?php echo set_value('location'); ?>" size="30" /></td></tr>
+				<tr><td><input type="text" name="location" id="location" value="<?php echo set_value('location', $location); ?>" size="30" /></td></tr>
 
 				<tr><td>Date/Time: (MM/DD/YYYY HH:MM) <font color='black'>*</font></td></tr>
-				<tr><td><input type="text" name="date_time" value="<?php echo set_value('date_time', date('m/d/Y H:i:s')); ?>" size="20" /></td></tr>
+				<tr><td><input type="text" name="date_time" value="<?php echo set_value('date_time', $date_time); ?>" size="20" /></td></tr>
 
 				<tr><td>Comment/Story:</td></tr>
-				<tr><td><textarea name="comments" id="comments" rows="4" cols="28" value="<?php echo set_value('comments'); ?>" size="20" /></textarea></td></tr>
+				<tr><td><textarea name="comments" id="comments" rows="4" cols="28" size="20"><?php echo set_value('comments', $comments); ?></textarea></td></tr>
 
 				<tr><td>Link:</td></tr>
 				<tr><td>
@@ -57,15 +72,15 @@
                         ?>
                     </div>
                     <input type="hidden" value="0" id="link_id" />
+					<!--
                     <input type='button' onclick='addInput("linkDiv", "link", "link_id", "text", 30);' value='Add Another Link' />
-
                 </td></tr>
                 <tr><td>Upload Picture:</td></tr>
                 <tr><td>
                     <input type="file" name="userfile" size="20" class="multi" />
                 </td></tr>
-                <!--<tr><td>Flickr Photo ID:</td></tr>
-				<tr><td><?php echo form_input(array('name' => 'flickr_photo_id', 'id' => 'flickr_photo_id', 'size' => 15, 'value' => set_value('flickr_photo_id', $location_info['flickr_photo_id']))) ?></td></tr> -->
+					-->
+
 				<tr><td><input type='submit' value='Submit'></tr>
 			</table>
 		</td>
