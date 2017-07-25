@@ -1,0 +1,40 @@
+<?php
+
+class Upgrade extends Controller {
+
+	function index() {
+	        $this->load->model('duck_model', 'duck');
+
+	       $this->db->select('duck_id, duck_location_id, location, latitude, longitude, comments, link, flickr_photo_id')
+				->from('duck_location')
+				->where('approved', 'Y')
+				->order_by('date_time', 'DESC');
+			$query = $this->db->get();
+			$locations = $query->result_array();
+
+				print_r($locations);
+//				return;
+				$this->load->library('twitter');
+				$this->twitter->auth($this->config->item('twitter_username'), $this->config->item('twitter_password'));
+
+			foreach ($locations as $data) {
+
+				if (empty($data['duck_id'])) {
+					error_log("skipping");
+					continue;
+				}
+				else {
+					error_log("processing {$data['duck_id']}:{$data['location']}");
+				}
+
+					if ($data['location'] != 'Home') {
+						error_log("Updatting Twitter" . $this->config->item('twitter_username'));
+						$result = $this->twitter->update("Duck #{$data['duck_id']} has just moved to \"{$data['location']}\" http://duckiehunt.com/view/location/{$data['duck_location_id']}");
+						error_log("result = $result");
+					}
+				break;
+
+			}
+	}
+}
+?>

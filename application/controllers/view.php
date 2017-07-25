@@ -13,7 +13,7 @@ class View extends CI_Controller {
         $this->load->model('duck_model', 'duck');
 
         $duck_info = $this->duck->getInfo($duck_id);
-		$user_id = $this->dx_auth->get_user_id();
+		$user_id = $this->ion_auth->get_user_id();
 		
         $data = array(
             'duck_info'       => $duck_info,
@@ -87,7 +87,7 @@ class View extends CI_Controller {
         }
         
         $duck_id = $location_info['duck_id'];
-		$user_id = $this->dx_auth->get_user_id();
+		$user_id = $this->ion_auth->get_user_id();
 		
         $data = array(
             'duck_location_id' => $duck_location_id,
@@ -150,7 +150,7 @@ class View extends CI_Controller {
 
     function alert( $duck_id, $action = 'add' )
     {
-        $user_id = $this->dx_auth->get_user_id();
+        $user_id = $this->ion_auth->get_user_id();
         $this->load->model('duck_model', 'duck');
 
         $this->load->view('header');
@@ -171,13 +171,13 @@ class View extends CI_Controller {
 
 	function add_alert() 
 	{
-        $user_id = $this->dx_auth->get_user_id();
+        $user_id = $this->ion_auth->get_user_id();
 		$duck_id = $this->input->post('duck_id');
 
         $this->load->model('duck_model', 'duck');
 	
         $this->load->view('header');
-//			$this->dx_auth->check_uri_permissions();
+//			$this->ion_auth->check_uri_permissions();
 	        $this->duck->track( $duck_id, $user_id );
 	        $this->load->view('alert/success');
 	}

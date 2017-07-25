@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/duckie/!svn/ver/87/system/application/controllers/manage
+END
+duck.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/duckie/!svn/ver/85/system/application/controllers/manage/duck.php
+END
+upgrade.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/duckie/!svn/ver/87/system/application/controllers/manage/upgrade.php
+END
+location.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/duckie/!svn/ver/80/system/application/controllers/manage/location.php
+END

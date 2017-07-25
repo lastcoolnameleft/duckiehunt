@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('database', 'DX_Auth');
+$autoload['libraries'] = array('database', 'ion_auth');
 
 /*
 | -------------------------------------------------------------------
@@ -103,7 +103,7 @@ $autoload['helper'] = array('url', 'form');
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array('dx_auth');
+$autoload['config'] = array();
 
 /*
 | -------------------------------------------------------------------

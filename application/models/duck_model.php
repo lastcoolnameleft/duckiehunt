@@ -516,12 +516,12 @@ class Duck_model Extends CI_Model {
 
     function canModifyLocation( $location_id )
     {
-        if ( $this->dx_auth->get_role_id() == 2 ) {
+        if ( $this->ion_auth->in_group('admin') ) {
             return true;
         }
 
         $location_info = $this->duck->getLocationInfo( $location_id );
-        if ( $this->dx_auth->get_user_id() == $location_info['user_id'] ) {
+        if ( $this->ion_auth->get_user_id() == $location_info['user_id'] ) {
             return true;
         }
 

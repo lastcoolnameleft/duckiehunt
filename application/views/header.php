@@ -48,13 +48,13 @@
 	}
 */
 	echo "\t\t<li>" . anchor('faq', 'Faq', $controller == 'faq' ? array('class' => 'here') : '') . "</li>\n";
-  /*
-	if ( $this->dx_auth->is_logged_in() ) {
+  
+	if ( $this->ion_auth->logged_in() ) {
 		  echo '<li>' . anchor('auth/logout', 'logout', $controller == 'auth' ? array('class' => 'here') : '') . '</li>';
 	} else {
 		  echo '<li>' . anchor('auth/login', 'login', $controller == 'auth' ? array('class' => 'here') : '') . '</li>';
 	}
-  */
+  
 ?>
     </ul>
   </div>

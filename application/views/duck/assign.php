@@ -2,7 +2,7 @@
     $this->load->helper('form'); 
     echo form_open('manage/duck/assign_s', array('id' => 'form', 'name' => 'form'));
 
-$form = $this->validation;
+$form = $this->form_validation;
 
 $username = array(
 'name'  => 'username',
