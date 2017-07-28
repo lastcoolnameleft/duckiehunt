@@ -23,7 +23,7 @@ class Upload extends CI_Controller {
 
                 if ( ! $this->upload->do_upload('userfile'))
                 {
-                    phpinfo();
+//                    phpinfo();
                         $error = array('error' => $this->upload->display_errors());
                         error_log(print_r($error, true));
 

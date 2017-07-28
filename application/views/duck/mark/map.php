@@ -7,10 +7,6 @@
  }
 </style>
 
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos&callback=initMap">
-</script>
-
 <script>
 	function initMap() {
 		var map = new google.maps.Map(document.getElementById('map'), {
@@ -44,4 +40,8 @@
 
 	}
 
+</script>
+
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos&callback=initMap">
 </script>
