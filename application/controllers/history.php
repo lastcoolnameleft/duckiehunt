@@ -22,7 +22,7 @@ class History extends Controller {
         $data['total_duck_list'] = $total_duck_list;
 
 		//  User's Duck List 
-        $this->db->select('duck.duck_id, name')->from('duck_track')->join('duck', 'duck.duck_id=duck_track.duck_id')->where('user_id', $this->dx_auth->get_user_id());
+        $this->db->select('duck.duck_id, name')->from('duck_track')->join('duck', 'duck.duck_id=duck_track.duck_id')->where('user_id', $this->ion_auth->get_user_id());
         $query = $this->db->get();
 
         $user_duck_list = count($query->result_array()) ? array('' => '') : array();
@@ -55,7 +55,7 @@ class History extends Controller {
 		$data['base_url'] = $this->config->item('base_url');
 		$data['duck_id'] = $duck_id;
 		$data['page_title'] = 'Your title';
-		$data['can_modify'] = ($this->dx_auth->get_role_id() == 2) ? true : false;
+		$data['can_modify'] = $this->ion_auth->in_group($this->config->item('admin_group', 'ion_auth'));
 
 		$this->load->view('header');
 		$this->load->view('duck/history', $data);
