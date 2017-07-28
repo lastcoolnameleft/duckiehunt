@@ -21,19 +21,15 @@ class Upload extends CI_Controller {
 
                 $this->load->library('upload', $config);
 
-                if ( ! $this->upload->do_upload('userfile'))
-                {
-//                    phpinfo();
-                        $error = array('error' => $this->upload->display_errors());
-                        error_log(print_r($error, true));
+                $upload_data = $this->upload->do_multi_upload("files");
 
-                        $this->load->view('upload_error', $error);
-                }
-                else
+                if ( $upload_data )
                 {
-                        $data = array('upload_data' => $this->upload->data());
-
+                        $data = array('upload_data' => $upload_data);
                         $this->load->view('upload_success', $data);
+                } else  {
+                        $error = array('error' => $this->upload->display_errors());
+                        $this->load->view('upload_form', $error);
                 }
         }
 }
