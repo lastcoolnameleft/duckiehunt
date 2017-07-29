@@ -1,6 +1,6 @@
 <?php
 
-class History extends Controller {
+class History extends CI_Controller {
 
 	function index()
 	{
