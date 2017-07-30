@@ -4,6 +4,9 @@ class History extends CI_Controller {
 
 	function index()
 	{
+		if (!$this->ion_auth->is_admin()) {
+			return show_error('You must be an administrator to view this page.');
+		}
 		$this->duck();
 	}
 
