@@ -2,6 +2,8 @@
 
 /**
  * Exenstion File Uploading Class
+ * Returns:
+ *  array - File info if files uploaded.  Empty array if no files uploaded
  */
 		
 class MY_Upload extends CI_Upload {
@@ -47,7 +49,8 @@ class MY_Upload extends CI_Upload {
 		//Multiple file upload
 		if( is_array( $_FILES[$field] ) )
 		{
-	
+			$return_value = array();
+
 			//$count = count($_FILES[$field]['name']); //Number of files to process
 			
 			foreach( $_FILES[$field]['name'] as $k => $file )

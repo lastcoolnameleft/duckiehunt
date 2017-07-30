@@ -6,7 +6,7 @@
 
 <?php echo $error;?>
 
-<?php echo form_open_multipart('upload/do_upload');?>
+<?php echo form_open_multipart($form_dest);?>
 
 <input type="file" name="files[]" size="20" multiple />
 
