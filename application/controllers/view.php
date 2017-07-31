@@ -115,7 +115,7 @@ class View extends CI_Controller {
 		if ( !empty($duck_id) ) {
 			$location = $this->duck->getLocation( $duck_location_id );
 
-            $this->load->library('flickr');
+            $this->load->library('flickr', array('consumer_key' => getenv('FLICKR_API_KEY')));
             
             if (!empty($location['flickr_photo_id'])) {
                 $location['thumbnail_url'] = $this->flickr->getThumbnail($location['flickr_photo_id']);

@@ -76,7 +76,7 @@
                 </td></tr>
                 <tr><td>Upload Picture:</td></tr>
                 <tr><td>
-                    <input type="file" name="userfile" size="20" class="multi" />
+                    <input type="file" name="files[]" size="20" multiple />
                 </td></tr>
 
 				<tr><td><input type='submit' value='Submit'></tr>

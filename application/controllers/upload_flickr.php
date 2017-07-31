@@ -42,7 +42,7 @@ class Upload_Flickr extends CI_Controller {
                                 $this->load->view('upload_form', $this->view_data);
                         }
 
-                        foreach ($upload_data as $pic) {
+                        foreach ($upload_data as $idx => $pic) {
                                 $title = 'Duck #' . $duck_id;
                                 $pic_desc = $desc . "<br/>\n" . anchor("http://duckiehunt.com/view/duck/{$duck_id}");
                                 $tags  = "duckiehunt,rubber duckie,duckie,duck{$duck_id}";
@@ -58,8 +58,8 @@ class Upload_Flickr extends CI_Controller {
                                 );
 
                                 $photo_info = $this->flickr->upload($parameters);
-                                print 'photo_info=';
-                                print_r($photo_info);
+//                                print 'photo_info=';
+//                                print_r($photo_info);
                                 if (!$photo_info ) {
                                         error_log('Received an error');
                                         $error_code = $this->flickr->error_code;
@@ -69,12 +69,12 @@ class Upload_Flickr extends CI_Controller {
                                         return;
                                 }
                                 $photo_id = $photo_info['photoid']['_content'];
+                                $upload_data[$idx]['flickr_photo_id'] = $photo_id;
 
-                                $response = $this->flickr->call('flickr.photos.getInfo', array('photo_id' => $photo_id));
-                                print 'response=';
-                                print_r($response);
+//                                $response = $this->flickr->call('flickr.photos.getInfo', array('photo_id' => $photo_id));
+//                                print 'response=';
+//                                print_r($response);
 
-                                $upload_data[] = $photo['urls']['photopage'];
                         }
                         $this->view_data['upload_data'] = $upload_data;
                         $this->load->view('upload_success', $this->view_data);

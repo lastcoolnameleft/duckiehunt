@@ -27,7 +27,6 @@ services:
       FLICKR_USER_NSID: ${FLICKR_USER_NSID}
       FLICKR_USER_NAME: ${FLICKR_USER_NAME}
       FLICKR_PERMISSIONS: ${FLICKR_PERMISSIONS}
-
   db:
     image: mysql
     container_name: db

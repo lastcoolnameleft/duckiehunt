@@ -94,14 +94,14 @@ class Flickr
      */
     public function __construct($params)
     {
-        if(!$params['consumer_key'] || !$params['consumer_secret']) {
+        if(!$params['consumer_key']) {
             throw new Exception("You must supply an consumer_key and an consumer_secret");
         }
         //The API Key must be set before any calls can be made.  You can
         //get your own at https://www.flickr.com/services/api/misc.api_keys.html
 
         $this->consumerKey = $params['consumer_key'];
-        $this->consumerSecret = $params['consumer_secret'];
+        $this->consumerSecret = isset($params['consumer_secret']) ? $params['consumer_secret'] : NULL;
         $this->callback = NULL;
 
         $this->httpTimeout = self::DEFAULT_HTTP_TIMEOUT;

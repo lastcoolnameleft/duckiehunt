@@ -136,7 +136,7 @@ class Mark extends CI_Controller
 		//  For keeping track of anyone malicious
 		$this->duck->addActivity($this->input->user_agent(), 'add', $this->input->ip_address(), $duck_id, $this->input->post('location'), $this->input->post('comments'));
 
-        $cl_user_id = $this->ion_auth->get_user_id();
+        $cl_user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
         $this->duck->createUnlessExists(
             $duck_id,
             $cl_user_id,
@@ -145,26 +145,22 @@ class Mark extends CI_Controller
 			$this->_approved
         );
 
-        $link_list = $this->_uploadFile($duck_id, $this->input->post('comments'));
-        for ($i=0; $i<10; $i++) {
-            $link = $this->input->post('link' . $i);
-            if (!empty($link)) {
-                $link_list[] = $this->input->post('link' . $i);
-            }
-        }
+        $links = $this->getLinks();
 
         $duck_id = $this->input->post('duck_id');
         $location_id = $this->duck->addLocation(
             $duck_id,
-            2, // $cl_user_id, //TODO: Fix this
+            $cl_user_id,
             $this->input->post('lat'),
             $this->input->post('lng'),
             $this->input->post('comments'),
-            $link_list,
+            $links,
             $this->input->post('date_time'),
             $this->input->post('location'),
             $this->_approved
         );
+
+        $this->_uploadFiles($duck_id, $location_id, $this->input->post('comments'));
 
         $this->session->set_userdata('modifying_duck', $duck_id);
         $this->session->set_userdata('location_id', $location_id);
@@ -190,20 +186,25 @@ class Mark extends CI_Controller
     }
 
 
+    private function getLinks() {
+        $link_list = array();
+        for ($i=0; $i<10; $i++) {
+            $link = $this->input->post('link' . $i);
+            if (!empty($link)) {
+                $link_list[] = $link;
+            }
+        }
+        return $link_list;
+    }
+
     private function _update( $duck_location_id )
     {
-        $cl_user_id = $this->ion_auth->get_user_id();
+        $cl_user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
         $duck_id = $this->input->post('duck_id');
         
         $this->session->set_userdata('modifying_duck', $duck_id);
 
-        $link_list = $this->_uploadFile($duck_id, $this->input->post('comments'));
-        for ($i=0; $i<10; $i++) {
-            $link = $this->input->post('link' . $i);
-            if (!empty($link)) {
-                $link_list[] = $this->input->post('link' . $i);
-            }
-        }
+        $links = $this->getLinks();
 
         $location_id = $this->duck->updateLocation(
             $duck_location_id,
@@ -212,11 +213,14 @@ class Mark extends CI_Controller
             $this->input->post('lat'),
             $this->input->post('lng'),
             $this->input->post('comments'),
-            $link_list,
+            $links,
             $this->input->post('date_time'),
             $this->input->post('location'),
             'Y' //  Approved
         );
+
+        $this->_uploadFiles($duck_id, $location_id, $this->input->post('comments'));
+
 
         $this->load->view('header');
         $success_data = array('location_id' => $duck_location_id);
@@ -292,55 +296,67 @@ class Mark extends CI_Controller
     }
     
 
-    function _uploadFile($duck_id, $desc)
+    function _uploadFiles($duck_id, $duck_location_id, $desc)
     {
-        $result = array();
         $config['upload_path'] = './uploads/'; // server directory
         $config['allowed_types'] = 'gif|jpg|png'; // by extension, will check for whether it is an image
 
         $this->load->library('upload', $config);
+        $upload_data = $this->upload->do_multi_upload("files");
 
-        if ( $this->upload->do_upload('userfile')) {
-            $data = $this->upload->data();
-            error_log('File upload successful');
-        } else {
-            error_log('Either file upload unsuccessful or no file uploaded');
-        }
-        return ;
-
-        if ( ! $files )
+        if ( $upload_data )
         {
-            $error = array('error' => $this->upload->display_errors());
-        }
-        else
-        {
-            $data = array('upload_data' => $files);
+            $flickr_config = array(
+                'consumer_key' => getenv('FLICKR_API_KEY'),
+                'consumer_secret' => getenv('FLICKR_API_SECRET')
+            );
 
-            $this->load->library('Flickr_API');
-            $data = array('upload_data' => $files);
-            $token = getenv('FLICKR_TOKEN');
-            $secrets = array(
-                'api_key'=> getenv('FLICKR_API_KEY'),
-                'api_secret' => getenv('FLICKR_API_SECRET'));
-            $flickr = new Flickr($secrets);
-            $flickr->token = $token;
+            $this->load->library('Flickr', $flickr_config);
+            $this->flickr->setOauthData('oauth_access_token', getenv('FLICKR_ACCESS_TOKEN'));
+            $this->flickr->setOauthData('oauth_access_token_secret', getenv('FLICKR_ACCESS_TOKEN_SECRET'));
+            $this->flickr->setOauthData('user_nsid', getenv('FLICKR_USER_NSID'));
+            $this->flickr->setOauthData('user_name', getenv('FLICKR_USER_NAME'));
+            $this->flickr->setOauthData('permissions', getenv('FLICKR_PERMISSIONS'));
 
-            $flickr->token = $token;
-            error_log(print_r($data, true));
-            foreach ($data['upload_data'] as $pic) {
+            if (!$this->flickr->authenticate('write')) {
+                error_log('unable to authenticate with Flickr');
+            }
+
+            foreach ($upload_data as $idx => $pic) {
                 $title = 'Duck #' . $duck_id;
                 $pic_desc = $desc . "<br/>\n" . anchor("http://duckiehunt.com/view/duck/{$duck_id}");
-                $tags  = "duckiehunt,rubber duckie,duckie,{$duck_id}";
-                $perms = array("is_public"=>1);
+                $tags  = "duckiehunt,rubber duckie,duckie,duck{$duck_id}";
                 $async = FALSE;
+                $parameters = array(
+                    'title' => $title,
+                    'tags' => $tags,
+                    'description' => $pic_desc,
+                    'photo' => curl_file_create($pic['full_path']),
+                    'is_public' => 0, // TODO:  Remove for prod
+                    'hidden' => 2, // TOOD: Remove for prod
+                );
 
-                $photo_id = $flickr->upload($pic['file'], $title, $pic_desc, $tags, $perms, $async);
-                $photo = $flickr->photosGetInfo($photo_id);
-                $result[] = $photo['urls']['photopage'];
+                $photo_info = $this->flickr->upload($parameters);
+
+                if (!$photo_info) {
+                    error_log('Received an error uploading to Flickr');
+                    $error_code = $this->flickr->error_code;
+                    $error_msg = $this->flickr->error_msg;
+                    error_log('Error Code:' . $error_code);
+                    error_log('Error Msg:' . $error_msg);
+                    return;
+                }
+
+                $flickr_photo_id = $photo_info['photoid']['_content'];
+                $upload_data[$idx]['flickr_photo_id'] = $flickr_photo_id;
+                $this->duck->addLocationPhoto($duck_location_id, $flickr_photo_id);
             }
+        } else  {
+            error_log('Received an error uploading photo locally');
+            error_log('Error:' . $this->upload->display_errors());
         }
 
-        return $result;
+        return $upload_data;
     }
 }
 

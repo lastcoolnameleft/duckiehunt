@@ -151,7 +151,8 @@ class Duck_model Extends CI_Model {
         $this->db->where('duck_id', $duck_id);
         $this->db->update('duck', $distance_data);
 
-        $this->mail_location_update_emails($duck_id, $location_id);
+        // TODO  Fix emails
+        //$this->mail_location_update_emails($duck_id, $location_id);
 
 		if ($approved == 'Y'  && $location != 'Home') {
 			$this->tweetNewLocation($duck_data);
@@ -659,5 +660,14 @@ class Duck_model Extends CI_Model {
 
         $this->db->insert('activity', $activity_data);
 	}
+
+    function addLocationPhoto($duck_location_id, $flickr_photo_id) {
+        $photo_data = array(
+            'duck_location_id' => $duck_location_id,
+            'flickr_photo_id' => $flickr_photo_id,
+        );
+
+        $this->db->insert('duck_location_photo', $photo_data);
+    }
 }
 ?>
