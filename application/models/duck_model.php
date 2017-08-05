@@ -424,7 +424,24 @@ class Duck_model Extends CI_Model {
                 $photos[$row['flickr_photo_id']] = $row['flickr_thumbnail_url'];
             }
         }
+        return $photos;
+    }
 
+    function getDuckPhotos( $duck_id )
+    {
+        $this->db->select('duck_location_photo.flickr_photo_id, flickr_thumbnail_url')
+			->from('duck')
+            ->join('duck_location', 'duck.duck_id=duck_location.duck_id')
+			->join('duck_location_photo', 'duck_location.duck_location_id=duck_location_photo.duck_location_id')
+			->where('duck.duck_id', $duck_id);
+        $query = $this->db->get();
+        $photos = array();
+        if ($query->num_rows())
+        {
+            foreach ($query->result_array() as $row) {
+                $photos[$row['flickr_photo_id']] = $row['flickr_thumbnail_url'];
+            }
+        }
         return $photos;
     }
 

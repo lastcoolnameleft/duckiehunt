@@ -8,6 +8,15 @@
 				<tr><td>Name</td><td>: <?php echo $duck_info['name'] ?></td></tr>
 				<tr><td>Distance Travelled</td><td>: <?php echo $duck_info['total_distance'] ?> Miles</td></tr>
 				<?php echo (!empty($duck_info['comments']) ? "<tr><td>Comments</td><td>: {$duck_info['comments']}</td></tr>" : '')  ; ?>
+<?php
+		if (!empty($photos)) {
+			echo "<tr><td>Photos</td><td>: ";
+			foreach ($photos as $photo_id => $thumbnail_url) {
+			echo '<a data-flickr-embed="true"  href="https://www.flickr.com/photos/duckiehunt/' . $photo_id . '/" title="Duck #' . $duck_id . '"><img src="' . $thumbnail_url . '" alt="Duck #' . $duck_id . '"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>';
+			}
+			echo "</td></tr>\n";
+		}
+?>
 			</table>
 			<br/>
 

@@ -48,19 +48,21 @@ class View extends CI_Controller {
             $data['location_list'] = array();
             $data['duck_location_pulldown'] = array();
 
-			$this->load->library('flickr');
+            $flickr_config = array(
+                'consumer_key' => getenv('FLICKR_API_KEY'),
+                'consumer_secret' => getenv('FLICKR_API_SECRET')
+            );
+
+            $this->load->library('Flickr', $flickr_config);
 
             if (!empty($location_list)) { 
                 $data['duck_location_pulldown'][''] = '';
                 $data['duck_location_list'] = $location_list;
             }
 
+            $data['photos'] = $this->duck->getDuckPhotos($duck_id);
 			foreach ($location_list as $location) {
                 $data['duck_location_pulldown'][$location['duck_location_id']] = $location['location'];
-
-                if (!empty($location['flickr_photo_id'])) {
-                    $location['thumbnail_url'] = $this->flickr->getThumbnail($location['flickr_photo_id']);
-                }
                 $data['location_list'][] = $this->duck->renderLocation( $location );
 			}
 		}
