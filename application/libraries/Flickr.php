@@ -668,4 +668,14 @@ class Flickr
 
         return $response;
     }
+
+    public function getThumbnailUrl($photo_id) {
+        $photoInfo = $this->call('flickr.photos.getSizes', array('photo_id' => $photo_id));
+        foreach ($photoInfo['sizes']['size'] as $size) {
+            if ($size['label'] == 'Thumbnail') {
+                return $size['source'];
+            }
+        }
+        return NULL;
+    }
 }

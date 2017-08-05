@@ -20,9 +20,6 @@
                      if (!empty($location_info['comments'])) {
                         echo "<tr><td>Comments</td><td>:</td><td>{$location_info['comments']}</td></tr>";
                      }
-                     if (!empty($location_info['flickr_photo_info']['page'])) {
-                         echo "<tr><td>Flickr Page</td><td>:</td><td>" . anchor($location_info['flickr_photo_info']['page'], $location_info['flickr_photo_info']['title']) . "</td></tr>";
-                     }
                      if (!empty($location_info['distance_to'])) {
                         echo "<tr><td>Distance To this Point</td><td>:</td><td>{$location_info['distance_to']}</td></tr>";
                      }
@@ -34,6 +31,13 @@
                              echo anchor($link) . "<br />";
                          }
                          echo  "</td></tr>";
+                     }
+                     if (!empty($photos)) {
+                         echo "<tr><td>Photos</td><td>:</td><td>\n";
+                         foreach ($photos as $photo_id => $thumbnail_url) {
+                            echo '<a data-flickr-embed="true"  href="https://www.flickr.com/photos/duckiehunt/' . $photo_id . '/" title="Duck #' . $duck_id . '"><img src="' . $thumbnail_url . '" alt="Duck #' . $duck_id . '"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>';
+//                            echo "<a href='https://www.flickr.com/photos/duckiehunt/{$photo_id}/'><img src='{$thumbnail_url}' /></a></td></tr>";
+                         }
                      }
 
                  }

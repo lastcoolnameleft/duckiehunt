@@ -349,7 +349,8 @@ class Mark extends CI_Controller
 
                 $flickr_photo_id = $photo_info['photoid']['_content'];
                 $upload_data[$idx]['flickr_photo_id'] = $flickr_photo_id;
-                $this->duck->addLocationPhoto($duck_location_id, $flickr_photo_id);
+                $thumbnail_url = $this->flickr->getThumbnailUrl($flickr_photo_id);
+                $this->duck->addLocationPhoto($duck_location_id, $flickr_photo_id, $thumbnail_url);
             }
         } else  {
             error_log('Received an error uploading photo locally');

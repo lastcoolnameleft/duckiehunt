@@ -364,8 +364,6 @@ class Duck_model Extends CI_Model {
         . ' LEFT JOIN `users` ON (`user_id`=`id`)'
         . ' WHERE `duck_location_id` = ? AND `approved`="Y"';
         $query = $this->db->query($sql, array($location_id));
-        //		$this->db->select('duck_id, duck_history_id, user_id, latitude, longitude, comments, link, flickr_photo_id, date_format(date_time, "%m/%d/%Y %T") as date_time, location')->from('duck_location')->where('duck_location_id', $location_id);
-        //        $query = $this->db->get();
         $result = $query->row_array();
 
         return $result;
@@ -410,6 +408,24 @@ class Duck_model Extends CI_Model {
         }
  
         return $links;
+    }
+
+    function getLocationPhotos( $location_id )
+    {
+        $this->db->select('flickr_photo_id, flickr_thumbnail_url')
+			->from('duck_location_photo')
+			->where('duck_location_id', $location_id);
+        $query = $this->db->get();
+
+        $photos = array();
+        if ($query->num_rows())
+        {
+            foreach ($query->result_array() as $row) {
+                $photos[$row['flickr_photo_id']] = $row['flickr_thumbnail_url'];
+            }
+        }
+
+        return $photos;
     }
 
     function getFullList()
@@ -661,10 +677,11 @@ class Duck_model Extends CI_Model {
         $this->db->insert('activity', $activity_data);
 	}
 
-    function addLocationPhoto($duck_location_id, $flickr_photo_id) {
+    function addLocationPhoto($duck_location_id, $flickr_photo_id, $flickr_thumbnail_url) {
         $photo_data = array(
             'duck_location_id' => $duck_location_id,
             'flickr_photo_id' => $flickr_photo_id,
+            'flickr_thumbnail_url' => $flickr_thumbnail_url,
         );
 
         $this->db->insert('duck_location_photo', $photo_data);

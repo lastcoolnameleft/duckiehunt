@@ -101,6 +101,7 @@ class View extends CI_Controller {
             'total_duck_list'  => $this->duck->getFullList(),
             'can_modify'       => $this->duck->canModifyLocation($duck_location_id),
             'links'            => $this->duck->getLocationLinks($duck_location_id),
+            'photos'           => array(),
         );
 
         $map_data = array(
@@ -117,15 +118,7 @@ class View extends CI_Controller {
 
             $this->load->library('flickr', array('consumer_key' => getenv('FLICKR_API_KEY')));
             
-            if (!empty($location['flickr_photo_id'])) {
-                $location['thumbnail_url'] = $this->flickr->getThumbnail($location['flickr_photo_id']);
-            }
-
-            if (!empty($location['flickr_photo_id'])) {
-                $data['location_info']['flickr_photo_info'] = $this->flickr->getPhotoInfo($location['flickr_photo_id']);
-            }
-//            print "page = $flickr_photo_page";
-               
+            $data['photos'] = $this->duck->getLocationPhotos($duck_location_id);
             $data['location_list'][] = $this->duck->renderLocation( $location );
 
 			$location_list = $this->duck->getLocations( $duck_id );
