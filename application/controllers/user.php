@@ -15,7 +15,7 @@ class User extends CI_Controller {
 
     function view($username)
     {
-        $this->db->select('id, username, created')->from('users')->where('username', $username);
+        $this->db->select('id, username')->from('users')->where('username', $username);
         $query = $this->db->get();
 
         if ($query->num_rows()) {

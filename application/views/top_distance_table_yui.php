@@ -68,7 +68,7 @@ YAHOO.widget.DataTable.formatDuck = function(elCell, oRecord, oColumn, oData) {
 
 YAHOO.widget.DataTable.formatUser = function(elCell, oRecord, oColumn, oData) {
     var username = oData;
-    elCell.innerHTML = "<a href='/user/" + username + "'>" + username + "</a>";
+    elCell.innerHTML = "<a href='/user/view/" + username + "'>" + username + "</a>";
 };
 
 YAHOO.util.Event.addListener(window, "load", function() {
