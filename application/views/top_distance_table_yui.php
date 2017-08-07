@@ -29,9 +29,9 @@
 
 
 <!-- Combo-handled YUI CSS files: -->
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/datatable/assets/skins/sam/datatable.css">
+<link rel="stylesheet" type="text/css" href="/css/datatable.css">
 <!-- Combo-handled YUI JS files: -->
-<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/element/element-min.js&2.7.0/build/datasource/datasource-min.js&2.7.0/build/datatable/datatable-min.js"></script>
+<script type="text/javascript" src="/js/yui.js"></script>
 
 
 
