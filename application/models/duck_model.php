@@ -587,7 +587,7 @@ class Duck_model Extends CI_Model {
 //        }
 
         //  Notify Tommy
-        send_duck_location_change_mail('snoopykiss@gmail.com', $duck_id, $duck_data);
+        send_duck_location_change_mail('tommy@duckiehunt.com', $duck_id, $duck_data);
 
         //  Now we notify everyone who's on the track list
         $this->db->select('email')->from('duck_track')->join('users', 'duck_track.user_id=users.id')->where('duck_id', $duck_id);

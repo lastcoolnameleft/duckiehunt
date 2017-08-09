@@ -27,7 +27,7 @@
 		$CI->email->from('tommy@duckiehunt.com', 'DuckieHunt');
 
 		$CI->email->to($to);
-//		$CI->email->bcc('tommy@duckiehunt.com', 'snoopykiss@gmail.com');
+//		$CI->email->bcc('tommy@duckiehunt.com', 'tommy@duckiehunt.com');
 
 		$subject = "Duck # $duck_id has moved!";
 		$CI->email->subject( $subject );
@@ -54,7 +54,7 @@
     function mail_location_update_emails( $duck_id, $duck_location_id )
     {
 		//  Notify Tommy
-		send_duck_location_change_mail('snoopykiss@gmail.com', $duck_id, $duck_location_id);
+		send_duck_location_change_mail('tommy@duckiehunt.com', $duck_id, $duck_location_id);
 
 		//  Now we notify everyone who's on the track list
         $this->db->select('email')->from('duck_track')->join('cl_users', 'duck_track.user_id=cl_users.id')->where('duck_id', $duck_id);
