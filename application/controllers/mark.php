@@ -115,7 +115,6 @@ class Mark extends CI_Controller
         }
     }
 
-
     function latlng_check( $latlng )
     {
         if (empty($latlng) )
@@ -327,13 +326,14 @@ class Mark extends CI_Controller
                 $pic_desc = $desc . "<br/>\n" . anchor("http://duckiehunt.com/view/duck/{$duck_id}");
                 $tags  = "duckiehunt,rubber duckie,duckie,duck{$duck_id}";
                 $async = FALSE;
+                # https://www.flickr.com/services/api/upload.api.html
                 $parameters = array(
                     'title' => $title,
                     'tags' => $tags,
                     'description' => $pic_desc,
                     'photo' => curl_file_create($pic['full_path']),
-                    'is_public' => 0, // TODO:  Remove for prod
-                    'hidden' => 2, // TOOD: Remove for prod
+                    'is_public' => getenv('FLICKR_UPLOAD_IS_PUBLIC'),
+                    'hidden' => getenv('FLICKR_UPLOAD_HIDDEN'),
                 );
 
                 $photo_info = $this->flickr->upload($parameters);
