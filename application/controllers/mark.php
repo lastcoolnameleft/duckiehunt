@@ -11,7 +11,7 @@ class Mark extends CI_Controller
         parent::__construct();
 
         $this->load->helper(array('form', 'url'));
-        $this->load->library('form_validation', 'sendgrid');
+        $this->load->library(array('form_validation', 'sendgrid'));
         $this->load->model('duck_model', 'duck');
 
         $this->form_validation->set_rules('duck_id', 'Duck ID', 'trim|required|numeric|callback_duck_id_check');
@@ -160,7 +160,10 @@ class Mark extends CI_Controller
 
         $this->_uploadFiles($duck_id, $location_id, $this->input->post('comments'));
 
-        $this->sendgrid->send_duck_location_change($to, $duck_id, $location_id);
+        $notify_email = getenv('NOTIFY_EMAIL');
+        if ($notify_email) {
+            $this->sendgrid->send_duck_location_change($notify_email, $duck_id, $location_id);
+        }
 
         $this->session->set_userdata('modifying_duck', $duck_id);
         $this->session->set_userdata('location_id', $location_id);

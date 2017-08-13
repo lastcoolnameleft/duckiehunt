@@ -1,6 +1,6 @@
 <br/>
 <?php
-	$register = "<a href='auth/register'>register</a>";
+	$register = "<a href='auth/create_user'>register</a>";
 	$login= "<a href='auth/login'>login</a>";
 ?>
 You are not currently logged in.  If you login, when you mark a duck's location, you get <b>Duck Points&trade;</b>!<font color='black'>*</font><br/>

@@ -16,7 +16,7 @@ class Invite extends CI_Controller {
 
 		$subject = 'You have been invited to join duckiehunt.com!';
 		$message = "This is not a spam message.<br/>No really.<br/>Someone thought you were cool enough to register at <a href='http://duckiehunt.com'>duckiehunt.com</a>.<br/>
-		Register <a href='http://duckiehunt.com/auth/register'>here</a>.<br/>
+		Register <a href='http://duckiehunt.com/auth/create_user'>here</a>.<br/>
 		Check out cool stuff <a href='http://duckiehunt.com/view'>here</a><br/>
 		<br/>
 		Thanks!<br/>

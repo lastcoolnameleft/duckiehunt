@@ -31,6 +31,7 @@ services:
       FLICKR_UPLOAD_HIDDEN: ${FLICKR_UPLOAD_HIDDEN}
       SENDGRID_USERNAME: ${SENDGRID_USERNAME}
       SENDGRID_PASSWORD: ${SENDGRID_PASSWORD}
+      NOTIFY_EMAIL: ${NOTIFY_EMAIL}
   db:
     image: mysql
     container_name: db
