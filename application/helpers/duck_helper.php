@@ -16,39 +16,18 @@
 
 	function send_duck_location_change_mail($to, $duck_id, $duck_location_id)
 	{
-		$result = false;
 		$CI = get_instance(); 
-
-        $CI->load->library('email');
-
-		$config = array('mailtype' => 'html');
-		$CI->email->initialize($config);
-
-		$CI->email->from('tommy@duckiehunt.com', 'DuckieHunt');
-
-		$CI->email->to($to);
-//		$CI->email->bcc('tommy@duckiehunt.com', 'tommy@duckiehunt.com');
+        $CI->load->library('sendgrid');
 
 		$subject = "Duck # $duck_id has moved!";
-		$CI->email->subject( $subject );
 
 		$message = "You are receiving this email because you're on the alert list for Duck #{$duck_id}.<br/>\n";
 		$message .= "You can see where this duck has travelled to by going to <a href='http://duckiehunt.com/view/duck/{$duck_id}'>http://duckiehunt.com/view/duck/{$duck_id}</a>";
 		$message .= " and can see the specific location info at <a href='http://duckiehunt.com/view/location/{$duck_location_id}'>http://duckiehunt.com/view/location/{$duck_location_id}</a>";
 
-		$CI->email->message($message);
-
-		if ($send_result = $CI->email->send() )
-		{
-			$result = true;
-		}
-		else {
-			error_log("some error happened.  send_result = {$send_result}");
-			error_log(print_r($CI->email->print_debugger(), true));
-		}
+		$result = $CI->sendgrid->send($email, $subject, $message);
 
 		return $result;
-
 	}
 
     function mail_location_update_emails( $duck_id, $duck_location_id )

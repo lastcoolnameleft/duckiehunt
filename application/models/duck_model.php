@@ -151,9 +151,6 @@ class Duck_model Extends CI_Model {
         $this->db->where('duck_id', $duck_id);
         $this->db->update('duck', $distance_data);
 
-        // TODO  Fix emails
-        //$this->mail_location_update_emails($duck_id, $location_id);
-
 		if ($approved == 'Y'  && $location != 'Home') {
 			$this->tweetNewLocation($duck_data);
 		}
@@ -210,8 +207,6 @@ class Duck_model Extends CI_Model {
         );
         $this->db->where('duck_id', $duck_id);
         $this->db->update('duck', $distance_data);
-
-        $this->mail_location_update_emails($duck_id, $duck_location_id);
 
         return $duck_location_id;
     }
@@ -582,10 +577,6 @@ class Duck_model Extends CI_Model {
 
     function mail_location_update_emails( $duck_id, $duck_data )
     {
-//        if (!$this->config->item('send_emails')) {
-//            return;
-//        }
-
         //  Notify Tommy
         send_duck_location_change_mail('tommy@duckiehunt.com', $duck_id, $duck_data);
 
@@ -596,7 +587,6 @@ class Duck_model Extends CI_Model {
         foreach ($result as $user_data) {
             send_duck_location_change_mail($user_data['email'], $duck_id, $duck_data);
         }
-
     }
 
     function getDistanceTo($lat, $lon, $duck_id, $duck_location_id = NULL)

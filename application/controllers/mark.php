@@ -11,14 +11,13 @@ class Mark extends CI_Controller
         parent::__construct();
 
         $this->load->helper(array('form', 'url'));
-        $this->load->library('form_validation');
+        $this->load->library('form_validation', 'sendgrid');
         $this->load->model('duck_model', 'duck');
 
         $this->form_validation->set_rules('duck_id', 'Duck ID', 'trim|required|numeric|callback_duck_id_check');
         $this->form_validation->set_rules('date_time', 'Date & Time', 'trim|required');
         $this->form_validation->set_rules('lat', 'Latitude', 'trim|required|numeric|callback_latlng_check');
         $this->form_validation->set_rules('lng', 'Longtitude', 'trim|required|numeric|callback_latlng_check');
-        //$this->form_validation->set_rules('comments', 'Comments', 'xss_clean');
         $this->form_validation->set_rules('location', 'Central Location', 'trim|required');
 
         for ($i=0; $i<10; $i++) {
@@ -160,6 +159,8 @@ class Mark extends CI_Controller
         );
 
         $this->_uploadFiles($duck_id, $location_id, $this->input->post('comments'));
+
+        $this->sendgrid->send_duck_location_change($to, $duck_id, $location_id);
 
         $this->session->set_userdata('modifying_duck', $duck_id);
         $this->session->set_userdata('location_id', $location_id);

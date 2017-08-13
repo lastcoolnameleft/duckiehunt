@@ -26,7 +26,6 @@ class Invite extends CI_Controller {
 
 		$redirect_url = $result ? '/invite/fail' : '/invite/success';
 		redirect($redirect_url, 'refresh');
-
 	}
 
 	function success()

@@ -1,7 +1,7 @@
 <h1><?php echo lang('create_user_heading');?></h1>
 <p><?php echo lang('create_user_subheading');?></p>
 
-<div id="infoMessage"><?php echo $message;?></div>
+<div id="infoMessage"><?php if ($message) { echo "<b><font color='red'>$message</font></b>"; } ?></div>
 
 <?php echo form_open("auth/create_user");?>
 
@@ -26,19 +26,9 @@
       }
       ?>
 
-      <p>
-            <?php echo lang('create_user_company_label', 'company');?> <br />
-            <?php echo form_input($company);?>
-      </p>
-
-      <p>
+     <p>
             <?php echo lang('create_user_email_label', 'email');?> <br />
             <?php echo form_input($email);?>
-      </p>
-
-      <p>
-            <?php echo lang('create_user_phone_label', 'phone');?> <br />
-            <?php echo form_input($phone);?>
       </p>
 
       <p>
