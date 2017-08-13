@@ -35,3 +35,6 @@ docker-db/
 phpinfo.php
 uploads/
 tmp/
+
+# JS
+node_modules
