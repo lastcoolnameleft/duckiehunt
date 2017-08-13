@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
 <head>
-  <title>duckiehunt.com</title>
+  <title><?php print $this->config->item('config', 'base_url') ?></title>
   <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
   <meta name="author" content="fullahead.org" />
   <meta name="keywords" content="Open Web Design, OWD, Free Web Template, Lazy Days, Fullahead" />

@@ -32,6 +32,7 @@ services:
       SENDGRID_USERNAME: ${SENDGRID_USERNAME}
       SENDGRID_PASSWORD: ${SENDGRID_PASSWORD}
       NOTIFY_EMAIL: ${NOTIFY_EMAIL}
+      CI_BASE_URL: ${CI_BASE_URL}
   db:
     image: mysql
     container_name: db

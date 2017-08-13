@@ -63,10 +63,26 @@ class Auth extends CI_Controller {
 
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember))
 			{
-				//if the login is successful
-				//redirect them back to the home page
-				$this->session->set_flashdata('message', $this->ion_auth->messages());
-				redirect('/', 'refresh');
+				// If login was successful and they are registering a duckie, then associate it back to them
+				if ($this->session->has_userdata('modifying_duck') && $this->session->has_userdata('location_id')) {
+					$identity = $this->input->post('identity');
+					$user_id = $this->ion_auth->get_user_id();
+					$duck_id = $this->session->userdata('modifying_duck');
+					$location_id = $this->session->userdata('location_id');
+					error_log("Updating logged in user ($identity:$user_id) with Duck $duck_id at $location_id");
+					$this->load->model('duck_model', 'duck');
+					$this->duck->updateDuckLocationUserId( $location_id, $user_id );
+					$this->session->set_flashdata('message', $this->ion_auth->messages());
+					$this->session->unset_userdata('location_id');
+					$this->session->unset_userdata('modifying_duck');
+					redirect("view/location/$location_id", 'refresh');
+				}
+				else {
+					//if the login is successful
+					//redirect them back to the home page
+					$this->session->set_flashdata('message', $this->ion_auth->messages());
+					redirect('/', 'refresh');
+				}
 			}
 			else
 			{
@@ -454,10 +470,30 @@ class Auth extends CI_Controller {
         }
         if ($this->form_validation->run() == true && $this->ion_auth->register($identity, $password, $email, $additional_data))
         {
-            // check to see if we are creating the user
-            // redirect them back to the admin page
-            $this->session->set_flashdata('message', $this->ion_auth->messages());
-            redirect("auth", 'refresh');
+			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), TRUE)) {
+				// If registration + login was successful and they are registering a duckie, then associate it back to them
+				if ($this->session->has_userdata('modifying_duck') && $this->session->has_userdata('location_id')) {
+					$user_id = $this->ion_auth->get_user_id();
+					$duck_id = $this->session->userdata('modifying_duck');
+					$location_id = $this->session->userdata('location_id');
+					error_log("Updating newly created user ($identity:$user_id) with Duck $duck_id at $location_id");
+					$this->load->model('duck_model', 'duck');
+					$this->duck->updateDuckLocationUserId( $location_id, $user_id );
+					$this->session->unset_userdata('location_id');
+					$this->session->unset_userdata('modifying_duck');
+					redirect("view/location/$location_id", 'refresh');
+				} else {
+					// check to see if we are creating the user
+					// redirect them back to the admin page
+					$this->session->set_flashdata('message', $this->ion_auth->messages());
+					redirect("/", 'refresh');
+				}
+			} else {
+				// check to see if we are creating the user
+				// redirect them back to the admin page
+				$this->session->set_flashdata('message', $this->ion_auth->messages());
+				redirect("/auth/login", 'refresh');
+			}
         }
         else
         {
