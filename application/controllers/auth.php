@@ -173,7 +173,9 @@ class Auth extends CI_Controller {
 			);
 
 			// render
+			$this->_render_page('header');
 			$this->_render_page('auth/change_password', $this->data);
+			$this->_render_page('footer');
 		}
 		else
 		{
@@ -227,7 +229,9 @@ class Auth extends CI_Controller {
 
 			// set any errors and display the form
 			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
+			$this->_render_page('header');
 			$this->_render_page('auth/forgot_password', $this->data);
+			$this->_render_page('footer');
 		}
 		else
 		{
