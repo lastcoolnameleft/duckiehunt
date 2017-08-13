@@ -317,7 +317,9 @@ class Auth extends CI_Controller {
 				$this->data['code'] = $code;
 
 				// render
+				$this->_render_page('header');
 				$this->_render_page('auth/reset_password', $this->data);
+				$this->_render_page('footer');
 			}
 			else
 			{
