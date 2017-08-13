@@ -79,7 +79,7 @@
                     <input type="file" name="files[]" size="20" multiple />
                 </td></tr>
 
-				<tr><td><input type='submit' value='Submit'></tr>
+				<tr><td><input type='submit' name="submit" value='Submit'></tr>
 			</table>
 		</td>
 		<td width="75%">
