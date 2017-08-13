@@ -82,8 +82,8 @@ $config['salt_prefix']    = version_compare(PHP_VERSION, '5.3.7', '<') ? '$2a$' 
  | The controller should check this function and act
  | appropriately. If this variable set to 0, there is no maximum.
  */
-$config['site_title']                 = "Example.com";       // Site Title, example.com
-$config['admin_email']                = "admin@example.com"; // Admin Email, admin@example.com
+$config['site_title']                 = "Duckiehunt.com";       // Site Title, example.com
+$config['admin_email']                = "tommy@duckiehunt.com"; // Admin Email, admin@example.com
 $config['default_group']              = 'members';           // Default group, use name
 $config['admin_group']                = 'admin';             // Default administrators group, use name
 $config['identity']                   = 'username';             // You can use any unique column in your table as identity column. The values in this column, alongside password, will be used for login purposes
@@ -123,8 +123,16 @@ $config['identity_cookie_name'] = 'identity';
  | 	  'file' = Use the default CI config or use from a config file
  | 	  array  = Manually set your email config settings
  */
-$config['use_ci_email'] = FALSE; // Send Email using the builtin CI email class, if false it will return the code and the identity
+$config['use_ci_email'] = TRUE; // Send Email using the builtin CI email class, if false it will return the code and the identity
 $config['email_config'] = array(
+	'mailtype' => 'html',
+	'protocol' => 'smtp',
+	'smtp_host' => 'smtp.sendgrid.net',
+	'smtp_user' => getenv('SENDGRID_USERNAME'),
+	'smtp_pass' => getenv('SENDGRID_PASSWORD'),
+	'smtp_port' => 587,
+	'crlf' => "\r\n",
+	'newline' => "\r\n",
 	'mailtype' => 'html',
 );
 
