@@ -21,14 +21,12 @@ deny from co.za
 deny from rr.nu
 allow from all
 
-RewriteEngine on
+# https://docs.microsoft.com/en-us/azure/app-service-web/app-service-web-tutorial-custom-ssl#enforce-https-for-web-apps-on-linux
+RewriteEngine On
+RewriteCond %{HTTP:X-ARR-SSL} ^$
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-RewriteCond %{HTTPS} off [OR]
-RewriteCond %{HTTP_HOST} !^www\. [OR]
-RewriteCond %{HTTP_HOST} ^duckiehunt\.com$ [NC]
-RewriteRule ^ https://duckiehunt.com%{REQUEST_URI} [R=301,L,NE]
-
-
+# Remove index.php from URL
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ /index.php?$1 [L]
