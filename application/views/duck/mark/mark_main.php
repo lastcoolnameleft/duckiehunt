@@ -2,8 +2,8 @@
     echo form_open_multipart($controller, array('id' => 'form', 'name' => 'form', 'onSubmit' => 'return validateData();'));
 ?>
 <input type="hidden" name="duck_location_id" id="duck_location_id" value="<?php echo set_value('duck_location_id'); ?>" />
-<input type="hidden" name="lat" id="lat" value="<?php echo set_value('lat'); ?>" />
-<input type="hidden" name="lng" id="lng" value="<?php echo set_value('lng'); ?>" />
+<input type="hidden" name="lat" id="lat" value="<?php echo set_value('lat', $lat); ?>" />
+<input type="hidden" name="lng" id="lng" value="<?php echo set_value('lng', $lng); ?>" />
 
 <div class="width25 floatLeft leftColumn">
 	<div class='gradient'>
@@ -71,7 +71,7 @@
                         }
                         ?>
                     </div>
-                    <input type="hidden" value="0" id="link_id" />
+                    <input type="hidden" value="<?php echo sizeof($links) ?>" id="link_id" />
                     <input type='button' onclick='addInput("linkDiv", "link", "link_id", "text", 30);' value='Add Another Link' />
                 </td></tr>
                 <tr><td>Upload Picture:</td></tr>

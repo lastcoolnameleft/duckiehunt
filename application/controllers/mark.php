@@ -75,6 +75,8 @@ class Mark extends CI_Controller
             'location'         => $location_info['location'],
             'comments'         => $location_info['comments'],
             'date_time'        => $location_info['date_time'],
+            'lat'              => $location_info['latitude'],
+            'lng'              => $location_info['longitude'],
             'duck_location_id' => $duck_location_id,
             'location_info'    => $location_info,
             'controller'       => "mark/update/{$duck_location_id}",
@@ -87,8 +89,6 @@ class Mark extends CI_Controller
             $this->load->view('footer');
         }
         else {
-            $location_info = $this->duck->getLocationInfo($duck_location_id);
-
             if ($this->form_validation->run() == FALSE) {
                 $this->load->view('header');
                 $this->load->view('duck/mark/mark_main', $data);
@@ -105,7 +105,7 @@ class Mark extends CI_Controller
     {
         if (!is_numeric($duck_id))
         {
-            $this->form_validation->set_message('duck_id_check', 'The %s field must be a number');
+            $this->form_validation->set_message('duck_id_check', "The %s field must be a number.  Value: $duck_id");
             return FALSE;
         }
         else
@@ -118,7 +118,7 @@ class Mark extends CI_Controller
     {
         if (empty($latlng) )
         {
-            $this->form_validation->set_message('latlng_check', 'Invalid %s');
+            $this->form_validation->set_message('latlng_check', "Invalid %s. Value: $latlng");
             return FALSE;
         }
         else
@@ -233,7 +233,7 @@ class Mark extends CI_Controller
             $this->load->view('duck/mark/not_named', array('duck_id' => $duck_id));
         }
 
-        if (!$this->ion_auth->is_logged_in() ) {
+        if (!$this->ion_auth->logged_in() ) {
             $this->load->view('duck/mark/not_reg');
         }
 
