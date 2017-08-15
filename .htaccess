@@ -24,6 +24,7 @@ allow from all
 # https://docs.microsoft.com/en-us/azure/app-service-web/app-service-web-tutorial-custom-ssl#enforce-https-for-web-apps-on-linux
 RewriteEngine On
 RewriteCond %{HTTP:X-ARR-SSL} ^$
+RewriteCond %{HTTP_HOST} !^duckiehunt.local$
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Remove index.php from URL
