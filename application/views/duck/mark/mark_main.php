@@ -1,5 +1,5 @@
 <?php
-    echo form_open_multipart($controller, array('id' => 'form', 'name' => 'form', 'onSubmit' => 'return validateData();'));
+    echo form_open_multipart($controller, array('id' => 'form', 'name' => 'form'));
 ?>
 <input type="hidden" name="duck_location_id" id="duck_location_id" value="<?php echo set_value('duck_location_id'); ?>" />
 <input type="hidden" name="lat" id="lat" value="<?php echo set_value('lat', $lat); ?>" />

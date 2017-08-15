@@ -18,7 +18,6 @@ class Upload_Flickr extends CI_Controller {
         {
                 $config['upload_path']          = './uploads/';
                 $config['allowed_types']        = 'gif|jpg|png';
-                $config['max_size']             = 32 * 1024;
                 $duck_id = 'deleteme';
                 $desc = 'testupload';
 
