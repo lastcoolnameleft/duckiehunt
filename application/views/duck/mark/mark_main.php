@@ -48,7 +48,7 @@
 				<tr><td>Duck: <font color='black'>*</font></td></tr>
 				<tr><td><input type="text" name="duck_id" value="<?php echo set_value('duck_id', $duck_id); ?>" size="10" /></td></tr>
 
-				<tr><td>Location: <font color='black'>*</font></td></tr>
+				<tr><td>Location: (e.g. Eiffel Tower)<font color='black'>*</font></td></tr>
 				<tr><td><input type="text" name="location" id="location" value="<?php echo set_value('location', $location); ?>" size="30" /></td></tr>
 
 				<tr><td>Date/Time: (MM/DD/YYYY HH:MM) <font color='black'>*</font></td></tr>
