@@ -356,3 +356,8 @@ ul.sideMenu {
 .notice {
   color: #ff0000;
 }
+
+.med_blue {
+  color: blue;
+  font-weight: bold;
+}

@@ -9,4 +9,18 @@ class Rules extends CI_Controller {
 		$this->load->view('user_guidelines');
 		$this->load->view('footer');
 	}
+
+	public function user_guidelines()
+	{
+		$this->load->view('header');
+		$this->load->view('user_guidelines');
+		$this->load->view('footer');
+	}
+
+	public function privacy()
+	{
+		$this->load->view('header');
+		$this->load->view('privacy');
+		$this->load->view('footer');
+	}
 }

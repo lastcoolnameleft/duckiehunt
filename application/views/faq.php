@@ -8,7 +8,7 @@ Here's the answer the questions that noone has asked me yet.  I'd need actual vi
 
 <h2>Why do you have so many duckies?</h2>
 <ul><li>
-My lovely wife and I were away on our honeymoon and our friends conspired towards a <?php echo anchor('http://flickr.com/photos/nmlittle/tags/duckieinvation/', 'huge rubber duckie invasion') ?>.  We came back to <?php echo anchor('http://flickr.com/photos/snoopykiss/sets/72157607146654923/', '1000+ duckies in the house') ?>.  <?php echo anchor('http://flickr.com/photos/snoopykiss/2833050713', '~300 on the bed') ?>.  Days later I went into work to find <?php echo anchor('http://flickr.com/photos/snoopykiss/2833067647', '~200 more there') ?>.  It was epic.</li></ul>
+The genesis of this was from "The Duckening".  My lovely wife and I were away on our honeymoon and our friends conspired towards a <?php echo anchor('http://flickr.com/photos/nmlittle/tags/duckieinvation/', 'huge rubber duckie invasion') ?>.  We came back to <?php echo anchor('http://flickr.com/photos/snoopykiss/sets/72157607146654923/', '1000+ duckies in the house') ?>.  <?php echo anchor('http://flickr.com/photos/snoopykiss/2833050713', '~300 on the bed') ?>.  Days later I went into work to find <?php echo anchor('http://flickr.com/photos/snoopykiss/2833067647', '~200 more there') ?>.  It was epic.</li></ul>
 
 <h2>No seriously.  Why do you have so many duckies?  I think you need professional help.</h2>
 <ul><li>
