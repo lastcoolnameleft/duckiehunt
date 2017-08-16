@@ -78,6 +78,7 @@
                 <tr><td>
                     <input type="file" name="files[]" size="20" multiple />
                 </td></tr>
+				<tr></td><?php echo $recaptcha_widget ?></td></tr>
 
 				<tr><td><input type='submit' name="submit" value='Submit'></tr>
 			</table>
@@ -92,4 +93,4 @@
 </div>
 
 <?php echo form_close(); ?>
-
+<?php echo $recaptcha_script;?>

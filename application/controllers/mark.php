@@ -4,15 +4,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Mark extends CI_Controller 
 {
 
-	private $_approved = 'Y';
+	private $_approved;
 	
     function __construct()
     {
         parent::__construct();
 
         $this->load->helper(array('form', 'url'));
-        $this->load->library(array('form_validation', 'sendgrid'));
+        $this->load->library(array('form_validation', 'sendgrid', 'recaptcha'));
         $this->load->model('duck_model', 'duck');
+        $this->_approved = $this->config->item('auto_approve');
 
         $this->form_validation->set_rules('duck_id', 'Duck ID', 'trim|required|numeric|callback_duck_id_check');
         $this->form_validation->set_rules('date_time', 'Date & Time', 'trim|required');
@@ -44,6 +45,8 @@ class Mark extends CI_Controller
             'date_time' => date('m/d/Y H:i:s'),
             'comments' => '',
             'controller' => 'mark',
+            'recaptcha_widget' => $this->recaptcha->getWidget(),
+            'recaptcha_script' => $this->recaptcha->getScriptTag(),
         );
 
         if ($this->form_validation->run() == FALSE) {
@@ -53,6 +56,23 @@ class Mark extends CI_Controller
             $this->load->view('footer');
         }
         else {
+            $recaptcha = $this->input->post('g-recaptcha-response');
+            if (empty($recaptcha)) {
+                error_log('recapcha was empty!');
+                $this->load->view('header');
+                $this->load->view('duck/mark/denied');
+                $this->load->view('footer');
+                return;
+            }
+            $response = $this->recaptcha->verifyResponse($recaptcha);
+            if (!isset($response['success']) or !$response['success'] === true) {
+                error_log('recapcha was not successful!');
+                error_log(print_r($response, true));
+                $this->load->view('header');
+                $this->load->view('duck/mark/denied');
+                $this->load->view('footer');
+                return;
+            }
             $this->_add();
         }
     }
@@ -60,6 +80,24 @@ class Mark extends CI_Controller
 
     function update( $duck_location_id )
     {
+        $recaptcha = $this->input->post('g-recaptcha-response');
+        if (empty($recaptcha)) {
+            error_log('recapcha was empty!');
+            $this->load->view('header');
+            $this->load->view('duck/mark/denied');
+            $this->load->view('footer');
+            return;
+        }
+        $response = $this->recaptcha->verifyResponse($recaptcha);
+        if (!isset($response['success']) or !$response['success'] === true) {
+            error_log('recapcha was not successful!');
+            error_log(print_r($response, true));
+            $this->load->view('header');
+            $this->load->view('duck/mark/denied');
+            $this->load->view('footer');
+            return;
+        }
+
         $location_info = $this->duck->getLocationInfo($duck_location_id);
 
         $links = array();
@@ -84,6 +122,8 @@ class Mark extends CI_Controller
             'location_info'    => $location_info,
             'controller'       => "mark/update/{$duck_location_id}",
             'links'            => $links,
+            'recaptcha_widget' => $this->recaptcha->getWidget(),
+            'recaptcha_script' => $this->recaptcha->getScriptTag(),
         );
 
         if (!$this->duck->canModifyLocation( $duck_location_id )) {
