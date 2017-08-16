@@ -33,10 +33,10 @@
     $this->load->helper('html');
     $controller = $this->uri->rsegment(1);
 
-    echo "\t\t<li>" . anchor('main', 'Main', $controller == 'main' ? array('class' => 'here') : '') . "</li>\n";
-	  echo "\t\t<li>" . anchor('stats', 'Stats', $controller == 'stats' ? array('class' => 'here') : '') . "</li>\n";
-	  echo "\t\t<li>" . anchor('view', 'View', $controller == 'view' ? array('class' => 'here') : '') . "</li>\n";
-    echo "\t\t<li>" . anchor('mark', 'Mark', $controller == 'mark' ? array('class' => 'here') : '') . "</li>\n";
+    echo "\t\t<li>" . anchor('main', 'Main', $controller == 'main' ? array('class' => 'here main_link') : array('id' => 'main_header')) . "</li>\n";
+	  echo "\t\t<li>" . anchor('stats', 'Stats', $controller == 'stats' ? array('class' => 'here stats_link') : array('id' => 'stats_header')) . "</li>\n";
+	  echo "\t\t<li>" . anchor('view', 'View', $controller == 'view' ? array('class' => 'here view_link') : array('id' => 'view_header')) . "</li>\n";
+    echo "\t\t<li>" . anchor('mark', 'Mark', $controller == 'mark' ? array('class' => 'here mark_link') : array('id' => 'mark_header')) . "</li>\n";
 
     if ($controller == 'user') {
         echo "\t\t<li>" . anchor('user', 'user', $controller == 'user' ? array('class' => 'here') : '') . "</li>\n";
@@ -50,9 +50,9 @@
 	  echo "\t\t<li>" . anchor('faq', 'Faq', $controller == 'faq' ? array('class' => 'here') : '') . "</li>\n";
   
     if ( $this->ion_auth->logged_in() ) {
-        echo '<li>' . anchor('auth/logout', 'logout', $controller == 'auth' ? array('class' => 'here') : '') . '</li>';
+        echo '<li>' . anchor('auth/logout', 'logout', $controller == 'auth' ? array('class' => 'here') : array('id' => 'logout_header')) . '</li>';
     } else {
-        echo '<li>' . anchor('auth/login', 'login', $controller == 'auth' ? array('class' => 'here') : '') . '</li>';
+        echo '<li>' . anchor('auth/login', 'login', $controller == 'auth' ? array('class' => 'here') : array('id' => 'login_header')) . '</li>';
     }
   
 ?>

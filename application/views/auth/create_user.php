@@ -42,6 +42,6 @@
       </p>
 
 
-      <p><?php echo form_submit('submit', lang('create_user_submit_btn'));?></p>
+      <p><?php echo form_submit('submit', lang('create_user_submit_btn'), array('id' => 'submit'));?></p>
 
 <?php echo form_close();?>
