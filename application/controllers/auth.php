@@ -458,6 +458,7 @@ class Auth extends CI_Controller {
         $this->form_validation->set_rules('company', $this->lang->line('create_user_validation_company_label'), 'trim');
         $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
         $this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
+        $this->form_validation->set_rules('agree_user_guidelines', $this->lang->line('create_user_validation_agree_user_guidelines_label'), 'required');
 
         if ($this->form_validation->run() == true)
         {
@@ -538,6 +539,13 @@ class Auth extends CI_Controller {
                 'id'    => 'password_confirm',
                 'type'  => 'password',
                 'value' => $this->form_validation->set_value('password_confirm'),
+            );
+
+            $this->data['agree_user_guidelines'] = array(
+                'name'  => 'agree_user_guidelines',
+                'id'    => 'agree_user_guidelines',
+                'type'  => 'checkbox',
+                'value' => $this->form_validation->set_value('agree_user_guidelines'),
             );
 
             $this->_render_page('header');

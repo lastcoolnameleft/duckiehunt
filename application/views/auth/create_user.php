@@ -9,7 +9,6 @@
       if($identity_column!=='email') {
           echo '<p>';
           echo lang('create_user_identity_label', 'identity');
-          echo '<br />';
           echo form_error('identity');
           echo form_input($identity);
           echo '</p>';
@@ -17,18 +16,23 @@
       ?>
 
      <p>
-            <?php echo lang('create_user_email_label', 'email');?> <br />
+            <?php echo lang('create_user_email_label', 'email');?>
             <?php echo form_input($email);?>
       </p>
 
       <p>
-            <?php echo lang('create_user_password_label', 'password');?> <br />
+            <?php echo lang('create_user_password_label', 'password');?>
             <?php echo form_input($password);?>
       </p>
 
       <p>
-            <?php echo lang('create_user_password_confirm_label', 'password_confirm');?> <br />
+            <?php echo lang('create_user_password_confirm_label', 'password_confirm');?>
             <?php echo form_input($password_confirm);?>
+      </p>
+
+      <p>
+            <?php echo lang('create_user_validation_agree_user_guidelines_label', 'agree_user_guidelines');?>
+            <input type="checkbox" name="agree_user_guidelines" value="1" id="agree_user_guidelines">
       </p>
 
 

@@ -63,6 +63,7 @@ $lang['create_user_email_label']                       = 'Email:';
 $lang['create_user_phone_label']                       = 'Phone:';
 $lang['create_user_password_label']                    = 'Password:';
 $lang['create_user_password_confirm_label']            = 'Confirm Password:';
+$lang['create_user_agree_user_guidelines']             = 'I have read, understand and agree to the User Guidelines:';
 $lang['create_user_submit_btn']                        = 'Create User';
 $lang['create_user_validation_fname_label']            = 'First Name';
 $lang['create_user_validation_lname_label']            = 'Last Name';
@@ -72,6 +73,7 @@ $lang['create_user_validation_phone_label']            = 'Phone';
 $lang['create_user_validation_company_label']          = 'Company Name';
 $lang['create_user_validation_password_label']         = 'Password';
 $lang['create_user_validation_password_confirm_label'] = 'Password Confirmation';
+$lang['create_user_validation_agree_user_guidelines_label'] = 'You must agree to the <a href="/rules/user_guidelines">User Guidelines</a>';
 
 // Edit User
 $lang['edit_user_heading']                           = 'Edit User';
@@ -93,6 +95,7 @@ $lang['edit_user_validation_company_label']          = 'Company Name';
 $lang['edit_user_validation_groups_label']           = 'Groups';
 $lang['edit_user_validation_password_label']         = 'Password';
 $lang['edit_user_validation_password_confirm_label'] = 'Password Confirmation';
+$lang['edit_user_validation_agree_user_guidelines_label'] = 'You must agree to the User Guidelines';
 
 // Create Group
 $lang['create_group_title']                  = 'Create Group';
