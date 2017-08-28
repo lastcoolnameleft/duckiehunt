@@ -20,6 +20,7 @@ class Mark extends CI_Controller
         $this->form_validation->set_rules('lat', 'Latitude', 'trim|required|numeric|callback_latlng_check');
         $this->form_validation->set_rules('lng', 'Longtitude', 'trim|required|numeric|callback_latlng_check');
         $this->form_validation->set_rules('location', 'Central Location', 'trim|required');
+        $this->form_validation->set_rules('g-recaptcha-response', 'Captcha', 'required');
 
         for ($i=0; $i<10; $i++) {
             $link = $this->input->post('link' . $i);
@@ -57,19 +58,12 @@ class Mark extends CI_Controller
         }
         else {
             $recaptcha = $this->input->post('g-recaptcha-response');
-            if (empty($recaptcha)) {
-                error_log('recapcha was empty!');
-                $this->load->view('header');
-                $this->load->view('duck/mark/denied');
-                $this->load->view('footer');
-                return;
-            }
             $response = $this->recaptcha->verifyResponse($recaptcha);
             if (!isset($response['success']) or !$response['success'] === true) {
                 error_log('recapcha was not successful!');
                 error_log(print_r($response, true));
                 $this->load->view('header');
-                $this->load->view('duck/mark/denied');
+                $this->load->view('error', array('error_msg' => 'Recaptcha failed'));
                 $this->load->view('footer');
                 return;
             }
@@ -81,19 +75,12 @@ class Mark extends CI_Controller
     function update( $duck_location_id )
     {
         $recaptcha = $this->input->post('g-recaptcha-response');
-        if (empty($recaptcha)) {
-            error_log('recapcha was empty!');
-            $this->load->view('header');
-            $this->load->view('duck/mark/denied');
-            $this->load->view('footer');
-            return;
-        }
         $response = $this->recaptcha->verifyResponse($recaptcha);
         if (!isset($response['success']) or !$response['success'] === true) {
             error_log('recapcha was not successful!');
             error_log(print_r($response, true));
             $this->load->view('header');
-            $this->load->view('duck/mark/denied');
+            $this->load->view('error', array('error_msg' => 'Recaptcha failed'));
             $this->load->view('footer');
             return;
         }

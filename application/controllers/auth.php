@@ -14,7 +14,7 @@ class Auth extends CI_Controller {
 		$this->lang->load('auth');
 	}
 
-
+	// https://github.com/thephpleague/oauth2-facebook#authorization-code-flow
 	public function facebook()
 	{
 		$provider = new \League\OAuth2\Client\Provider\Facebook([
@@ -25,7 +25,6 @@ class Auth extends CI_Controller {
 		]);
 		
 		if (!isset($_GET['code'])) {
-		
 			// If we don't have an authorization code then get one
 			$authUrl = $provider->getAuthorizationUrl([
 				'scope' => ['email'],
@@ -34,11 +33,10 @@ class Auth extends CI_Controller {
 			redirect($authUrl);
 		// Check given state against previously stored one to mitigate CSRF attack
 		} elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
-		
 			unset($_SESSION['oauth2state']);
-			echo 'Invalid state.';
-			exit;
-		
+			$this->_render_page('header');
+			$this->_render_page('error', array('error_msg' => 'Invalid State'));
+			$this->_render_page('footer');
 		}
 		
 		// Try to get an access token (using the authorization code grant)
@@ -48,33 +46,30 @@ class Auth extends CI_Controller {
 		
 		// Optional: Now you have a token you can look up a users profile data
 		try {
-		
 			// We got an access token, let's now get the user's details
 			$user = $provider->getResourceOwner($token);
-		
-			// Use these details to create a new profile
-			printf('Hello %s!', $user->getFirstName());
-			
-			echo '<pre>';
-			var_dump($user);
-			# object(League\OAuth2\Client\Provider\FacebookUser)#10 (1) { ...
-			echo '</pre>';
-		
+
+			$identity = $user->getEmail();
+			$password = (string) rand();
+			if (!$this->ion_auth_model->identity_check($identity)) {
+				$additional_data = array(
+					'username'   => $user->getName(),
+					'first_name' => $user->getFirstName(),
+					'last_name' => $user->getLastName(),
+				);
+				$this->ion_auth->register($identity, $password, $user->getEmail(), $additional_data);
+			} else {
+				$this->ion_auth->reset_password($identity, $password);
+			}
+			$this->ion_auth->login($identity, $password, TRUE);
 		} catch (\Exception $e) {
-		
-			// Failed to get user details
-			exit('Oh dear...');
+			$this->_render_page('header');
+			$this->_render_page('error', array('error_msg' => $e->getMessage()));
+			$this->_render_page('footer');
+			return;
 		}
-		
-		echo '<pre>';
-		// Use this to interact with an API on the users behalf
-		var_dump($token->getToken());
-		# string(217) "CAADAppfn3msBAI7tZBLWg...
-		
-		// The time (in epoch time) when an access token will expire
-		var_dump($token->getExpires());
-		# int(1436825866)
-		echo '</pre>';
+
+		redirect('/');
 	}
 
 	// redirect if needed, otherwise display the user list
