@@ -14,6 +14,69 @@ class Auth extends CI_Controller {
 		$this->lang->load('auth');
 	}
 
+
+	public function facebook()
+	{
+		$provider = new \League\OAuth2\Client\Provider\Facebook([
+			'clientId'          => $this->config->item('facebook_client_id'),
+			'clientSecret'      => $this->config->item('facebook_client_secret'),
+			'redirectUri'       => $this->config->item('base_url') . 'auth/facebook',
+			'graphApiVersion'   => 'v2.10',
+		]);
+		
+		if (!isset($_GET['code'])) {
+		
+			// If we don't have an authorization code then get one
+			$authUrl = $provider->getAuthorizationUrl([
+				'scope' => ['email'],
+			]);
+			$_SESSION['oauth2state'] = $provider->getState();
+			redirect($authUrl);
+		// Check given state against previously stored one to mitigate CSRF attack
+		} elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
+		
+			unset($_SESSION['oauth2state']);
+			echo 'Invalid state.';
+			exit;
+		
+		}
+		
+		// Try to get an access token (using the authorization code grant)
+		$token = $provider->getAccessToken('authorization_code', [
+			'code' => $_GET['code']
+		]);
+		
+		// Optional: Now you have a token you can look up a users profile data
+		try {
+		
+			// We got an access token, let's now get the user's details
+			$user = $provider->getResourceOwner($token);
+		
+			// Use these details to create a new profile
+			printf('Hello %s!', $user->getFirstName());
+			
+			echo '<pre>';
+			var_dump($user);
+			# object(League\OAuth2\Client\Provider\FacebookUser)#10 (1) { ...
+			echo '</pre>';
+		
+		} catch (\Exception $e) {
+		
+			// Failed to get user details
+			exit('Oh dear...');
+		}
+		
+		echo '<pre>';
+		// Use this to interact with an API on the users behalf
+		var_dump($token->getToken());
+		# string(217) "CAADAppfn3msBAI7tZBLWg...
+		
+		// The time (in epoch time) when an access token will expire
+		var_dump($token->getExpires());
+		# int(1436825866)
+		echo '</pre>';
+	}
+
 	// redirect if needed, otherwise display the user list
 	public function index()
 	{
@@ -61,7 +124,9 @@ class Auth extends CI_Controller {
 			// check for "remember me"
 			$remember = (bool) $this->input->post('remember');
 
-			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember))
+			$identity = $this->input->post('identity');
+			$password = $this->input->post('password');
+			if ($this->ion_auth->login($identity, $password, $remember))
 			{
 				// If login was successful and they are registering a duckie, then associate it back to them
 				if ($this->session->has_userdata('modifying_duck') && $this->session->has_userdata('location_id')) {
@@ -108,6 +173,7 @@ class Auth extends CI_Controller {
 				'type' => 'password',
 			);
 
+			$this->data['fb_auth_url'] = 'facebook';
 			$this->_render_page('header');
 			$this->_render_page('auth/login', $this->data);
 			$this->_render_page('footer');

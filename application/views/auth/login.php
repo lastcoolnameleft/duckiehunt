@@ -1,28 +1,37 @@
-<h1><?php echo lang('login_heading');?></h1>
-<p><?php echo lang('login_subheading');?></p>
+<link rel="stylesheet" href="/css/login_style.css" />
+<link rel="stylesheet" href="/css/login-style.css" />
 
 <div id="infoMessage"><?php echo $message;?></div>
 
-<?php echo form_open("auth/login");?>
-
-  <p>
-    <?php echo lang('login_identity_label', 'identity');?>
-    <?php echo form_input($identity);?>
-  </p>
-
-  <p>
-    <?php echo lang('login_password_label', 'password');?>
-    <?php echo form_input($password);?>
-  </p>
-
-  <p>
-    <?php echo lang('login_remember_label', 'remember');?>
-    <?php echo form_checkbox('remember', '1', FALSE, 'id="remember"');?>
-  </p>
-
-
-  <p><?php echo form_submit('submit', lang('login_submit_btn'), array('id' => 'submit'));?></p>
-
-<?php echo form_close();?>
-
-<p><a href="forgot_password"><?php echo lang('login_forgot_password');?></a></p>
+<div id="auth_wrapper">
+  <div id="auth_container">
+    <div id="login_container">
+      <h2 class="signup_heading">Login to your account.</h2>    
+      <div id="social_login">
+        <a class="fb_login" href="<?php echo $fb_auth_url ?>"><span></span>Facebook Login</a>
+      </div>
+      <div class="login_or"></div>
+        <div id="div_error_box_login" ></div>
+        <?php echo form_open("auth/login");?>
+        <ul>
+          <li>
+            <input type="text" name="identity" id="identity" value="" placeholder="Username" class="required requiredField Email fg-input text fg-fw" autocomplete="off" style="">
+          </li>
+          <li>
+            <input type="text" name="password" id="password" value="" placeholder="Password" class="required requiredField Password fg-input text fg-fw" autocomplete="off" style="">
+          </li>
+          <li>
+            <div class="chkbox"><?php echo form_checkbox('remember', '1', FALSE, 'id="remember"');?> Remember me
+          </li>
+          <li>
+            <?php echo form_submit('submit', lang('login_submit_btn'), array('id' => 'submit'));?>
+          </li>
+        </ul>
+    <?php echo form_close();?>
+    <div>
+        <a class="forgot-password" href="forgot_password">Forgot Password?</a>
+        <a id="register" class="signup-btn">Create New Account</a>
+        <div class="clearfix"></div>
+    </div>
+  </div>
+</div>
