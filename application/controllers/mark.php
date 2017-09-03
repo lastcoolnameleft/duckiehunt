@@ -15,6 +15,10 @@ class Mark extends CI_Controller
         $this->load->model('duck_model', 'duck');
         $this->_approved = $this->config->item('auto_approve');
 
+        if ( ! $this->ion_auth->logged_in() ) {
+            redirect('/auth');
+        }
+
         $this->form_validation->set_rules('duck_id', 'Duck ID', 'trim|required|numeric|callback_duck_id_check');
         $this->form_validation->set_rules('date_time', 'Date & Time', 'trim|required');
         $this->form_validation->set_rules('lat', 'Latitude', 'trim|required|numeric|callback_latlng_check');
