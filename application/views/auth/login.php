@@ -30,7 +30,7 @@
     <?php echo form_close();?>
     <div>
         <a class="forgot-password" href="forgot_password">Forgot Password?</a>
-        <a id="register" class="signup-btn">Create New Account</a>
+        <a href='create_user' id="register" class="signup-btn">Create New Account</a>
         <div class="clearfix"></div>
     </div>
   </div>
