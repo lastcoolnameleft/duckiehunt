@@ -1,28 +1,3 @@
-<?php
-    echo form_open_multipart($controller, array('id' => 'form', 'name' => 'form'));
-?>
-<input type="hidden" name="duck_location_id" id="duck_location_id" value="<?php echo set_value('duck_location_id'); ?>" />
-<input type="hidden" name="lat" id="lat" value="<?php echo set_value('lat', $lat); ?>" />
-<input type="hidden" name="lng" id="lng" value="<?php echo set_value('lng', $lng); ?>" />
-
-<div class="width25 floatLeft leftColumn">
-	<div class='gradient'>
-			<ol>
-				<span><b>Instructions: </b></span>
-				<li><span>Provide a Duck ID <font color='black'>*</font></span></li>
-				<li><span>Enter a location and click Center <font color='black'>*</font></span></li>
-				<li><span>Provide a Date / Time <font color='black'>*</font></span></li>
-				<li><span>Click on the map to refine the marker</span></li>
-				<li><span>Provide a Story/Link/Flickr Photo</span></li>
-                <font color='black'>*</font> = Required
-			</ol>
-	</div>
-</div>
-
-<div class="width75 floatRight">
-	<div class="gradient">
-    <?php echo validation_errors('<div class="error">', '</div><br />'); ?>
-
 <script src="/js/jquery-3.2.1.min.js" type="text/javascript" language="javascript"></script>
 
 <script>
@@ -40,6 +15,28 @@
 	}
 </script>
 
+<?php
+    echo form_open_multipart($controller, array('id' => 'form', 'name' => 'form'));
+?>
+<input type="hidden" name="duck_location_id" id="duck_location_id" value="<?php echo set_value('duck_location_id'); ?>" />
+<input type="hidden" name="lat" id="lat" value="<?php echo set_value('lat', $lat); ?>" />
+<input type="hidden" name="lng" id="lng" value="<?php echo set_value('lng', $lng); ?>" />
+
+<div class="width25 floatLeft leftColumn">
+			<ol>
+				<span><b>Instructions: </b></span>
+				<li><span>Provide a Duck ID <font color='black'>*</font></span></li>
+				<li><span>Enter a location and click Center <font color='black'>*</font></span></li>
+				<li><span>Provide a Date / Time <font color='black'>*</font></span></li>
+				<li><span>Click on the map to refine the marker</span></li>
+				<li><span>Provide a Story/Link/Flickr Photo</span></li>
+                <font color='black'>*</font> = Required
+			</ol>
+</div>
+
+<div class="width75 floatRight">
+    <?php echo validation_errors('<div class="error">', '</div><br />'); ?>
+	<div
 <br/>
 <table id='form_table'>
 	<tr>
@@ -89,7 +86,6 @@
 	</tr>
 </table>
 
-	</div>
 </div>
 
 <?php echo form_close(); ?>
