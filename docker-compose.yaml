@@ -13,7 +13,7 @@ services:
       - front-tier
       - back-tier
     environment:
-      CI_BASE_URL: 'http://duckiehunt.local/'
+      CI_BASE_URL: 'http://localhost.duckiehunt.com/'
       CI_DATABASE_HOSTNAME: 'db'
       CI_DATABASE_USERNAME: 'root'
       CI_DATABASE_PASSWORD: ''
@@ -38,6 +38,8 @@ services:
       DH_AUTO_APPROVE: ${DH_AUTO_APPROVE}
       FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}
       FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
   db:
     image: mysql
     container_name: db

@@ -14,7 +14,6 @@ class Auth extends CI_Controller {
 		$this->lang->load('auth');
 	}
 
-	// https://github.com/thephpleague/oauth2-facebook#authorization-code-flow
 	public function facebook()
 	{
 		$provider = new \League\OAuth2\Client\Provider\Facebook([
@@ -23,52 +22,70 @@ class Auth extends CI_Controller {
 			'redirectUri'       => $this->config->item('base_url') . 'auth/facebook',
 			'graphApiVersion'   => 'v2.10',
 		]);
-		
-		if (!isset($_GET['code'])) {
-			// If we don't have an authorization code then get one
-			$authUrl = $provider->getAuthorizationUrl([
-				'scope' => ['email'],
-			]);
-			$_SESSION['oauth2state'] = $provider->getState();
-			redirect($authUrl);
-		// Check given state against previously stored one to mitigate CSRF attack
-		} elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
-			unset($_SESSION['oauth2state']);
-			$this->_render_page('header');
-			$this->_render_page('error', array('error_msg' => 'Invalid State'));
-			$this->_render_page('footer');
-		}
-		
-		// Try to get an access token (using the authorization code grant)
-		$token = $provider->getAccessToken('authorization_code', [
-			'code' => $_GET['code']
+
+		return $this->provider_login($provider);
+	}
+
+	public function google()
+	{
+		$provider = new \League\OAuth2\Client\Provider\Google([
+			'clientId'          => $this->config->item('google_client_id'),
+			'clientSecret'      => $this->config->item('google_client_secret'),
+			'redirectUri'       => $this->config->item('base_url') . 'auth/google',
+			'hostedDomain' 		=> 'https://example.com',
 		]);
 		
-		// Optional: Now you have a token you can look up a users profile data
-		try {
-			// We got an access token, let's now get the user's details
-			$user = $provider->getResourceOwner($token);
+		return $this->provider_login($provider);
+	}
 
-			$identity = $user->getEmail();
-			$password = (string) rand();
-			if (!$this->ion_auth_model->identity_check($identity)) {
-				$additional_data = array(
-					'username'   => $user->getName(),
-					'first_name' => $user->getFirstName(),
-					'last_name' => $user->getLastName(),
-				);
-				$this->ion_auth->register($identity, $password, $user->getEmail(), $additional_data);
-			} else {
-				$this->ion_auth->reset_password($identity, $password);
+	// https://github.com/thephpleague/oauth2-facebook#authorization-code-flow
+	private function provider_login($provider)
+	{
+		if (!empty($_GET['error'])) {
+			// Got an error, probably user denied access
+			exit('Got error: ' . htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'));
+		} elseif (empty($_GET['code'])) {
+			// If we don't have an authorization code then get one
+			$authUrl = $provider->getAuthorizationUrl();
+			$_SESSION['oauth2state'] = $provider->getState();
+			redirect($authUrl);
+		} elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
+			// State is invalid, possible CSRF attack in progress
+			unset($_SESSION['oauth2state']);
+			$this->load->view('header');
+			$this->_render_page('error', array('error_msg' => 'Invalid State'));
+			$this->load->view('footer');
+		} else {
+			// Try to get an access token (using the authorization code grant)
+			$token = $provider->getAccessToken('authorization_code', [
+				'code' => $_GET['code']
+			]);
+
+			// Optional: Now you have a token you can look up a users profile data
+			try {
+				// We got an access token, let's now get the user's details
+				$user = $provider->getResourceOwner($token);
+			
+				$identity = $user->getEmail();
+				$password = (string) rand();
+				if (!$this->ion_auth_model->identity_check($identity)) {
+					$additional_data = array(
+						'username'   => $user->getName(),
+						'first_name' => $user->getFirstName(),
+						'last_name' => $user->getLastName(),
+					);
+					$this->ion_auth->register($identity, $password, $user->getEmail(), $additional_data);
+				} else {
+					$this->ion_auth->reset_password($identity, $password);
+				}
+				$this->ion_auth->login($identity, $password, TRUE);
+			} catch (Exception $e) {
+				$this->load->view('header');
+				$this->_render_page('error', array('error_msg' => $e->getMessage()));
+				$this->load->view('footer');
+				return;
 			}
-			$this->ion_auth->login($identity, $password, TRUE);
-		} catch (\Exception $e) {
-			$this->_render_page('header');
-			$this->_render_page('error', array('error_msg' => $e->getMessage()));
-			$this->_render_page('footer');
-			return;
 		}
-
 		redirect('/');
 	}
 
@@ -169,6 +186,7 @@ class Auth extends CI_Controller {
 			);
 
 			$this->data['fb_auth_url'] = 'facebook';
+			$this->data['g_auth_url'] = 'google';
 			$this->_render_page('header');
 			$this->_render_page('auth/login', $this->data);
 			$this->_render_page('footer');
