@@ -13,7 +13,7 @@ class Data extends Controller {
 
         $query = $this->db->query(
             "SELECT ROUND(SUM(`distance_to`)) as total_distance, `user_id`, `username`"
-                . " FROM `duck_location` JOIN `cl_users` ON (`user_id`=`id`)"
+                . " FROM `duck_location` JOIN `users` ON (`user_id`=`id`)"
                 . " WHERE `user_id` != 0"
                 . " GROUP BY (`user_id`) ORDER BY `total_distance` desc LIMIT 10");
         $users = $query->result_array();

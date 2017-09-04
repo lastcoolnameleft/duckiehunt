@@ -168,10 +168,10 @@ class Mark extends CI_Controller
 		//  For keeping track of anyone malicious
 		$this->duck->addActivity($this->input->user_agent(), 'add', $this->input->ip_address(), $duck_id, $this->input->post('location'), $this->input->post('comments'));
 
-        $cl_user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
+        $user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
         $this->duck->createUnlessExists(
             $duck_id,
-            $cl_user_id,
+            $user_id,
             '',
             '',
 			$this->_approved
@@ -182,7 +182,7 @@ class Mark extends CI_Controller
         $duck_id = $this->input->post('duck_id');
         $location_id = $this->duck->addLocation(
             $duck_id,
-            $cl_user_id,
+            $user_id,
             $this->input->post('lat'),
             $this->input->post('lng'),
             $this->input->post('comments'),
@@ -236,7 +236,7 @@ class Mark extends CI_Controller
 
     private function _update( $duck_location_id )
     {
-        $cl_user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
+        $user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
         $duck_id = $this->input->post('duck_id');
         
         $this->session->set_userdata('modifying_duck', $duck_id);
@@ -246,7 +246,7 @@ class Mark extends CI_Controller
         $location_id = $this->duck->updateLocation(
             $duck_location_id,
             $duck_id,
-            $cl_user_id,
+            $user_id,
             $this->input->post('lat'),
             $this->input->post('lng'),
             $this->input->post('comments'),

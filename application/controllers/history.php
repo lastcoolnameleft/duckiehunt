@@ -44,11 +44,11 @@ class History extends CI_Controller {
 					->join('duck', 'duck.duck_id=duck_history.duck_id')
 					->join('duck_history_action', 'duck_history.action_id=duck_history_action.duck_history_action_id')
 					->join('duck_assign', 'duck_history.duck_history_id=duck_assign.duck_history_id', 'left')
-					->join('cl_users as user_assign', 'user_assign.id=duck_assign.user_id', 'left')
+					->join('users as user_assign', 'user_assign.id=duck_assign.user_id', 'left')
 					->join('duck_track', 'duck_history.duck_history_id=duck_track.duck_history_id', 'left')
-					->join('cl_users as user_track', 'user_track.id=duck_track.user_id', 'left')
+					->join('users as user_track', 'user_track.id=duck_track.user_id', 'left')
 					->join('duck_location', 'duck_history.duck_history_id=duck_location.duck_history_id', 'left')
-					->join('cl_users as user_mark', 'user_mark.id=duck_location.user_id', 'left')
+					->join('users as user_mark', 'user_mark.id=duck_location.user_id', 'left')
 					->where('duck_history.duck_id', $duck_id)
 					->order_by('duck_history.timestamp', 'desc');
 			$query = $this->db->get();

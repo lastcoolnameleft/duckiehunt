@@ -36,7 +36,7 @@
 		send_duck_location_change_mail('tommy@duckiehunt.com', $duck_id, $duck_location_id);
 
 		//  Now we notify everyone who's on the track list
-        $this->db->select('email')->from('duck_track')->join('cl_users', 'duck_track.user_id=cl_users.id')->where('duck_id', $duck_id);
+        $this->db->select('email')->from('duck_track')->join('users', 'duck_track.user_id=users.id')->where('duck_id', $duck_id);
         $query = $this->db->get();
         $result = $query->result_array();
 		foreach ($result as $user_data) {

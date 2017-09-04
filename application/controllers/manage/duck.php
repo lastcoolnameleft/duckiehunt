@@ -55,7 +55,7 @@ class Duck extends CI_Controller {
 		$this->load->library('form_validation');
 		$data['base_url'] = $this->config->item('base_url');
 
-		$this->db->select('id, username')->from('cl_users');
+		$this->db->select('id, username')->from('users');
 		$query = $this->db->get();
 		$user_list = array( '' => '' );
 		foreach ($query->result_array() as $row) {
@@ -80,7 +80,7 @@ class Duck extends CI_Controller {
 
 	function owners()
 	{
-		$this->db->select('cl_users.id, cl_users.username, duck.duck_id, duck.name AS duck_name')->from('duck')->join('cl_users', 'duck.current_owner_id= cl_users.id', 'left');
+		$this->db->select('users.id, users.username, duck.duck_id, duck.name AS duck_name')->from('duck')->join('users', 'duck.current_owner_id= users.id', 'left');
 		$query = $this->db->get();
 		$data['duck_list'] = $query->result_array();
 
