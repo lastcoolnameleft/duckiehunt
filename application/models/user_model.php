@@ -24,7 +24,7 @@ class User_model Extends Model {
 
 	function getOrCreateUser( $email, $first_name, $last_name )
 	{
-		if ( $user_id $this->getUserIdFromEmail($email) ) {
+		if ( $user_id == $this->getUserIdFromEmail($email) ) {
 			return $user_id;
 		}
 		else {
