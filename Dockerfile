@@ -11,7 +11,7 @@ RUN a2enmod rewrite
 RUN mkdir /tmp/uploads
 
 # Copy app files
-COPY . /var/www/html/
+COPY app /var/www/html/
 
 # Copy config files
 COPY config/php.ini /usr/local/etc/php/
