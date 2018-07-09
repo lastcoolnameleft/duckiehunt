@@ -33,6 +33,9 @@ docker-db/
 phpinfo.php
 uploads/
 tmp/
+config/secret.yaml
+config/database.php
+config/duckiehunt.php
 
 # JS
 node_modules

@@ -1,0 +1,9 @@
+[environments]
+  [environments.development]
+    name = "duckiehunt"
+    namespace = "default"
+    wait = true
+    watch = true
+    auto-connect = false
+    dockerfile = "Dockerfile"
+    chart = ""
