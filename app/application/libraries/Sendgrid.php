@@ -5,12 +5,13 @@ class Sendgrid {
     {
 		$CI =& get_instance();
 		$CI->load->library('email');
+		$CI->config->load('duckiehunt');
 
 		$CI->email->initialize(array(
 			'protocol' => 'smtp',
 			'smtp_host' => 'smtp.sendgrid.net',
-			'smtp_user' => getenv('SENDGRID_USERNAME'),
-			'smtp_pass' => getenv('SENDGRID_PASSWORD'),
+			'smtp_user' => $CI->config->item('sendgrid_username'),
+			'smtp_pass' => $CI->config->item('sendgrid_password'),
 			'smtp_port' => 587,
 			'crlf' => "\r\n",
 			'newline' => "\r\n",

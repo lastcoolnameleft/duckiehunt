@@ -47,10 +47,12 @@ class View extends CI_Controller {
             $map_data['location_list'] = $location_list;
             $data['location_list'] = array();
             $data['duck_location_pulldown'] = array();
-
+            $this->config->load('duckiehunt');
+error_log($this->config->item('flickr_api_key'));
+error_log($this->config->item('flickr_api_secret'));
             $flickr_config = array(
-                'consumer_key' => getenv('FLICKR_API_KEY'),
-                'consumer_secret' => getenv('FLICKR_API_SECRET')
+                'consumer_key' => $this->config->item('flickr_api_key'),
+                'consumer_secret' => $this->config->item('flickr_api_secret')
             );
 
             $this->load->library('Flickr', $flickr_config);
@@ -118,7 +120,7 @@ class View extends CI_Controller {
 		if ( !empty($duck_id) ) {
 			$location = $this->duck->getLocation( $duck_location_id );
 
-            $this->load->library('flickr', array('consumer_key' => getenv('FLICKR_API_KEY')));
+            $this->load->library('flickr', array('consumer_key' => $this->config->item('flickr_api_key')));
             
             $data['photos'] = $this->duck->getLocationPhotos($duck_location_id);
             $data['location_list'][] = $this->duck->renderLocation( $location );
