@@ -24,6 +24,13 @@ spec:
         volumeMounts:
         - name: app-config
           mountPath: /var/www/html/application/config/development/
+        env:
+        - name: CI_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: duckiehunt
+              key: CI_BASE_URL
+
         resources:
 {{ toYaml .Values.resources | indent 12 }}
       volumes:

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: duckiehunt
+  namespace: default
+data:
+  CI_BASE_URL: {{ .Values.env.ciBaseUrl }}

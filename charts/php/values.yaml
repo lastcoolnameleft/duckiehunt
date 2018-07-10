@@ -27,5 +27,8 @@ volumes:
   secret:
     secretName: duckiehunt-prod-file
 
+env:
+  ciBaseUrl: http://localhost.duckiehunt.com:30004/
+
 ingress:
   enabled: false
