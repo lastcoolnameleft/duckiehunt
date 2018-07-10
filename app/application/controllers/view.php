@@ -48,8 +48,6 @@ class View extends CI_Controller {
             $data['location_list'] = array();
             $data['duck_location_pulldown'] = array();
             $this->config->load('duckiehunt');
-error_log($this->config->item('flickr_api_key'));
-error_log($this->config->item('flickr_api_secret'));
             $flickr_config = array(
                 'consumer_key' => $this->config->item('flickr_api_key'),
                 'consumer_secret' => $this->config->item('flickr_api_secret')
