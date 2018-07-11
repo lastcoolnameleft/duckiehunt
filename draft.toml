@@ -7,3 +7,21 @@
     auto-connect = false
     dockerfile = "Dockerfile"
     chart = ""
+    set = ["service.type=NodePort", "ingress.annotations.kubernetes.io/ingress.class=addon-http-application-routing"]
+  [environments.minikube]
+    name = "duckiehunt"
+    namespace = "default"
+    wait = true
+    watch = true
+    auto-connect = false
+    dockerfile = "Dockerfile"
+    chart = ""
+  [environments.developmentaks]
+    name = "duckiehunt"
+    namespace = "development"
+    wait = true
+    watch = true
+    auto-connect = false
+    dockerfile = "Dockerfile"
+    chart = ""
+    set = ["ingress.enabled=true", "service.type=ClusterIP"]

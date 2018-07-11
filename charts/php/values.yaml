@@ -10,7 +10,7 @@ image:
 
 service:
   name: duckiehunt
-  type: NodePort
+  type: ClusterIP
   externalPort: 80
   internalPort: 80
 
@@ -32,3 +32,6 @@ env:
 
 ingress:
   enabled: false
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+  clusterDnsZone: 0ac465baaee94b9895d1.eastus.aksapp.io

@@ -5,9 +5,11 @@ metadata:
   name: {{ template "fullname" . }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+  annotations:
+{{ toYaml .Values.ingress.annotations | indent 8 }}
 spec:
   rules:
-  - host: {{ .Release.Name }}.{{ .Values.basedomain }}
+  - host: {{ .Release.Name }}.{{ .Values.ingress.clusterDnsZone }}
     http:
       paths:
       - path: /
