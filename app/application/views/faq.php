@@ -34,13 +34,13 @@ You might be onto something here.  It started out when I bought a hot tub.  For 
 <h2>Who all is to blame for this?</h2>
 <ul><li>Not everyone has fessed up to <i>The Great Duckie Invasion of 2008</i>&trade;, but so far the list of suspects is:</li>
 <li><?php echo anchor('http://burningnerd.com', 'Neil Little') ?></li>
-<li><?php echo anchor('http://moofie.lastcoolnameleft.com', 'Lee Gibson') ?></li>
+<li>Lee Gibson<li>
 <li><?php echo anchor('http://robertames.com', 'Robert Ames') ?></li>
 <li>Abel Rios</li>
 </ul>
 
 <h2>Who build this site?</h2>
-<ul><li>Me.  I'm a developer for <?php echo anchor('http://yahoo.com', 'Yahoo!') ?> and this is my lifeblood.</li></ul>
+<ul><li>Me.  I used to be a developer for Yahoo!, but now I'm a Cloud Solution Architect at Microsoft. This is my lifeblood.</li></ul>
 
 <h2>Really?!  You must know a lot about computers.  I've got this...</h2>
 <ul><li>No.</li></ul>
