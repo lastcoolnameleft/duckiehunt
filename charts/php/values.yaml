@@ -14,6 +14,9 @@ service:
   externalPort: 80
   internalPort: 80
 
+deployment:
+  appConfigMountPath: /var/www/html/application/config/development/
+
 resources:
   limits:
     cpu: 100m
@@ -25,7 +28,7 @@ resources:
 volumes:
 - name: app-config
   secret:
-    secretName: duckiehunt-prod-file
+    secretName: duckiehunt-file
 
 env:
   ciBaseUrl: http://localhost.duckiehunt.com:30004/
@@ -34,4 +37,4 @@ ingress:
   enabled: false
   annotations:
     kubernetes.io/ingress.class: addon-http-application-routing
-  clusterDnsZone: 0ac465baaee94b9895d1.eastus.aksapp.io
+  host: aks-dev.duckiehunt.com

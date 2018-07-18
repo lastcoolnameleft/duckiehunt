@@ -33,9 +33,9 @@ docker-db/
 phpinfo.php
 uploads/
 tmp/
-config/secret.yaml
-config/database.php
-config/duckiehunt.php
+config/minikube
+config/aks-prod
+config/aks-dev
 
 # JS
 node_modules

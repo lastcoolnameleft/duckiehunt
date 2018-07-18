@@ -23,7 +23,7 @@ spec:
         - containerPort: {{ .Values.service.internalPort }}
         volumeMounts:
         - name: app-config
-          mountPath: /var/www/html/application/config/development/
+          mountPath: {{ .Values.deployment.appConfigMountPath }}
         env:
         - name: CI_BASE_URL
           valueFrom:

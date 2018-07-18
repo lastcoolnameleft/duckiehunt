@@ -3,13 +3,17 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ template "fullname" . }}
-  labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
   annotations:
-{{ toYaml .Values.ingress.annotations | indent 8 }}
+    kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host }}
+    secretName: tls-secret
   rules:
-  - host: {{ .Release.Name }}.{{ .Values.ingress.clusterDnsZone }}
+  - host: {{ .Values.ingress.host }}
     http:
       paths:
       - path: /

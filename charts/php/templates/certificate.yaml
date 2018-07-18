@@ -1,0 +1,18 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: tls-secret
+spec:
+  secretName: tls-secret
+  dnsNames:
+  - aks-dev.duckiehunt.com
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - aks-dev.duckiehunt.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+
