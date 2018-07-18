@@ -24,4 +24,4 @@
     auto-connect = false
     dockerfile = "Dockerfile"
     chart = ""
-    set = ["ingress.enabled=true", "env.ciBaseUrl=http://aks-dev.duckiehunt.com", "ingress.hostname=aks-dev.duckiehunt.com"]
+    set = ["ingress.enabled=true", "env.ciBaseUrl=https://aks-dev.duckiehunt.com/", "ingress.hostname=aks-dev.duckiehunt.com"]

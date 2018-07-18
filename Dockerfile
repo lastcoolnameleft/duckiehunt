@@ -10,8 +10,15 @@ RUN docker-php-ext-install mysqli
 RUN a2enmod rewrite
 RUN mkdir /tmp/uploads
 
+# Install Composer + requirements
+RUN apt-get -y update && apt-get install -y git
+RUN curl -sS https://getcomposer.org/installer | php
+
 # Copy app files
 COPY app /var/www/html/
+
+RUN php composer.phar install
+RUN rm composer.phar
 
 # Copy config files
 COPY config/php.ini /usr/local/etc/php/
