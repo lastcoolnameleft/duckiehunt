@@ -36,7 +36,7 @@ tmp/
 config/minikube
 config/aks-prod
 config/aks-dev
-charts/ingress/charts/*.tgz
+charts/*/charts/*.tgz
 
 # JS
 node_modules

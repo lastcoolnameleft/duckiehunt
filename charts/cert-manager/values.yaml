@@ -1,0 +1,4 @@
+ingressShim:
+  defaultIssuerName: letsencrypt-staging
+  defaultIssuerKind: ClusterIssuer
+
