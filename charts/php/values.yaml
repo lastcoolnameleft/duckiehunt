@@ -31,10 +31,11 @@ volumes:
     secretName: duckiehunt-file
 
 env:
-  ciBaseUrl: http://localhost.duckiehunt.com:30004/
+  ciBaseUrl: https://aks-dev.duckiehunt.com/
 
 ingress:
-  enabled: false
-  annotations:
-    kubernetes.io/ingress.class: addon-http-application-routing
+  enabled: true
   host: aks-dev.duckiehunt.com
+  clusterIssuer:
+    name: letsencrypt-staging
+    server: https://acme-staging-v02.api.letsencrypt.org/directory

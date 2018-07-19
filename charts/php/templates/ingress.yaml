@@ -3,9 +3,10 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ template "fullname" . }}
+  namespace: dev
   annotations:
     kubernetes.io/ingress.class: nginx
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    certmanager.k8s.io/cluster-issuer: {{ .Values.ingress.clusterIssuer.name }}
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   tls:

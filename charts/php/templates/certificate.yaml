@@ -13,6 +13,6 @@ spec:
       domains:
       - aks-dev.duckiehunt.com
   issuerRef:
-    name: letsencrypt-prod
+    name: {{ .Values.ingress.clusterIssuer.name }}
     kind: ClusterIssuer
 

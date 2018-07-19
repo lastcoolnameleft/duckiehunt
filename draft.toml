@@ -1,27 +1,19 @@
 [environments]
   [environments.development]
-    name = "duckiehunt"
-    namespace = "default"
+    name = "duckiehunt-dev-php"
+    namespace = "dev"
     wait = true
     watch = true
     auto-connect = false
     dockerfile = "Dockerfile"
-    chart = ""
-    set = ["service.type=NodePort", "ingress.annotations.kubernetes.io/ingress.class=addon-http-application-routing"]
-  [environments.minikube]
-    name = "duckiehunt"
-    namespace = "default"
+    chart = "charts/php"
+    set = []
+  [environments.development-ingress]
+    name = "duckiehunt-dev-ing"
+    namespace = "dev"
     wait = true
     watch = true
     auto-connect = false
     dockerfile = "Dockerfile"
-    chart = ""
-  [environments.developmentaks]
-    name = "duckiehunt"
-    namespace = "default"
-    wait = true
-    watch = true
-    auto-connect = false
-    dockerfile = "Dockerfile"
-    chart = ""
-    set = ["ingress.enabled=true", "env.ciBaseUrl=https://aks-dev.duckiehunt.com/", "ingress.hostname=aks-dev.duckiehunt.com"]
+    chart = "charts/ing"
+    set = []
