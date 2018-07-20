@@ -31,14 +31,12 @@ volumes:
     secretName: duckiehunt-file
 
 env:
-  ciBaseUrl: https://dev.duckiehunt.com/
+  ciBaseUrl: https://www.duckiehunt.com/
 
 ingress:
   enabled: true
-  host: dev.duckiehunt.com
+  host: www.duckiehunt.com
   clusterIssuer:
     # Don't need because already enabled from dev deployment
-    enabled: true
-    name: letsencrypt-prod
-    server: https://acme-v02.api.letsencrypt.org/directory
-  certificateName: dev-tls-secret
+    enabled: false
+  certificateName: prod-tls-secret

@@ -8,12 +8,3 @@
     dockerfile = "Dockerfile"
     chart = "charts/php"
     set = []
-  [environments.development-ingress]
-    name = "duckiehunt-dev-ing"
-    namespace = "dev"
-    wait = true
-    watch = true
-    auto-connect = false
-    dockerfile = "Dockerfile"
-    chart = "charts/ing"
-    set = []

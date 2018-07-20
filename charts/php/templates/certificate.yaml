@@ -1,17 +1,17 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: tls-secret
+  name: {{ .Values.ingress.certificateName }}
 spec:
-  secretName: tls-secret
+  secretName: {{ .Values.ingress.certificateName }}
   dnsNames:
-  - aks-dev.duckiehunt.com
+  - {{ .Values.ingress.host }}
   acme:
     config:
     - http01:
         ingressClass: nginx
       domains:
-      - aks-dev.duckiehunt.com
+      - {{ .Values.ingress.host }}
   issuerRef:
     name: {{ .Values.ingress.clusterIssuer.name }}
     kind: ClusterIssuer
