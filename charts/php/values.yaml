@@ -4,7 +4,7 @@
 replicaCount: 1
 
 image:
-  repository: duckiehunt.azurecr.io/duckiehunt-dev-php
+  repository: duckiehunt.azurecr.io/duckiehunt
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -37,8 +37,9 @@ ingress:
   enabled: true
   host: dev.duckiehunt.com
   clusterIssuer:
-    # Don't need because already enabled from dev deployment
     enabled: true
     name: letsencrypt-prod
     server: https://acme-v02.api.letsencrypt.org/directory
   certificateName: dev-tls-secret
+  rootRedirect:
+    enabled: false

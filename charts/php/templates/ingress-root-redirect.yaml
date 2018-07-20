@@ -1,0 +1,17 @@
+{{- if .Values.ingress.rootRedirect.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/permanent-redirect: {{ .Values.ingress.rootRedirect.redirectUrl }}
+  name: root-redirect
+spec:
+  rules:
+  - host:  {{ .Values.ingress.rootRedirect.rootUrl }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ template "fullname" . }}
+          servicePort: {{ .Values.service.externalPort }}
+{{- end -}}
