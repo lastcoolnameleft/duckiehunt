@@ -1,0 +1,19 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$config['auto_approve'] = 'Y';
+$config['facebook_client_id'] = '';
+$config['facebook_client_secret'] = '';
+$config['google_client_id'] = '';
+$config['google_client_secret'] = '';
+$config['flickr_access_token'] = '';
+$config['flickr_access_token_secret'] = '';
+$config['flickr_user_nsid'] = '';
+$config['flickr_user_name'] = '';
+$config['flickr_permissions'] = 'write';
+$config['flickr_upload_is_public'] = '0';
+$config['flickr_upload_hidden'] = '2';
+$config['sendgrid_username'] = '';
+$config['sendgrid_password'] = '';
+$config['recaptcha_site_key'] = '';
+$config['recaptcha_secret_key'] = '';

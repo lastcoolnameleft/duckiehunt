@@ -194,7 +194,8 @@ class Mark extends CI_Controller
 
         $this->_uploadFiles($duck_id, $location_id, $this->input->post('comments'));
 
-        $notify_email = getenv('NOTIFY_EMAIL');
+        $this->config->load('duckiehunt');
+        $notify_email = $this->config->item('notify_email');
         if ($notify_email) {
             $this->sendgrid->send_duck_location_change($notify_email, $duck_id, $location_id);
         }
@@ -344,16 +345,17 @@ class Mark extends CI_Controller
         if ( $upload_data )
         {
             $flickr_config = array(
-                'consumer_key' => getenv('FLICKR_API_KEY'),
-                'consumer_secret' => getenv('FLICKR_API_SECRET')
+                'consumer_key' => $this->config->item('flickr_api_key'),//getenv('FLICKR_API_KEY'),
+                'consumer_secret' => $this->config->item('flickr_api_secret'),//getenv('FLICKR_API_SECRET')
             );
 
+            $this->config->load('duckiehunt');
             $this->load->library('Flickr', $flickr_config);
-            $this->flickr->setOauthData('oauth_access_token', getenv('FLICKR_ACCESS_TOKEN'));
-            $this->flickr->setOauthData('oauth_access_token_secret', getenv('FLICKR_ACCESS_TOKEN_SECRET'));
-            $this->flickr->setOauthData('user_nsid', getenv('FLICKR_USER_NSID'));
-            $this->flickr->setOauthData('user_name', getenv('FLICKR_USER_NAME'));
-            $this->flickr->setOauthData('permissions', getenv('FLICKR_PERMISSIONS'));
+            $this->flickr->setOauthData('oauth_access_token', $this->config->item('flickr_access_token'));
+            $this->flickr->setOauthData('oauth_access_token_secret', $this->config->item('flickr_access_token_secret'));
+            $this->flickr->setOauthData('user_nsid', $this->config->item('flickr_user_nsid'));
+            $this->flickr->setOauthData('user_name', $this->config->item('flickr_user_name'));
+            $this->flickr->setOauthData('permissions', $this->config->item('flickr_permissions'));
 
             if (!$this->flickr->authenticate('write')) {
                 error_log('unable to authenticate with Flickr');
@@ -370,8 +372,8 @@ class Mark extends CI_Controller
                     'tags' => $tags,
                     'description' => $pic_desc,
                     'photo' => curl_file_create($pic['full_path']),
-                    'is_public' => getenv('FLICKR_UPLOAD_IS_PUBLIC'),
-                    'hidden' => getenv('FLICKR_UPLOAD_HIDDEN'),
+                    'is_public' => $this->config->item('flickr_upload_is_public'),
+                    'hidden' => $this->config->item('flickr_upload_hidden'),
                 );
 
                 $photo_info = $this->flickr->upload($parameters);

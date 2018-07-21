@@ -32,7 +32,6 @@ class Auth extends CI_Controller {
 			'clientId'          => $this->config->item('google_client_id'),
 			'clientSecret'      => $this->config->item('google_client_secret'),
 			'redirectUri'       => $this->config->item('base_url') . 'auth/google',
-			'hostedDomain' 		=> 'https://example.com',
 		]);
 		
 		return $this->provider_login($provider);

@@ -33,6 +33,10 @@ docker-db/
 phpinfo.php
 uploads/
 tmp/
+config/minikube
+config/aks-prod
+config/aks-dev
+charts/*/charts/*.tgz
 
 # JS
 node_modules

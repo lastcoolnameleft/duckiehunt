@@ -1,0 +1,47 @@
+# Default values for PHP.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+
+image:
+  repository: duckiehunt.azurecr.io/duckiehunt
+  tag: k8s
+  pullPolicy: IfNotPresent
+
+service:
+  name: duckiehunt
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 80
+
+deployment:
+  appConfigMountPath: /var/www/html/application/config/development/
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+volumes:
+- name: app-config
+  secret:
+    secretName: duckiehunt-file
+
+env:
+  ciBaseUrl: https://www.duckiehunt.com/
+
+ingress:
+  enabled: true
+  host: www.duckiehunt.com
+  clusterIssuer:
+    enabled: true
+    name: letsencrypt-prod
+    server: https://acme-v02.api.letsencrypt.org/directory
+  certificateName: prod-tls-secret
+  rootRedirect:
+    enabled: true
+    redirectUrl: https://www.duckiehunt.com
+    rootUrl: duckiehunt.com

@@ -22,20 +22,21 @@ class Upload_Flickr extends CI_Controller {
                 $desc = 'testupload';
 
                 $this->load->library('upload', $config);
+                $this->config->load('duckiehunt');
 
                 $upload_data = $this->upload->do_multi_upload("files");
 
                 if ( $upload_data )
                 {
                         $flickr_config = array(
-                                'consumer_key' => getenv('FLICKR_API_KEY'),
-                                'consumer_secret' => getenv('FLICKR_API_SECRET'));
+                                'consumer_key' => $this->config->item('flickr_api_key'),
+                                'consumer_secret' => $this->config->item('flickr_api_secret'));
                         $this->load->library('Flickr', $flickr_config);
-                        $this->flickr->setOauthData('oauth_access_token', getenv('FLICKR_ACCESS_TOKEN'));
-                        $this->flickr->setOauthData('oauth_access_token_secret', getenv('FLICKR_ACCESS_TOKEN_SECRET'));
-                        $this->flickr->setOauthData('user_nsid', getenv('FLICKR_USER_NSID'));
-                        $this->flickr->setOauthData('user_name', getenv('FLICKR_USER_NAME'));
-                        $this->flickr->setOauthData('permissions', getenv('FLICKR_PERMISSIONS'));
+                        $this->flickr->setOauthData('oauth_access_token', $this->config->item('flickr_access_token'));
+                        $this->flickr->setOauthData('oauth_access_token_secret', $this->config->item('flickr_access_token_secret'));
+                        $this->flickr->setOauthData('user_nsid', $this->config->item('flickr_user_nsid'));
+                        $this->flickr->setOauthData('user_name', $this->config->item('flickr_user_name'));
+                        $this->flickr->setOauthData('permissions', $this->config->item('flickr_permissions'));
                         if (!$this->flickr->authenticate('write')) {
                                 $this->view_data['error'] = 'unable to authenticate with Flickr';
                                 $this->load->view('upload_form', $this->view_data);

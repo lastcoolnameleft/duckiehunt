@@ -15,8 +15,10 @@ class Flickr_API {
                           'io_timeout'      => 60 );
 
     function __construct($params = array()) {
-        $this->_cfg['api_key'] = getenv('FLICKR_API_KEY');
-        $this->_cfg['api_secret'] = getenv('FLICKR_API_SECRET');
+        $this->_ci = & get_instance();
+        $this->_ci->load->config('duckiehunt');
+        $this->_cfg['api_key'] = $this->_ci->config->item('flickr_api_key');
+        $this->_cfg['api_secret'] = $this->_ci->config->item('flickr_api_secret');
         if(isset($params['token'])) $this->token = $params['token'];
         foreach($params as $k => $v) {
             $this->_cfg[$k] = $v;
