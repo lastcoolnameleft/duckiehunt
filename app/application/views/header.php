@@ -19,7 +19,7 @@
   <div id="header">
 
     <div id="title">
-      <h1>duckie hunt</h1>
+      <h1>duckiehunt</h1>
     </div>
     <img src="/images/bg/balloons.gif"  alt="baloons"  class="balloons" />
     <img src="/images/bg/header_left.jpg"  alt="baloons"  class="left" />
