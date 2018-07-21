@@ -1,9 +1,9 @@
 # Duckiehunt.com
 
-# Start
+## Start
 
-`docker-compose up --build -d`
+Congrats!  You found the easter egg:  The Duckiehunt source code.
 
-# Developer Notes
+## Developer Notes
 
-   * Google Maps API - https://console.developers.google.com/apis/credentials
+* Google Maps API - https://console.developers.google.com/apis/credentials
