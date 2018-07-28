@@ -30,6 +30,19 @@ spec:
             configMapKeyRef:
               name: duckiehunt
               key: CI_BASE_URL
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 1
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 1
+          periodSeconds: 5
+
 
         resources:
 {{ toYaml .Values.resources | indent 12 }}
