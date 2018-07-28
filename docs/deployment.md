@@ -7,6 +7,7 @@ helm install stable/nginx-ingress --namespace kube-system --name nginx-ingress
 
 helm install stable/cert-manager --set ingressShim.defaultIssuerName=letsencrypt-staging --set ingressShim.defaultIssuerKind=ClusterIssuer --name cert-manager --namespace kube-system
 
+kubectl create secret generic blobfusecreds --from-literal accountname=duckiehunt --from-literal accountkey="$ACCOUNT_KEY" --type="azure/blobfuse"
 ```
 
 ## Dev Env
