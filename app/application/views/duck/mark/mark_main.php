@@ -71,10 +71,12 @@
                     <input type="hidden" value="<?php echo sizeof($links) ?>" id="link_id" />
                     <input type='button' onclick='addInput("linkDiv", "link", "link_id", "text", 30);' value='Add Another Link' />
                 </td></tr>
+				<!--
                 <tr><td>Upload Picture:</td></tr>
                 <tr><td>
                     <input type="file" name="files[]" size="20" multiple />
                 </td></tr>
+				-->
 				<tr></td><?php echo $recaptcha_widget ?></td></tr>
 
 				<tr><td><input type='submit' name="submit" value='Submit'></tr>
