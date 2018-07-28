@@ -16,6 +16,7 @@ service:
 
 deployment:
   appConfigMountPath: /var/www/html/application/config/development/
+  imagesMountPath: /mnt/images
 
 resources:
   limits:
@@ -29,6 +30,16 @@ volumes:
 - name: app-config
   secret:
     secretName: duckiehunt-file
+- name: images
+  flexVolume:
+    driver: "azure/blobfuse"
+    readOnly: false
+    secretRef:
+      name: blobfusecreds
+    options:
+      container: dev
+      tmppath: /tmp/blobfuse
+      mountoptions: "--file-cache-timeout-in-seconds=120 --use-https=true"
 
 env:
   ciBaseUrl: https://dev.duckiehunt.com/
