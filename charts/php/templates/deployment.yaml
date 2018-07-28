@@ -30,18 +30,19 @@ spec:
             configMapKeyRef:
               name: duckiehunt
               key: CI_BASE_URL
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 1
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 1
-          periodSeconds: 5
+# This makes A LOT of log entries.  Slowing my roll for now            
+#        livenessProbe:
+#          httpGet:
+#            path: /
+#            port: 80
+#          initialDelaySeconds: 1
+#          periodSeconds: 60
+#        readinessProbe:
+#          httpGet:
+#            path: /
+#            port: 80
+#          initialDelaySeconds: 1
+#          periodSeconds: 60
 
 
         resources:
