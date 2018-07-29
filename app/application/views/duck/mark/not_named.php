@@ -6,7 +6,7 @@ Since this duck is not yet named, you can submit one.  Be creative, not dirty.<b
 <input type='text' id='duck_name' size='30' maxlength="30">
 <input type="button" id="name_btn" value="Submit">
 
-<script src="/js/yui.js"></script>
+<script src="/js/yui-2.6.0.js"></script>
 <script type='text/javascript'>
     // http://yui.yahooapis.com/combo?2.6.0/build/yahoo/yahoo-min.js&2.6.0/build/event/event-min.js&2.6.0/build/connection/connection-min.js&2.6.0/build/dom/dom-min.js&2.6.0/build/json/json-min.js
 

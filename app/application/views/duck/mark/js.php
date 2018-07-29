@@ -1,5 +1,5 @@
 <script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=<?php echo $this->config->item('y_app_id') ?>"></script>
-<script src="/js/yui.js"></script>
+<script src="/js/yui-2.6.0.js"></script>
 <script type="text/javascript">
 
 
