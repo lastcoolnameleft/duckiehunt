@@ -78,17 +78,6 @@ class Mark extends CI_Controller
 
     function update( $duck_location_id )
     {
-        $recaptcha = $this->input->post('g-recaptcha-response');
-        $response = $this->recaptcha->verifyResponse($recaptcha);
-        if (!isset($response['success']) or !$response['success'] === true) {
-            error_log('recapcha was not successful!');
-            error_log(print_r($response, true));
-            $this->load->view('header');
-            $this->load->view('error', array('error_msg' => 'Recaptcha failed'));
-            $this->load->view('footer');
-            return;
-        }
-
         $location_info = $this->duck->getLocationInfo($duck_location_id);
 
         $links = array();
@@ -130,6 +119,17 @@ class Mark extends CI_Controller
                 $this->load->view('footer');
             }
             else {
+                $recaptcha = $this->input->post('g-recaptcha-response');
+                $response = $this->recaptcha->verifyResponse($recaptcha);
+                if (!isset($response['success']) or !$response['success'] === true) {
+                    error_log('recapcha was not successful!');
+                    error_log(print_r($response, true));
+                    $this->load->view('header');
+                    $this->load->view('error', array('error_msg' => 'Recaptcha failed'));
+                    $this->load->view('footer');
+                    return;
+                }
+
                 $this->_update( $duck_location_id );
             }
         }
