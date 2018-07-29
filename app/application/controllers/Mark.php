@@ -338,7 +338,7 @@ class Mark extends CI_Controller
     {
         $this->config->load('duckiehunt');
         $config['upload_path'] = $this->config->item('upload_path');
-        $config['allowed_types'] = 'gif|jpg|png'; // by extension, will check for whether it is an image
+        $config['allowed_types'] = 'gif|jpg|jpeg|png'; // by extension, will check for whether it is an image
 
         $this->load->library('upload', $config);
         $upload_data = $this->upload->do_multi_upload("files");
