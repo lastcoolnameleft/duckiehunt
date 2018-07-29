@@ -6,8 +6,9 @@ Since this duck is not yet named, you can submit one.  Be creative, not dirty.<b
 <input type='text' id='duck_name' size='30' maxlength="30">
 <input type="button" id="name_btn" value="Submit">
 
-<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.6.0/build/yahoo/yahoo-min.js&2.6.0/build/event/event-min.js&2.6.0/build/connection/connection-min.js&2.6.0/build/dom/dom-min.js&2.6.0/build/json/json-min.js"></script>
+<script src="/js/yui.js"></script>
 <script type='text/javascript'>
+    // http://yui.yahooapis.com/combo?2.6.0/build/yahoo/yahoo-min.js&2.6.0/build/event/event-min.js&2.6.0/build/connection/connection-min.js&2.6.0/build/dom/dom-min.js&2.6.0/build/json/json-min.js
 
     YAHOO.util.Event.on('name_btn','click',function (e) {
         // Get the div element in which to report messages from the server
