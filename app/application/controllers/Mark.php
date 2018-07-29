@@ -336,8 +336,9 @@ class Mark extends CI_Controller
 
     function _uploadFiles($duck_id, $duck_location_id, $desc)
     {
-        $config['upload_path'] = './uploads/'; // server directory
-        $config['allowed_types'] = 'gif|jpg|png'; // by extension, will check for whether it is an image
+        $this->config->load('duckiehunt');
+        $config['upload_path'] = $this->config->item('upload_path');
+        $config['allowed_types'] = 'gif|jpg|jpeg|png'; // by extension, will check for whether it is an image
 
         $this->load->library('upload', $config);
         $upload_data = $this->upload->do_multi_upload("files");
@@ -377,8 +378,9 @@ class Mark extends CI_Controller
                 );
 
                 $photo_info = $this->flickr->upload($parameters);
+                error_log(print_r($photo_info, true));
 
-                if (!$photo_info) {
+                if (!$photo_info || $photo_info['stat'] === 'fail') {
                     error_log('Received an error uploading to Flickr');
                     $error_code = $this->flickr->error_code;
                     $error_msg = $this->flickr->error_msg;

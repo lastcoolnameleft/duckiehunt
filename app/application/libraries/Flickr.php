@@ -6,7 +6,8 @@
  * Author: David Wilkinson
  * Web: http://dopiaza.org/
  *
- * Copyright (c) 2012 David Wilkinson
+ * Copyright (c) 2012 David Wilkinson - https://github.com/dopiaza/DPZFlickr
+ * Copyright (c) 2018 Tommy Falgout - https://github.com/lastcoolnameleft/DPZFlickr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the

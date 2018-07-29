@@ -24,12 +24,15 @@ spec:
         volumeMounts:
         - name: app-config
           mountPath: {{ .Values.deployment.appConfigMountPath }}
+        - name: images
+          mountPath: {{ .Values.deployment.imagesMountPath }}
         env:
         - name: CI_BASE_URL
           valueFrom:
             configMapKeyRef:
               name: duckiehunt
               key: CI_BASE_URL
+
 # This makes A LOT of log entries.  Slowing my roll for now            
 #        livenessProbe:
 #          httpGet:
