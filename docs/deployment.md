@@ -10,7 +10,14 @@ helm install stable/cert-manager --set ingressShim.defaultIssuerName=letsencrypt
 kubectl create secret generic blobfusecreds --from-literal accountname=duckiehunt --from-literal accountkey="$ACCOUNT_KEY" --type="azure/blobfuse"
 ```
 
-## Dev Env
+## Dev Local Env
+
+```shell
+docker build . -t duckiehunt
+docker run --name duckiehunt -p 80:80 --rm -v $PWD/app:/var/www/html -v $PWD/config/aks-dev:/var/www/html/application/config/development duckiehunt
+```
+
+## Dev K8S Env
 
 ```shell
 kubectl create ns dev
@@ -19,7 +26,7 @@ kubectl create secret generic duckiehunt-file --from-file=config/aks-dev/duckieh
 draft up
 ```
 
-## Prod env
+## Prod K8S env
 
 ```shell
 kubectl create ns prod
