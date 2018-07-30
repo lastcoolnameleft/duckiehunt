@@ -31,4 +31,11 @@ class Faq extends CI_Controller {
 		$this->load->view('privacy');
 		$this->load->view('footer');
 	}
+
+	public function tos()
+	{
+		$this->load->view('header');
+		$this->load->view('tos');
+		$this->load->view('footer');
+	}
 }

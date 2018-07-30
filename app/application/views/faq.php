@@ -51,3 +51,6 @@ You might be onto something here.  It started out when I bought a hot tub.  For 
 <h2>What's your Privacy Policy?</h2>
 <ul><li>You can see our privacy policy <a href='/faq/privacy'>here</a></li></ul>
 
+<h2>What's your Terms of Service?</h2>
+<ul><li>You can see our Terms of Service <a href='/faq/tos'>here</a></li></ul>
+
