@@ -48,3 +48,6 @@ You might be onto something here.  It started out when I bought a hot tub.  For 
 <h2>How do I get in touch with you?</h2>
 <ul><li><?php echo mailto('tommy@duckiehunt.com') ?></li></ul>
 
+<h2>What's your Privacy Policy?</h2>
+<ul><li>You can see our privacy policy <a href='/faq/privacy'>here</a></li></ul>
+

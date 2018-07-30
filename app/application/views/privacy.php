@@ -74,5 +74,5 @@ To operate the service, we also may make identifiable and anonymous information 
 <br/><br/>
 
 <span class="notice">#12 Summary</span><br/>
-This privacy policy was last updated on Wednesday, Aug 16, 2017. Our privacy policy may change from time to time. If we make any material changes to our policies, we will place a prominent notice on our website or application. If the change materially affects registered users, we will send a notice to you by email.
+This privacy policy was last updated on July 29, 2018. Our privacy policy may change from time to time. If we make any material changes to our policies, we will place a prominent notice on our website or application. If the change materially affects registered users, we will send a notice to you by email.
 <br/><br/>

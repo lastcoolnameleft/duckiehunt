@@ -24,4 +24,11 @@ class Faq extends CI_Controller {
 		$this->load->view('faq');
 		$this->load->view('footer');
 	}
+
+	public function privacy()
+	{
+		$this->load->view('header');
+		$this->load->view('privacy');
+		$this->load->view('footer');
+	}
 }
