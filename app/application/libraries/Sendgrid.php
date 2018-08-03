@@ -37,9 +37,10 @@ class Sendgrid {
 	{
 		$subject = "Duck # $duck_id has moved!";
 
-		$message = "You are receiving this email because you're on the alert list for Duck #{$duck_id}.<br/>\n";
-		$message .= "You can see where this duck has travelled to by going to <a href='http://duckiehunt.com/view/duck/{$duck_id}'>http://duckiehunt.com/view/duck/{$duck_id}</a>";
-		$message .= " and can see the specific location info at <a href='http://duckiehunt.com/view/location/{$duck_location_id}'>http://duckiehunt.com/view/location/{$duck_location_id}</a>";
+		$message = "Welcome fellow <a href='https://www.duckiehunt.com'>Duckiehunt</a> friend.<br/>\n<br/>\n";
+		$message .= "You can see where this duck has travelled to by going to: <a href='https://www.duckiehunt.com/view/location/{$duck_location_id}'>https://www.duckiehunt.com/view/location/{$duck_location_id}</a>.<br/>\n<br/>\n";
+		$message .= "You are receiving this email because you're on the alert list for Duck #{$duck_id}.";
+		$message .= "To remove yourself from notification for this duck, please go to: <a href='https://www.duckiehunt.com/view/duck/{$duck_id}'>https://www.duckiehunt.com/view/duck/{$duck_id}</a> and click 'Release me!'<br/>\n";
 
 		$result = $this->send($to, $subject, $message);
 
