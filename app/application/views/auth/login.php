@@ -6,11 +6,11 @@
 <div id="auth_wrapper">
   <div id="auth_container">
     <div id="login_container">
-      <h2 class="signup_heading">Login to your account.</h2>
       <div id="social_login">
         <a class="fb_login" href="<?php echo $fb_auth_url ?>"><span></span>Facebook Login</a>
         <a class="gg_login" href="<?php echo $g_auth_url ?>"><span></span>Google Login</a>
       </div>
+      <!--
       <div class="login_or"></div>
         <div id="div_error_box_login" ></div>
         <?php echo form_open("auth/login");?>
@@ -34,5 +34,6 @@
         <a href='create_user' id="register" class="signup-btn">Create New Account</a>
         <div class="clearfix"></div>
     </div>
+-->
   </div>
 </div>
