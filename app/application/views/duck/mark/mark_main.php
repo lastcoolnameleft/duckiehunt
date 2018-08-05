@@ -1,5 +1,3 @@
-<script src="/js/jquery-3.2.1.min.js" type="text/javascript" language="javascript"></script>
-
 <script>
 	function addInput( div, name, count, type, size) {
 		if ( document.getElementById(count).value < 9) {

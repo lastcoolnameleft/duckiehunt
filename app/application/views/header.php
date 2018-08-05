@@ -8,57 +8,56 @@
   <meta name="robots" content="index, follow, noarchive" />
   <meta name="googlebot" content="noarchive" />
   <link rel="icon" type="image/png" href="/images/icons/duck-32x32.png" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <link  href="/css/html.css" media="screen, projection, tv " rel="stylesheet" type="text/css" />
   <link  href="/css/layout.css" media="screen, projection, tv " rel="stylesheet" type="text/css" />
   <link  href="/css/print.css" media="print " rel="stylesheet" type="text/css" />
 </head>
 <body>
 
+
+
 <div id="content">
 
   <div id="header">
 
-    <div id="title">
-      <h1>duckiehunt</h1>
-    </div>
     <img src="/images/bg/balloons.gif"  alt="baloons"  class="balloons" />
     <img src="/images/bg/header_left.jpg"  alt="baloons"  class="left" />
     <img src="/images/bg/header_right.jpg"  alt="baloons"  class="right" />
 
   </div>
 
-  <div id="mainMenu">
-    <ul class="floatRight">
-<?php
-    $this->load->helper('html');
-    $controller = $this->uri->rsegment(1);
+  <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+      <a class="navbar-brand mr-auto mr-lg-0" href="#">Welcome to Duckiehunt: </a>
+      <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    echo "\t\t<li>" . anchor('main', 'Main', $controller == 'main' ? array('class' => 'here main_link') : array('id' => 'main_header')) . "</li>\n";
-	  echo "\t\t<li>" . anchor('stats', 'Stats', $controller == 'stats' ? array('class' => 'here stats_link') : array('id' => 'stats_header')) . "</li>\n";
-	  echo "\t\t<li>" . anchor('view', 'View', $controller == 'view' ? array('class' => 'here view_link') : array('id' => 'view_header')) . "</li>\n";
-    echo "\t\t<li>" . anchor('mark', 'Mark', $controller == 'mark' ? array('class' => 'here mark_link') : array('id' => 'mark_header')) . "</li>\n";
+      <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Stats<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">"add a Duck"</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">FAQ</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="https://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown01">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-    if ($controller == 'user') {
-        echo "\t\t<li>" . anchor('user', 'user', $controller == 'user' ? array('class' => 'here') : '') . "</li>\n";
-    }
-
-    if ($this->ion_auth->in_group('admin')) {
-      echo "\t\t<li>" . anchor('history', 'History', $controller == 'history' ? array('class' => 'here') : '') . "</li>\n";
-      echo "\t\t<li>" . anchor('admin', 'Admin', ($controller == 'admin' || $controller == 'duck') ? array('class' => 'here') : '') . "</li>\n";
-    }
-
-	  echo "\t\t<li>" . anchor('faq', 'Faq', $controller == 'faq' ? array('class' => 'here') : '') . "</li>\n";
-  
-    if ( $this->ion_auth->logged_in() ) {
-        echo '<li>' . anchor('auth/logout', 'logout', $controller == 'auth' ? array('class' => 'here') : array('id' => 'logout_header')) . '</li>';
-    } else {
-        echo '<li>' . anchor('auth/login', 'login', $controller == 'auth' ? array('class' => 'here') : array('id' => 'login_header')) . '</li>';
-    }
-  
-?>
-    </ul>
-  </div>
 
   <div id="page">
-
-
