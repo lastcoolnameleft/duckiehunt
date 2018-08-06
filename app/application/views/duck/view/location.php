@@ -14,9 +14,9 @@
                      echo "<tr><td colspan='3'><h2>Location Info</h2></td></tr>";
                      echo "<tr><td>Location</td><td>:</td><td>{$location_info['location']}</td></tr>";
                      echo "<tr><td>Date/Time</td><td>:</td><td>{$location_info['date_time']}</td></tr>";
-                     if (!empty($location_info['user_id'])) {
-                        echo "<tr><td>User</td><td>:</td><td>{$location_info['username']}</td></tr>";
-                     }
+#                     if (!empty($location_info['user_id'])) {
+#                        echo "<tr><td>User</td><td>:</td><td>{$location_info['username']}</td></tr>";
+#                     }
                      if (!empty($location_info['comments'])) {
                         echo "<tr><td>Comments</td><td>:</td><td>{$location_info['comments']}</td></tr>";
                      }
