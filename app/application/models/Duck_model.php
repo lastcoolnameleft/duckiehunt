@@ -504,7 +504,7 @@ class Duck_model Extends CI_Model {
     }
     function getLocations( $duck_id )
     {
-        $this->db->select('duck_location.duck_id, duck.name, duck_location_id, location, latitude, longitude, duck_location.comments, link, flickr_photo_id')
+        $this->db->select('duck_location.duck_id, duck.name, duck_location_id, location, latitude, longitude, duck_location.comments, link, flickr_photo_id, date_time')
 			->from('duck_location')
 			->join('duck', 'duck_location.duck_id=duck.duck_id', 'left')
 			->where('duck_location.duck_id', $duck_id)

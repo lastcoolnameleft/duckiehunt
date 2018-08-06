@@ -1,55 +1,41 @@
-<table>
-	<tr valign='top'>
-		<td>
-		</td>
-		<td>
-<?php	if (!empty($duck_id) && !empty($duck_info)) { ?>
-			<table>
-				<tr><td>Name</td><td>: <?php echo $duck_info['name'] ?></td></tr>
-				<tr><td>Distance Travelled</td><td>: <?php echo $duck_info['total_distance'] ?> Miles</td></tr>
-				<?php echo (!empty($duck_info['comments']) ? "<tr><td>Comments</td><td>: {$duck_info['comments']}</td></tr>" : '')  ; ?>
-<?php
-		if (!empty($photos)) {
-			echo "<tr><td>Photos</td><td>: ";
-			foreach ($photos as $photo_id => $thumbnail_url) {
-			echo '<a data-flickr-embed="true"  href="https://www.flickr.com/photos/duckiehunt/' . $photo_id . '/" title="Duck #' . $duck_id . '"><img src="' . $thumbnail_url . '" alt="Duck #' . $duck_id . '"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>';
-			}
-			echo "</td></tr>\n";
-		}
-?>
-			</table>
-			<br/>
+      <!-- Intro Content -->
+      <div class="row">
+        <div class="col-lg-6">
+          <h2><?php echo $duck_info['name'] ?></h2>
+          <p>Distance Travelled:  <?php echo $duck_info['total_distance'] ?> Miles</p>
+		  <?php echo (!empty($duck_info['comments']) ? $duck_info['comments'] : '')  ; ?>
+        </div>
+      </div>
+      <!-- /.row -->
 
-            Location History:
-            <table>
-<?php foreach ($duck_location_list as $duck_location) { ?>
-                <ul style="margin-top: 3px; margin-bottom: 3px;">
-                    <li><?php echo anchor( '/view/location/' . $duck_location['duck_location_id'], $duck_location['location']) ?></li>
-                </ul>
-<?php } ?>
-            </table>
-<?php
+      <!-- Photos -->
+      <h2>Photos</h2>
+      <div class="row">
+		<?php foreach ($photos as $photo_id => $thumbnail_url) { ?>
+        <div class="col-lg-2 col-sm-2 mb-2">
+          <img class="img-fluid" src="<?php echo str_replace('_t', '_m_d', $thumbnail_url) ?>" alt="">
+		</div>
+		<?php } ?>
+      </div>
+      <!-- /.row -->
 
+      <!-- Team Members -->
+      <h2>Locations</h2>
 
-	}
-	if (!empty($duck_id)) {
-		$this->load->helper('form');
-		if ($is_tracking) {
-			echo form_open('view/alert/' . $duck_id . '/remove');
-			echo "Stop alerts for this duck<br/>";
-			echo form_submit('mysubmit', 'Release me!') . '<br/>';
-		}
-		else {
-			echo form_open('view/add_alert');
-			echo form_hidden('duck_id', $duck_id);
-			echo "Get alerts for this duck: ";
-			echo form_submit('mysubmit', 'Alert me!') . '<br/>';
-//			echo "<font color='black'>Requires valid login</font>";
-		}
-		echo form_close();
-	} 
-	?>
-		</td>
-	</tr>
-</table>
+      <div class="row">
+		<?php foreach ($duck_location_list as $duck_location) { ?>
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100 text-center">
+            <!-- <img class="card-img-top" src="http://placehold.it/750x450" alt=""> -->
+            <div class="card-body">
+              <h4 class="card-title"><?php echo anchor( '/view/location/' . $duck_location['duck_location_id'], $duck_location['location']) ?></h4>
+              <h6 class="card-subtitle mb-2 text-muted"><?php echo $duck_location['date_time'] ?></h6>
+              <h6 class="card-text"><?php echo $duck_location['comments'] ?></h6>
+            </div>
+          </div>
+        </div>
+		<?php } ?>
+      </div>
+      <!-- /.row -->
+		</div>
 
