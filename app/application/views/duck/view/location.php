@@ -55,6 +55,16 @@
 		<?php } ?>
       </div>
       <!-- /.row -->
+
+      <!-- Map -->
+      <h2>Map</h2>
+      <div class="row">
+        <div class="col-lg-6">
+			<div id='map'></div>
+		</div>
+      </div>
+      <!-- /.row -->
+
 <?php }
 
     if ( $can_modify ) {
@@ -63,3 +73,4 @@
     }
         ?>
 </div>
+<br />

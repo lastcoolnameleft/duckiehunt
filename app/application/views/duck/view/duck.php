@@ -19,7 +19,7 @@
       </div>
       <!-- /.row -->
 
-	  <!-- Photos -->
+	  <!-- Map -->
       <h2>Map</h2>
       <div class="row">
         <div class="col-lg-6">
