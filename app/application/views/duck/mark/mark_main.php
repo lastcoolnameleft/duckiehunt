@@ -34,18 +34,18 @@
 			<input type="hidden" name="lat" id="lat" value="<?php echo set_value('lat', $lat); ?>" />
 			<input type="hidden" name="lng" id="lng" value="<?php echo set_value('lng', $lng); ?>" />
 			<dl class="row">
-				<dt class="col-sm-4">Duck #:</dt>
-				<dd class="col-sm-8"><input type="text" name="duck_id" value="<?php echo set_value('duck_id', $duck_id); ?>" size="10" /></dd>
-				<dt class="col-sm-4">Location: (e.g. Eiffel Tower)</dt>
-				<dd class="col-sm-8"><input type="text" name="location" id="location" value="<?php echo set_value('location', $location); ?>" size="30" /></dd>
-				<dt class="col-sm-4">Map:</dt>
-				<dd class="col-sm-8"><div id="map"></div></dd>
-				<dt class="col-sm-4">Date/Time: (e.g. MM/DD/YYYY HH:MM)</dt>
-				<dd class="col-sm-8"><input type="text" name="date_time" value="<?php echo set_value('date_time', $date_time); ?>" size="20" /></dd>
-				<dt class="col-sm-4">Comment/Story:</dt>
-				<dd class="col-sm-8"><textarea name="comments" id="comments" rows="6" cols="50" size="20"><?php echo set_value('comments', $comments); ?></textarea></dd>
-				<dt class="col-sm-4">Link:</dt>
-				<dd class="col-sm-8">
+				<dt class="col-sm-2">Duck #:</dt>
+				<dd class="col-sm-10"><input type="text" name="duck_id" value="<?php echo set_value('duck_id', $duck_id); ?>" size="10" /></dd>
+				<dt class="col-sm-2">Location:<br />(e.g. Eiffel Tower)</dt>
+				<dd class="col-sm-10"><input type="text" name="location" id="location" value="<?php echo set_value('location', $location); ?>" size="30" /></dd>
+				<dt class="col-sm-2">Map:</dt>
+				<dd class="col-sm-10"><div id="map"></div></dd>
+				<dt class="col-sm-2">Date/Time:<br />(e.g. MM/DD/YYYY HH:MM)</dt>
+				<dd class="col-sm-10"><input type="text" name="date_time" value="<?php echo set_value('date_time', $date_time); ?>" size="20" /></dd>
+				<dt class="col-sm-2">Comment/Story:</dt>
+				<dd class="col-sm-10"><textarea name="comments" id="comments" rows="6" cols="50" size="20"><?php echo set_value('comments', $comments); ?></textarea></dd>
+				<dt class="col-sm-2">Link:</dt>
+				<dd class="col-sm-10">
 				<div id="linkDiv">
 					<?php
 						if (empty($links)) {
@@ -61,12 +61,12 @@
 					<input type="hidden" value="<?php echo sizeof($links) ?>" id="link_id" />
 					<input type='button' onclick='addInput("linkDiv", "link", "link_id", "text", 30);' value='Add Another Link' />
 				</dd>
-				<dt class="col-sm-4">Upload Picture:</dt>
-				<dd class="col-sm-8"><input type="file" name="files[]" size="20" multiple /></dd>
-				<dt class="col-sm-4">&nbsp;</dt>
-				<dt class="col-sm-8"><?php echo $recaptcha_widget ?></dt>
-				<dt class="col-sm-4">&nbsp;</dt>
-				<dd class="col-sm-8"><input type='submit' name="submit" value='Submit the new location'></dd>
+				<dt class="col-sm-2">Upload Picture:</dt>
+				<dd class="col-sm-10"><input type="file" name="files[]" size="20" multiple /></dd>
+				<dt class="col-sm-2">&nbsp;</dt>
+				<dt class="col-sm-10"><?php echo $recaptcha_widget ?></dt>
+				<dt class="col-sm-2">&nbsp;</dt>
+				<dd class="col-sm-10"><input type='submit' name="submit" value='Submit the new location'></dd>
 			</dl>
 			</form>
 		</div>

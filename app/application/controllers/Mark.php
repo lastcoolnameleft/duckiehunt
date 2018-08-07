@@ -181,7 +181,7 @@ class Mark extends CI_Controller
         $links = $this->getLinks();
 
         $duck_id = $this->input->post('duck_id');
-        $location_id = $this->duck->addLocation(
+        $location_id = (int) $this->duck->addLocation(
             $duck_id,
             $user_id,
             $this->input->post('lat'),
@@ -204,24 +204,20 @@ class Mark extends CI_Controller
         $this->session->set_userdata('modifying_duck', $duck_id);
         $this->session->set_userdata('location_id', $location_id);
 
-        $this->load->view('header');
-
 		if ($this->_approved == 'Y') {
-	        $this->load->view('duck/mark/success', array('location_id' => $location_id));
+            $url = "/view/location/{$location_id}";
+            redirect($url);
 		}
 		else {
+            $this->load->view('header');
 	        $this->load->view('duck/mark/success_not_approved', array('location_id' => $location_id));
+            $this->load->view('footer');
 		}
 
-        if ($this->duck->isRenamable($duck_id)) {
-            $this->load->view('duck/mark/not_named', array('duck_id' => $duck_id));
-        }
+#        if ($this->duck->isRenamable($duck_id)) {
+#            $this->load->view('duck/mark/not_named', array('duck_id' => $duck_id));
+#        }
 
-        if (!$this->ion_auth->logged_in() ) {
-            $this->load->view('duck/mark/not_reg');
-        }
-
-        $this->load->view('footer');
     }
 
 

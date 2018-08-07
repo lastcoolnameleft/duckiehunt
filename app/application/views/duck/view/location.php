@@ -8,23 +8,25 @@
             <dl class="row">
                 <dt class="col-sm-3">Name</dt>
                 <dd class="col-sm-9"><?php echo empty($duck_info['name']) ? 'Unnamed' : $duck_info['name'] ?></dd>
-                <dt class="col-sm-3">Total Distance Travelled</dt>
-                <dd class="col-sm-9"><?php echo $duck_info['total_distance'] ?> Miles</dd>
-                <?php if (!empty($location_info['comments'])) { ?>
-                    <dt class="col-sm-3">Comments</dt>
-                    <dd class="col-sm-9"><?php echo $location_info['comments'] ?></dd>
-                <?php } ?>
                 <?php if (!empty($location_info['location'])) { ?>
                     <dt class="col-sm-3">Location</dt>
                     <dd class="col-sm-9"><?php echo $location_info['location'] ?></dd>
+                <?php } ?>
+                <?php if (!empty($location_info['comments'])) { ?>
+                    <dt class="col-sm-3">Comments</dt>
+                    <dd class="col-sm-9"><?php echo $location_info['comments'] ?></dd>
                 <?php } ?>
                 <?php if (!empty($location_info['date_time'])) { ?>
                     <dt class="col-sm-3">Date/Time</dt>
                     <dd class="col-sm-9"><?php echo $location_info['date_time'] ?></dd>
                 <?php } ?>
+                <?php if (!empty($duck_info['total_distance'])) { ?>
+                    <dt class="col-sm-3">Total Distance Travelled</dt>
+                    <dd class="col-sm-9"><?php echo $duck_info['total_distance'] . ' miles' ?></dd>
+                <?php } ?>
                 <?php if (!empty($location_info['distance_to'])) { ?>
                     <dt class="col-sm-3">Distance to this point</dt>
-                    <dd class="col-sm-9"><?php echo $location_info['distance_to'] ?></dd>
+                    <dd class="col-sm-9"><?php echo $location_info['distance_to'] . ' miles' ?></dd>
                 <?php } ?>
                 <?php if (!empty($location_info['latitude'])) { ?>
                     <dt class="col-sm-3">Latitude</dt>
@@ -46,14 +48,16 @@
       <!-- /.row -->
 
       <!-- Photos -->
-      <h2>Photos</h2>
-      <div class="row">
-		<?php foreach ($photos as $photo_id => $thumbnail_url) { ?>
-        <div class="col-lg-2 col-sm-2 mb-2">
-          <img class="img-fluid" src="<?php echo str_replace('_t', '_m_d', $thumbnail_url) ?>" alt="">
-		</div>
-		<?php } ?>
-      </div>
+      <?php if ($photos) { ?>
+        <h2>Photos</h2>
+        <div class="row">
+            <?php foreach ($photos as $photo_id => $thumbnail_url) { ?>
+            <div class="col-lg-2 col-sm-2 mb-2">
+            <img class="img-fluid" src="<?php echo str_replace('_t', '_m_d', $thumbnail_url) ?>" alt="">
+            </div>
+            <?php } ?>
+        </div>
+      <?php } ?>
       <!-- /.row -->
 
       <!-- Map -->
