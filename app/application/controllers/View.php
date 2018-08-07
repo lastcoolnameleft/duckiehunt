@@ -26,6 +26,8 @@ class View extends CI_Controller {
         );
 
         $map_data = array(
+            'map_width' => '100%',
+            'map_height' => '400px',
             'focus_lat' => 0,
             'focus_long' => 0,
             'focus_zoom' => 2,

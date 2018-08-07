@@ -1,8 +1,8 @@
 
 <style>
  #map {
-   width: 100%;
-   height: 800px;
+   width: <?php echo $map_width ?>;
+   height: <?php echo $map_height ?>;
    background-color: grey;
    color: #000;
  }

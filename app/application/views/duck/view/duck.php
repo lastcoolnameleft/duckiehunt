@@ -19,7 +19,16 @@
       </div>
       <!-- /.row -->
 
-      <!-- Team Members -->
+	  <!-- Photos -->
+      <h2>Map</h2>
+      <div class="row">
+        <div class="col-lg-6">
+			<div id='map'></div>
+		</div>
+      </div>
+      <!-- /.row -->
+
+      <!-- Locations -->
       <h2>Locations</h2>
 
       <div class="row">

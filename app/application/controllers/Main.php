@@ -28,6 +28,8 @@ class Main extends CI_Controller {
 
         $location_list = $this->duck->getAllLocations();
         $data = array(
+            'map_width' => '100%',
+            'map_height' => '800px',
             'focus_lat' => 23,
             'focus_long' => 10,
             'focus_zoom' => 2,
