@@ -35,6 +35,7 @@ class View extends CI_Controller {
         if (empty($duck_info)) {
             $this->load->view('header');
             $this->load->view('duck/view/dropdown', $data);
+            $this->load->view('duck/view/enddiv');
             $this->load->view('footer');
             return;
         }

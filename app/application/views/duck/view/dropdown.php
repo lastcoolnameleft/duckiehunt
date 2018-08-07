@@ -9,18 +9,31 @@
         <li class="breadcrumb-item">
           <a href="/">Home</a>
         </li>
-        <li class="breadcrumb-item active">View</li>
+		<?php 
+			if ($duck_id) {
+				if ($duck_location_id) {
+					echo "<li class='breadcrumb-item'><a href='/view'>View</a></li>"
+						. "<li class='breadcrumb-item'><a href='/view/duck/{$duck_id}'>Duck #{$duck_id}</a></li>"
+						. "<li class='breadcrumb-item active'>Location #{$duck_location_id}</li>";
+				} else {
+					echo "<li class='breadcrumb-item'><a href='/view'>View</a></li>"
+						. "<li class='breadcrumb-item'>Duck #{$duck_id}</li>";
+				}
+			} else {
+				echo "<li class='breadcrumb-item'><a href='/view'>View</a></li>";
+			}
+		?>
       </ol>
 
       <!-- Intro Content -->
       <div class="row">
         <div class="col-lg-6">
-          <?php echo (!$duck_id) ? '<p>Please select from the list of all ducks currently registered in Duckiehunt: </p>' : '' ?>
+          <?php echo (!$duck_id) ? '<p>Please select a duck: </p>' : '' ?>
 
 			<table>
 					<tr>
 						<?php echo (!empty($user_duck_list)) ? '<td>Tracked Ducks:</td>' : ''; ?>
-						<td>All Ducks:</td>
+						<td>All Registered Ducks:</td>
 						<?php echo (!empty($duck_location_pulldown)) ? '<td>Duck Locations:</td>' : '' ; ?> 
 
 					</tr>
@@ -47,10 +60,12 @@
 	function redirectToDuckLocation(obj)
 	{
 		var location_id = obj[obj.selectedIndex].value;
-		var URL = '<?php echo $base_url; ?>view/location/' + location_id;
+		var URL = '<?php echo $base_url; ?>/view/location/' + location_id;
 		window.location.href = URL;
 	}
 </script>
         </div>
       </div>
 	  <!-- /.row -->
+
+	
