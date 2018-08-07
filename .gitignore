@@ -40,3 +40,12 @@ charts/*/charts/*.tgz
 
 # JS
 node_modules
+
+# PHP Packages
+app/composer.phar
+app/vendor/autoload.php
+app/vendor/composer/
+app/vendor/guzzlehttp/
+app/vendor/league/
+app/vendor/paragonie/
+app/vendor/psr/
