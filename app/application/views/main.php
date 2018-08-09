@@ -14,7 +14,7 @@
           </div>
           <!-- Slide Two - Set the background image for this slide in the line below -->
           <div class="carousel-item" style="background-image: url('https://farm1.staticflickr.com/850/29848655078_9d8afd1c5d_b_d.jpg')">
-          <a href='https://www.flickr.com/photos/duckiehunt/29848655078/in/photostream/'>
+          <a href='https://www.flickr.com/photos/duckiehunt/29848655078/in/photostream/' target="_blank" >
             <div class="carousel-caption d-none d-md-block" style='text-shadow: black 0.1em 0.1em 0.2em'>
               <h3>Duck #42</h3>
               <p><a href='/view/location/715'>Blue Lagoon, Iceland</a></p>
@@ -23,7 +23,7 @@
           </div>
           <!-- Slide Three -->
           <div class="carousel-item" style="background-image: url('https://farm5.staticflickr.com/4120/4819252192_7591229ed0_b_d.jpg')">
-          <a href='https://www.flickr.com/photos/duckiehunt/4819252192/in/dateposted/'>
+          <a href='https://www.flickr.com/photos/duckiehunt/4819252192/in/dateposted/' target="_blank" >
             <div class="carousel-caption d-none d-md-block" style='text-shadow: black 0.1em 0.1em 0.2em'>
               <h3>Duck #1099</h3>
               <p><a href='/view/location/715'>St. Peter's Basilica, Vatican City</a></p>
@@ -47,7 +47,7 @@
     <!-- Page Content -->
     <div class="container">
 
-      <h1 class="my-4">Welcome Duckiehunt!</h1>
+      <h1 class="my-4">Welcome to Duckiehunt!</h1>
 
       <!-- Marketing Icons Section -->
       <div class="row">

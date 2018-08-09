@@ -626,16 +626,25 @@ class Duck_model Extends CI_Model {
         return $distance_to;
     }
 
-    function isRenamable($duck_id)
+    function isRenamable($duck_id, $user_id)
     {
-        $duck_info = $this->getInfo($duck_id);
+        if ($user_id > 0) {
+            $this->db->select('name')->from('duck')->where('duck_id', $duck_id);
+            $query = $this->db->get();
 
-        $result = FALSE;
-        if (!empty($duck_info) && empty($duck_info['name'])) {
-            $result = TRUE;
+            if ($query->num_rows())
+            {
+                $duck_info = $query->row_array();
+
+                if (empty($duck_info['name'])) {
+                    $this->db->select('duck_location_id')->from('duck_location')->where('user_id', $user_id)->where('duck_id', $duck_id);
+                    if ($this->db->count_all_results() > 0) {
+                        return TRUE;
+                    }
+                }
+            }
         }
-
-        return $result;
+        return FALSE;
     }
 
     function isNameTaken($name)

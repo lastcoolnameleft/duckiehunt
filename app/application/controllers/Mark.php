@@ -44,6 +44,7 @@ class Mark extends CI_Controller
                 'location' => ''
             ),
             'duck_id' => '',
+            'name' => '',
             'location' => '',
             'lat' => '',
             'lng' => '',
@@ -286,8 +287,8 @@ class Mark extends CI_Controller
     function setName($duck_id)
     {
         $name = $this->input->post('name');
-        
-        if ($this->duck->isRenamable($duck_id)) {
+        $user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
+        if ($this->duck->isRenamable($duck_id, $name, $user_id)) {
             if ($this->isValidName($name)) {
                 if (!$this->duck->isNameTaken($name)) {
                     if ($this->session->userdata('modifying_duck') == $duck_id) {

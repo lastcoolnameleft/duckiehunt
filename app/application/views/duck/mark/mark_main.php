@@ -11,21 +11,6 @@
 		<li class='breadcrumb-item active'>Mark a duck</li>
 	</ol>
 
-	<!--
-	<div class="row">
-		<div class="col-lg-6">
-			<ol>
-				<span><b>Instructions: </b></span>
-				<li><span>Provide a Duck ID <font color='black'>*</font></span></li>
-				<li><span>Enter a location and click Center <font color='black'>*</font></span></li>
-				<li><span>Provide a Date / Time <font color='black'>*</font></span></li>
-				<li><span>Click on the map to refine the marker</span></li>
-				<li><span>Provide a Story/Link/Flickr Photo</span></li>
-				<font color='black'>*</font> = Required
-			</ol>
-		</div>
-	</div>
--->
 	<div class="row">
 		<div class="col-lg-12">
 			<?php echo validation_errors('<div class="error">', '</div><br />'); ?>

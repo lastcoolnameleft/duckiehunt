@@ -1,13 +1,13 @@
 
 <?php	if (!empty($duck_id) && !empty($duck_info)) { ?>
       <!-- Intro Content -->
-            <h2>Location Info</h2>
+      <h2>Location Info</h2>
       <div class="row">
         <div class="col-lg-12">
 
             <dl class="row">
                 <dt class="col-sm-3">Name</dt>
-                <dd class="col-sm-9"><?php echo empty($duck_info['name']) ? 'Unnamed' : $duck_info['name'] ?></dd>
+                <dd class="col-sm-9" id="duck_name"><?php echo empty($duck_info['name']) ? 'Unnamed' : $duck_info['name'] ?></dd>
                 <?php if (!empty($location_info['location'])) { ?>
                     <dt class="col-sm-3">Location</dt>
                     <dd class="col-sm-9"><?php echo $location_info['location'] ?></dd>
@@ -30,11 +30,11 @@
                 <?php } ?>
                 <?php if (!empty($location_info['latitude'])) { ?>
                     <dt class="col-sm-3">Latitude</dt>
-                    <dd class="col-sm-9"><?php echo $location_info['latitude'] ?></dd>
+                    <dd class="col-sm-9"><?php echo round($location_info['latitude'], 5) ?></dd>
                 <?php } ?>
                 <?php if (!empty($location_info['longitude'])) { ?>
                     <dt class="col-sm-3">Longitude</dt>
-                    <dd class="col-sm-9"><?php echo $location_info['longitude'] ?></dd>
+                    <dd class="col-sm-9"><?php echo round($location_info['longitude'], 5) ?></dd>
                 <?php } ?>
                 <?php if (!empty($links)) { ?>
                     <dt class="col-sm-3">Links</dt>
