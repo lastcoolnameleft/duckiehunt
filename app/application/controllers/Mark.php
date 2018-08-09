@@ -287,7 +287,7 @@ class Mark extends CI_Controller
     {
         $name = $this->input->post('name');
         $user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
-        if ($this->duck->isRenamable($duck_id, $name, $user_id)) {
+        if ($this->duck->isRenamable($duck_id, $user_id)) {
             if ($this->isValidName($name)) {
                 if (!$this->duck->isNameTaken($name)) {
                     if ($this->session->userdata('modifying_duck') == $duck_id) {
@@ -298,7 +298,7 @@ class Mark extends CI_Controller
 
                         $result = array('status' => 'success', 'message' => 'Name Updated!');
                     } else {
-                        $result = array('status' => 'failure', 'message' => 'You don\'t have permission to update');
+                        $result = array('status' => 'failure', 'message' => 'You do not have permission to update');
                     }
                 } else {
                     $result = array('status' => 'failure', 'message' => 'Sorry, but that name is already taken');
@@ -307,7 +307,7 @@ class Mark extends CI_Controller
                 $result = array('status' => 'failure', 'message' => 'Invalid Name');
             }
         } else {
-            $result = array('status' => 'failure', 'message' => 'This duck has already been named');
+            $result = array('status' => 'failure', 'message' => 'You are unable to name this duck');
         }
 
         print json_encode($result);

@@ -146,7 +146,7 @@ class View extends CI_Controller {
         // Allow user to update the name
         $duck_name = (!empty($duck_info['duck_name'])) ? $duck_info['duck_name'] : '';
         $user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
-        if ($this->duck->isRenamable($duck_id, $user_id, $duck_name)) {
+        if ($this->duck->isRenamable($duck_id, $user_id)) {
             $this->load->view('duck/mark/not_named', array('duck_id' => $duck_id));
         }
 
