@@ -16,8 +16,7 @@ class Mark extends CI_Controller
         $this->_approved = $this->config->item('auto_approve');
 
         if ( ! $this->ion_auth->logged_in() ) {
-            // TODO:  REMOVE THIS BEFORE PROD!
-//            redirect('/auth');
+            redirect('/auth');
         }
 
         $this->form_validation->set_rules('duck_id', 'Duck ID', 'trim|required|numeric|callback_duck_id_check');
