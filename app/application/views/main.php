@@ -82,7 +82,7 @@
               <p class="card-text">If you want to look at a duck's history and see it's photos, you can do so here.</p>
             </div>
             <div class="card-footer">
-              <a href="#" class="btn btn-primary">View a Duck</a>
+              <a href="/view" class="btn btn-primary">View a Duck</a>
             </div>
           </div>
         </div>

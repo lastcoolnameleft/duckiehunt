@@ -39,7 +39,11 @@
               <a class="nav-link" href="/faq">FAQ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/auth/login">Login</a>
+              <?php if ( $this->ion_auth->logged_in() ) { ?>
+                <a class="nav-link" href="/auth/logout">Logout</a>
+              <?php } else { ?>
+                <a class="nav-link" href="/auth/login">Login</a>
+              <?php } ?>
             </li>
           </ul>
         </div>

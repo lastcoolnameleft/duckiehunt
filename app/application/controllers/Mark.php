@@ -16,6 +16,14 @@ class Mark extends CI_Controller
         $this->_approved = $this->config->item('auto_approve');
 
         if ( ! $this->ion_auth->logged_in() ) {
+            $this->load->helper('cookie');
+            $cookie = array(
+                'name'   => 'auth_redirect',
+                'value'  => '/mark',
+                'expire' => '600',
+                'prefix' => ''
+             );
+            $this->input->set_cookie($cookie);
             redirect('/auth');
         }
 

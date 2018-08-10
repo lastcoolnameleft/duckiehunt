@@ -28,8 +28,6 @@
       <!-- Intro Content -->
       <div class="row">
         <div class="col-lg-6">
-          <?php echo (!$duck_id) ? '<p>Please select a duck: </p>' : '' ?>
-
 			<table>
 					<tr>
 						<?php echo (!empty($user_duck_list)) ? '<td>Tracked Ducks:</td>' : ''; ?>
