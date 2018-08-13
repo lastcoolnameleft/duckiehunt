@@ -1,9 +1,8 @@
-<div id='map'></div>
 
 <style>
  #map {
-   width: 100%;
-   height: 400px;
+   width: <?php echo $map_width ?>;
+   height: <?php echo $map_height ?>;
    background-color: grey;
    color: #000;
  }
@@ -17,6 +16,7 @@
 	echo "    var duck_location_id={$duck_location_id};\n";
 	echo "    var location_list=" . json_encode($location_list) . ";\n";
 ?>
+    
 	function initMap() {
 		var map = new google.maps.Map(document.getElementById('map'), {
 			zoom: focus_zoom,

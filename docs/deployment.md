@@ -14,7 +14,7 @@ kubectl create secret generic blobfusecreds --from-literal accountname=duckiehun
 
 ```shell
 docker build . -t duckiehunt
-docker run --name duckiehunt -p 80:80 --rm -v $PWD/app:/var/www/html -v $PWD/config/aks-dev:/var/www/html/application/config/development duckiehunt
+docker run --name duckiehunt -p 80:80 --rm -v $PWD/app:/var/www/html -v $PWD/config/aks-dev:/var/www/html/application/config/development -e CI_BASE_URL=http://local.duckiehunt.com duckiehunt
 ```
 
 ## Dev K8S Env

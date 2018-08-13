@@ -26,6 +26,8 @@ class View extends CI_Controller {
         );
 
         $map_data = array(
+            'map_width' => '100%',
+            'map_height' => '400px',
             'focus_lat' => 0,
             'focus_long' => 0,
             'focus_zoom' => 2,
@@ -35,6 +37,7 @@ class View extends CI_Controller {
         if (empty($duck_info)) {
             $this->load->view('header');
             $this->load->view('duck/view/dropdown', $data);
+            $this->load->view('duck/view/enddiv');
             $this->load->view('footer');
             return;
         }
@@ -107,6 +110,8 @@ class View extends CI_Controller {
         );
 
         $map_data = array(
+            'map_width'        => '100%',
+            'map_height'       => '400px',
             'focus_lat'        => 0,
             'focus_long'       => 0,
             'focus_zoom'       => 2,
@@ -135,8 +140,16 @@ class View extends CI_Controller {
 		}
         $data['duck_location_id'] = $duck_location_id;
 
-		$this->load->view('header');
+        $this->load->view('header');
         $this->load->view('duck/view/dropdown', $data);
+
+        // Allow user to update the name
+        $duck_name = (!empty($duck_info['duck_name'])) ? $duck_info['duck_name'] : '';
+        $user_id = $this->ion_auth->get_user_id() ? $this->ion_auth->get_user_id() : 0;
+        if ($this->duck->isRenamable($duck_id, $user_id)) {
+            $this->load->view('duck/mark/not_named', array('duck_id' => $duck_id));
+        }
+
 		$this->load->view('duck/view/location', $data);
         $this->load->view('duck/view/map', $map_data);
 		$this->load->view('footer');

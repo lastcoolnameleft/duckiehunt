@@ -85,7 +85,11 @@ class Auth extends CI_Controller {
 				return;
 			}
 		}
-		redirect('/');
+
+		$this->load->helper('cookie');
+		$auth_redirect = $this->input->cookie('auth_redirect') ? $this->input->cookie('auth_redirect') : '/';
+		$this->input->cookie('auth_redirect');
+		redirect($auth_redirect);
 	}
 
 	// redirect if needed, otherwise display the user list

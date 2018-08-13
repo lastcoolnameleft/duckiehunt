@@ -1,6 +1,5 @@
-	<br/>
-Since this duck is not yet named, you can submit one.  Be creative, not dirty.<br/>
-
+<h2>You've found an unnamed duck!</h2>
+Since this duck is not yet named, you can submit one.  Please be creative, not dirty.<br/>
 <input type='hidden' id='duck_id' value='<?php echo $duck_id ?>' >
 <div id="result_msg"></div>
 <input type='text' id='duck_name' size='30' maxlength="30">
@@ -53,4 +52,5 @@ Since this duck is not yet named, you can submit one.  Be creative, not dirty.<b
     });
 
 </script>
+<br/>
 <br/>

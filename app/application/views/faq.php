@@ -1,56 +1,115 @@
-Here's the answer the questions that noone has asked me yet.  I'd need actual vistors before I'd have questions.
-<br/>
-<br/>
-<h2>Why are you doing this?</h2>
-<ul><li>
-	Because.
-</li></ul>
+    <!-- Page Content -->
+    <div class="container">
 
-<h2>Why do you have so many duckies?</h2>
-<ul><li>
-The genesis of this was from "The Duckening".  My lovely wife and I were away on our honeymoon and our friends conspired towards a <?php echo anchor('http://flickr.com/photos/nmlittle/tags/duckieinvation/', 'huge rubber duckie invasion') ?>.  We came back to <?php echo anchor('http://flickr.com/photos/snoopykiss/sets/72157607146654923/', '1000+ duckies in the house') ?>.  <?php echo anchor('http://flickr.com/photos/snoopykiss/2833050713', '~300 on the bed') ?>.  Days later I went into work to find <?php echo anchor('http://flickr.com/photos/snoopykiss/2833067647', '~200 more there') ?>.  It was epic.</li></ul>
+      <!-- Page Heading/Breadcrumbs -->
+      <h1 class="mt-4 mb-3">FAQ
+      </h1>
 
-<h2>No seriously.  Why do you have so many duckies?  I think you need professional help.</h2>
-<ul><li>
-You might be onto something here.  It started out when I bought a hot tub.  For it's cristening, my friends and I thought it would be funny to put some rubber duckies in it.
-</li>
-<li>
-  A few rubber duckies became quite a few duckies.
-</li>
-<li>  Then friends started finding speciality duckies. 
-</li>
-<li>
-	Then friends started bringing me duckies from around the world.
-</li>
-<li>
-	Then I got married.
-</li>
-</ul>
-<h2>Yeah, I saw that.  Congrats.</h2>
-<ul>
-<li>Thanks!  Anyway, a number of our friends had this grand idea to supply the house and my work with duckies while we were on our <?php echo anchor ('http://flickr.com/photos/snoopykiss/sets/72157607006148637/', 'honeymoon') ?>.</li>
-</ul>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/">Home</a>
+        </li>
+        <li class="breadcrumb-item active">FAQ</li>
+      </ol>
 
-<h2>Who all is to blame for this?</h2>
-<ul><li>Not everyone has fessed up to <i>The Great Duckie Invasion of 2008</i>&trade;, but so far the list of suspects is:</li>
-<li><?php echo anchor('http://burningnerd.com', 'Neil Little') ?></li>
-<li>Lee Gibson<li>
-<li><?php echo anchor('http://robertames.com', 'Robert Ames') ?></li>
-<li>Abel Rios</li>
-</ul>
+      <div class="mb-4" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="card">
+          <div class="card-header" role="tab" id="headingTwo">
+            <h5 class="mb-0">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Why do you have so many duckies?
+              </a>
+            </h5>
+          </div>
+          <div id="collapseTwo" class="collapse show" role="tabpanel" aria-labelledby="headingTwo">
+            <div class="card-body">
+				<p>The genesis of this was from "The Duckening".</p>
+				<p>My lovely wife and I were away on our honeymoon and our friends conspired towards a <?php echo anchor('http://flickr.com/photos/nmlittle/tags/duckieinvation/', 'huge rubber duckie invasion') ?>.  We came back to <?php echo anchor('http://flickr.com/photos/snoopykiss/sets/72157607146654923/', '1000+ duckies in the house') ?>.  <?php echo anchor('http://flickr.com/photos/snoopykiss/2833050713', '~300 on the bed') ?>.  Days later I went into work to find <?php echo anchor('http://flickr.com/photos/snoopykiss/2833067647', '~200 more there') ?>.  It was epic.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" role="tab" id="headingOne">
+            <h5 class="mb-0">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Why are you doing this?</a>
+            </h5>
+          </div>
 
-<h2>Who build this site?</h2>
-<ul><li>Me.  I used to be a developer for Yahoo!, but now I'm a Cloud Solution Architect at Microsoft. This is my lifeblood.</li></ul>
+          <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+            <div class="card-body">
+              Because.
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" role="tab" id="headingThree">
+            <h5 class="mb-0">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Who gave you all of these ducks?</a>
+            </h5>
+          </div>
+          <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
+            <div class="card-body">
+				Not everyone has fessed up to <i>The Great Duckie Invasion of 2008</i>&trade;, but so far the list of suspects is:
+				<ul>
+				<li><?php echo anchor('http://burningnerd.com', 'Neil Little') ?></li>
+				<li>Lee Gibson</li>
+				<li><?php echo anchor('http://robertames.com', 'Robert Ames') ?></li>
+				<li>Abel Rios</li>
+				</ul>
+   		    </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" role="tab" id="headingFour">
+            <h5 class="mb-0">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Who built this website?</a>
+            </h5>
+          </div>
+          <div id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour">
+            <div class="card-body">
+				<p>Me.</p>
+				<p>I used to be a developer for Yahoo!, but now I'm a Cloud Solution Architect at Microsoft. This is my lifeblood.</p>
+				<p>It's currently running on an AKS cluster in Microsoft Azure.
+				I even <a href='https://www.lastcoolnameleft.com/2018/07/the-journey-to-kubernetes/'>blogged about the technical aspects</a>.</p>
+   		    </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" role="tab" id="headingFive">
+            <h5 class="mb-0">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">What's your Privacy Policy?</a>
+            </h5>
+          </div>
+          <div id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFive">
+            <div class="card-body">
+			  You can see our privacy policy <a href='/privacy'>here</a>
+   		    </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" role="tab" id="headingSix">
+            <h5 class="mb-0">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">What's your Terms of Service?</a>
+            </h5>
+          </div>
+          <div id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingSix">
+            <div class="card-body">
+			  You can see our Terms of Service <a href='/tos'>here</a>
+   		    </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" role="tab" id="headingSeven">
+            <h5 class="mb-0">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">How do I contact you?</a>
+            </h5>
+          </div>
+          <div id="collapseSeven" class="collapse" role="tabpanel" aria-labelledby="headingSeven">
+            <div class="card-body">
+			  <?php echo mailto('tommy@duckiehunt.com') ?>
+   		    </div>
+          </div>
+        </div>
+      </div>
 
-<h2>Really?!  You must know a lot about computers.  I've got this...</h2>
-<ul><li>No.</li></ul>
-
-<h2>How do I get in touch with you?</h2>
-<ul><li><?php echo mailto('tommy@duckiehunt.com') ?></li></ul>
-
-<h2>What's your Privacy Policy?</h2>
-<ul><li>You can see our privacy policy <a href='/faq/privacy'>here</a></li></ul>
-
-<h2>What's your Terms of Service?</h2>
-<ul><li>You can see our Terms of Service <a href='/faq/tos'>here</a></li></ul>
-
+    </div>
+    <!-- /.container -->
