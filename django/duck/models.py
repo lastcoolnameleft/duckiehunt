@@ -252,7 +252,7 @@ class Duck(models.Model):
     approved = models.CharField(max_length=1, blank=True, null=True)
 
     def natural_key(self):
-        return {'duck_id': self.duck_id, 'name': self.name}
+        return {'duck_id': self.duck_id, 'name': self.name, 'total_distance': self.total_distance}
 
     class Meta:
         managed = False
