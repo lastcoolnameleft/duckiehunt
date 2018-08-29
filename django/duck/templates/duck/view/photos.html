@@ -1,0 +1,13 @@
+	{% if photos %}
+      <!-- Photos -->
+      <h2>Photos</h2>
+      <div class="row">
+		{% for photo in photos %}
+        <div class="col-lg-2 col-sm-2 mb-2">
+            <!-- TODO REPLACE thumbnail '_t' with '_m_d'-->
+          <img class="img-fluid" src="{{ photo.flickr_thumbnail_url }}" alt="">
+        </div>
+        {% endfor %}
+      </div>
+      <!-- /.row -->
+    {% endif %}

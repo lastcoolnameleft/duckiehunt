@@ -1,0 +1,20 @@
+      <!-- Locations -->
+      <h2>Locations</h2>
+
+      <div class="row">
+		{% for duck_location in duck_location_list %}
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100 text-center">
+            <!-- <img class="card-img-top" src="http://placehold.it/750x450" alt=""> -->
+            <div class="card-body">
+              <a href='/view/location/{{ duck_location.duck_location_id }}'>
+              <h4 class="card-title">{{ duck_location.location }}</h4>
+              <h6 class="card-subtitle mb-2 text-muted">{{ duck_location.date_time }}</h6>
+              <h6 class="card-text">{{ duck_location.comments }}</h6>
+              </a>
+            </div>
+          </div>
+        </div>
+		{% endfor %}
+      </div>
+      <!-- /.row -->

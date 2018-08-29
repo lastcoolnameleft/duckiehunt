@@ -1,0 +1,36 @@
+            <!-- Page Heading/Breadcrumbs -->
+            <h1 class="mt-4 mb-3">View a Duck
+            </h1>
+      
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="/">Home</a>
+              </li>
+              <li class='breadcrumb-item'><a href='/duck'>Duck</a></li>
+              <li class='breadcrumb-item'>
+                    <select onChange="javascript:redirectToDuck(this)">
+{% for duck_d in duck_list %}                    
+                      <option value="{{ duck_d.duck_id }}" {% if duck_d.duck_id == duck.duck_id %}selected{% endif %}>{{ duck_d.name }} ({{ duck_d.duck_id }})</option>{% endfor %}                    
+                    </select>
+              </li>
+{% if duck.duck_location_id %}
+              <li class='breadcrumb-item active'>Location #{{ duck.duck_location_id }}</li>
+{% endif %}
+            </ol>
+      
+            <!-- /.row -->
+<script type="text/javascript" language="JavaScript">
+    function redirectToDuck(obj)
+    {
+        var duck_id = obj[obj.selectedIndex].value;
+        var URL = '/duck/' + duck_id;
+        window.location.href = URL;
+    }
+
+    function redirectToDuckLocation(obj)
+    {
+        var location_id = obj[obj.selectedIndex].value;
+        var URL = '/location/' + location_id;
+        window.location.href = URL;
+    }
+</script>

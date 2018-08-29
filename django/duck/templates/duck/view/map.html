@@ -1,0 +1,50 @@
+      <style>
+        #map {
+          width: {{ map.width }}; 
+          height: {{ map.height }};
+          background-color: grey;
+          color: #000;
+        }
+      </style>
+       
+       <script>
+           var focus_lat={{ map.focus_lat }};
+           var focus_long={{ map.focus_long }};
+           var focus_zoom={{ map.focus_zoom }};
+           var duck_location_id={{ map.duck_location_id }};
+           var location_list={{ map.location_list|safe }};
+           
+           function initMap() {
+               var map = new google.maps.Map(document.getElementById('map'), {
+                   zoom: focus_zoom,
+                   center: { lat: focus_lat, lng: focus_long }
+               });
+               var bounds = new google.maps.LatLngBounds();
+       
+               location_list.forEach((location, index) => {
+                   var position = new google.maps.LatLng( Number(location.fields.latitude), Number(location.fields.longitude) );
+                   var marker = new google.maps.Marker({ position: position, map: map, icon: '/static/icons/duck-32x32.png' });
+       
+                   if (!(focus_lat && focus_long)) {
+                       bounds.extend(position);
+                   }
+                   var duck_header = '<a href="/view/duck/' + location.fields.duck.duck_id + '">Duck #' + location.fields.duck.duck_id + ' (' + location.fields.duck.name + ')</a>';
+                   var content = '<div id="content"><p>' + duck_header + '<br/>' + location.fields.comments + '</p></div>';
+                   var infoWindow = new google.maps.InfoWindow( { content: content });
+                   marker.addListener('click', () => { infoWindow.open(map, marker); });
+                   if (location.fields.duck_location_id == duck_location_id) {
+                       infoWindow.open(map, marker);
+                   }
+               });
+       
+               if (!(focus_lat && focus_long)) {
+                   map.fitBounds(bounds);
+               }
+       
+           }
+       </script>
+       
+       <script async defer
+           src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU&callback=initMap">
+       </script>
+       
