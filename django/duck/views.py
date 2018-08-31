@@ -1,6 +1,8 @@
 from django.core import serializers
 from django.shortcuts import get_object_or_404, render
-from .models import Duck, DuckLocation, DuckLocationPhoto
+from django.http import HttpResponseRedirect
+from .models import Duck, DuckLocation, DuckLocationPhoto, Users
+from .forms import DuckForm
 
 def index(request):
     duck_location_list = DuckLocation.objects.all()
@@ -70,3 +72,46 @@ def duck_list(request):
 
 def faq(request):
     return render(request, 'duck/faq.html')
+
+def mark(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = DuckForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            duck_id = form.cleaned_data['duck_id']
+            try:
+                duck = Duck.objects.get(pk=duck_id)
+            except duck.models.Duck.DoesNotExist:
+                duck = Duck(id=form.duck_id, name=form.name, approved='Y')
+                duck.save()
+            user = Users(id=1)
+            duck_location = DuckLocation(duck=duck,
+                                         latitude=form.cleaned_data['lat'],
+                                         longitude=form.cleaned_data['lng'],
+                                         location=form.cleaned_data['location'],
+                                         date_time=form.cleaned_data['date_time'],
+                                         user=user,
+                                         approved='Y')
+            duck_location.save()
+
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/duck/' + str(duck_id))
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = DuckForm()
+        map_data = {
+            'width': '100%',
+            'height': '400px',
+            'focus_lat': 35,
+            'focus_long': -30,
+            'focus_zoom': 1,
+            'location_list': [],
+            'duck_location_id': 0,
+        }
+
+    return render(request, 'duck/mark.html', {'form': form, 'map': map_data})
