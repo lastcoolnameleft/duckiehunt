@@ -1,7 +1,8 @@
 from django.core import serializers
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
-from .models import Duck, DuckLocation, DuckLocationPhoto, Users
+import datetime
+from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
 
 def index(request):
@@ -83,16 +84,19 @@ def mark(request):
             duck_id = form.cleaned_data['duck_id']
             try:
                 duck = Duck.objects.get(pk=duck_id)
-            except duck.models.Duck.DoesNotExist:
-                duck = Duck(id=form.duck_id, name=form.name, approved='Y')
+            except Duck.DoesNotExist:
+                duck = Duck(duck_id=duck_id,
+                            name=form.cleaned_data['name'], approved='Y',
+                            create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            comments='')
                 duck.save()
-            user = Users(id=1)
+            #user = Users(id=1)
             duck_location = DuckLocation(duck=duck,
                                          latitude=form.cleaned_data['lat'],
                                          longitude=form.cleaned_data['lng'],
                                          location=form.cleaned_data['location'],
                                          date_time=form.cleaned_data['date_time'],
-                                         user=user,
+                                         #user=user,
                                          approved='Y')
             duck_location.save()
 

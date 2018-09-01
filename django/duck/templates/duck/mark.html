@@ -82,8 +82,12 @@
     </style>
 
     <script>
+        $( "#id_name" ).prop( "disabled", true);
         $('#id_duck_id').focusout(() => {
             var duck_id = $('#id_duck_id').get(0).value;
+            if (1 >= parseInt(duck_id)) {
+                return;
+            }
             console.log('Checking duck id:' + duck_id);
             var get_duck_url = '/api/duck/' + duck_id;
             $.get(get_duck_url, (result) => {
