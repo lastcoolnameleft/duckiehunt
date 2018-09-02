@@ -85,8 +85,9 @@ def mark(request):
             try:
                 duck = Duck.objects.get(pk=duck_id)
             except Duck.DoesNotExist:
+                name = form.cleaned_data['name'] if form.cleaned_data['name'] else 'Unnamed'
                 duck = Duck(duck_id=duck_id,
-                            name=form.cleaned_data['name'], approved='Y',
+                            name=name, approved='Y',
                             create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             comments='')
                 duck.save()
