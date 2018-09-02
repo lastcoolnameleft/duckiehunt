@@ -25,7 +25,7 @@ SECRET_KEY = 'x7j0-o6h&loz+jkr4+$-*ii8xix#)g9hx38y#r7g^!&2zow=xl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['local.duckiehunt.com']
+ALLOWED_HOSTS = ['local.duckiehunt.com', 'testserver']
 
 
 # Application definition
