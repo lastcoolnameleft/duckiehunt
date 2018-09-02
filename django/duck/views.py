@@ -96,6 +96,7 @@ def mark(request):
                                          longitude=form.cleaned_data['lng'],
                                          location=form.cleaned_data['location'],
                                          date_time=form.cleaned_data['date_time'],
+                                         comments=form.cleaned_data['comments'],
                                          #user=user,
                                          approved='Y')
             duck_location.save()

@@ -9,3 +9,4 @@ class DuckForm(forms.Form):
                                 initial=datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S'))
     lat = forms.FloatField(label='Latitude')
     lng = forms.FloatField(label='Longitude')
+    comments = forms.CharField(widget=forms.Textarea(attrs={'cols': '50', 'rows': '5'}))

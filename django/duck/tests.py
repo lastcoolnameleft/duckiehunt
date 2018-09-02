@@ -18,7 +18,8 @@ class SimpleTest(TestCase):
 
     def test_mark(self):
         data = {'duck_id': '999', 'name': 'test duck 999', 'location': 'northkapp',
-                'lat': '71.169493', 'lng': '25.7831639', 'date_time': '09/01/2018 23:04:08'}
+                'lat': '71.169493', 'lng': '25.7831639', 'date_time': '09/01/2018 23:04:08',
+                'comments': '999 comment'}
         response = self.c.post('/mark/', data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/duck/999')
@@ -29,4 +30,5 @@ class SimpleTest(TestCase):
         self.assertEqual(duck_location[0].location, 'northkapp')
         self.assertEqual(duck_location[0].latitude, 71.169493)
         self.assertEqual(duck_location[0].longitude, 25.7831639)
+        self.assertEqual(duck_location[0].comments, '999 comment')
 
