@@ -1,6 +1,0 @@
-{
-    "require": {
-        "league/oauth2-facebook": "^2.0",
-        "league/oauth2-google": "^2.2"
-    }
-}
