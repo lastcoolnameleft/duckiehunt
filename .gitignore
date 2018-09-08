@@ -49,3 +49,6 @@ app/vendor/guzzlehttp/
 app/vendor/league/
 app/vendor/paragonie/
 app/vendor/psr/
+
+# env stuff
+django/env/local.env
