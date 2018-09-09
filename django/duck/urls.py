@@ -1,3 +1,4 @@
+from django.conf.urls import url, include
 from django.urls import path
 
 from . import views, apis
@@ -16,4 +17,8 @@ urlpatterns = [
     path('location/<int:duck_location_id>', views.location, name='location'),
     # APIs
     path('api/duck/<int:duck_id>', apis.detail, name='detail'),
+    # Auth
+    path('login', views.login, name='login'),
+    path('logout', views.logout, name='logout'),
+    path('oauth/', include('social_django.urls', namespace='social'), name='logthru'),
 ]

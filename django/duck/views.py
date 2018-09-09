@@ -1,6 +1,9 @@
 from django.core import serializers
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
+from django.contrib.auth import logout as auth_logout, login
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 import datetime
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
@@ -74,6 +77,7 @@ def duck_list(request):
 def faq(request):
     return render(request, 'duck/faq.html')
 
+@login_required
 def mark(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -121,3 +125,19 @@ def mark(request):
         }
 
     return render(request, 'duck/mark.html', {'form': form, 'map': map_data})
+
+def logout(request):
+    """Logs out user"""
+    auth_logout(request)
+    return redirect('/')
+
+
+def login(request):
+    """Home view, displays login mechanism"""
+    print(request.user)
+    print(request.user)
+    return render(request, 'duck/login.html')
+
+    if request.user.is_authenticated:
+        return redirect('done')
+
