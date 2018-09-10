@@ -20,7 +20,7 @@
 
         <div class="row">
             <div class="col-lg-12">
-                <form action="/mark/" method="post">
+                <form enctype="multipart/form-data" action="/mark/" method="post">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
                     {{ form.lat.as_hidden }}
@@ -48,7 +48,11 @@
                         <dt class="col-sm-2">
                             <label for="{{ form.location.id_for_label }}">Location:</label>
                         </dt>
-                        <dd class="col-sm-10">{{ form.location }}</dd>
+                        <dd class="col-sm-10">
+{% if form.lat.errors or form.lng.errors %}
+                        Unable to find Lat/Long for the location.  Please try again.<br/>{% endif %}
+                            {{ form.location }}
+                        </dd>
 
                         <dt class="col-sm-2">Map:</dt>
                         <dd class="col-sm-10"><div id="map"></div></dd>
@@ -59,6 +63,14 @@
                         <dd class="col-sm-10">
                             {{ form.date_time }} <a href='https://en.wikipedia.org/wiki/Coordinated_Universal_Time'>UTC Timezone</a>
                             {{ form.date_time.errors }}
+                        </dd>
+
+                        <dt class="col-sm-2">
+                            <label for="{{ form.image.id_for_label }}">Upload an image:</label>
+                        </dt>
+                        <dd class="col-sm-10">
+                            {{ form.image}}
+                            {{ form.image.errors }}
                         </dd>
 
                         <dt class="col-sm-2">
@@ -90,12 +102,14 @@
 
     <script>
         $( "#id_name" ).prop( "disabled", true);
-        $('#id_duck_id').focusout(() => {
+        $('#id_duck_id').focusout(() => checkDuckName());
+
+        function checkDuckName() {
             var duck_id = $('#id_duck_id').get(0).value;
-            if (1 >= parseInt(duck_id)) {
+            console.log('checkDuckName()::duck_id=' + duck_id);
+            if (!parseInt(duck_id) || 1 >= parseInt(duck_id)) {
                 return;
             }
-            console.log('Checking duck id:' + duck_id);
             var get_duck_url = '/api/duck/' + duck_id;
             $.get(get_duck_url, (result) => {
                 var duck_name = result[0].fields.name;
@@ -110,7 +124,8 @@
                     enableDuckName()
                 }
             });
-        });
+        }
+
         function enableDuckName() {
             console.log('Enable duck name!');
             $('#id_name').prop('disabled', false);
@@ -123,6 +138,7 @@
             $('#id_name').val(duck_name);
             $('#name_notification').text('');
         }
+
         function initMap() {
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 1,
@@ -154,6 +170,8 @@
             });
         }
 
+        // After invalid form, re-check the name
+        checkDuckName();
     </script>
 
     <script async defer

@@ -10,3 +10,4 @@ class DuckForm(forms.Form):
     lat = forms.FloatField(label='Latitude')
     lng = forms.FloatField(label='Longitude')
     comments = forms.CharField(widget=forms.Textarea(attrs={'cols': '50', 'rows': '5'}))
+    image = forms.ImageField(required=False)

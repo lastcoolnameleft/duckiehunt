@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-#    'django_jinja',
     'social_django',
 ]
 
@@ -81,7 +80,7 @@ WSGI_APPLICATION = 'duckiehunt.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', 
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'duckiehunt_python',
         'USER': 'root',
         'PASSWORD': '',

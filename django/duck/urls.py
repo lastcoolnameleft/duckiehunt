@@ -21,4 +21,6 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social'), name='logthru'),
+    # Tmp
+    path('flickr/', views.flickr, name='flickr'),
 ]

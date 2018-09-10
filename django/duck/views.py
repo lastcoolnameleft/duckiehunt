@@ -4,9 +4,12 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+import flickr_api
 import datetime
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
+from duck import media
 
 def index(request):
     duck_location_list = DuckLocation.objects.all()
@@ -68,7 +71,8 @@ def location(request, duck_location_id):
 
     return render(request, 'duck/location.html',
                   {'photos': photos, 'map': map_data, 'duck': duck_location.duck,
-                   'duck_location': duck_location, 'duck_location_list': duck_location_list, 'duck_list': duck_dropdown_list})
+                   'duck_location': duck_location, 'duck_location_list': duck_location_list,
+                   'duck_list': duck_dropdown_list})
 
 def duck_list(request):
     ducks = Duck.objects.all()
@@ -79,6 +83,15 @@ def faq(request):
 
 @login_required
 def mark(request):
+    map_data = {
+        'width': '100%',
+        'height': '400px',
+        'focus_lat': 35,
+        'focus_long': -30,
+        'focus_zoom': 1,
+        'location_list': [],
+        'duck_location_id': 0,
+    }
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -105,24 +118,16 @@ def mark(request):
                                          #user=user,
                                          approved='Y')
             duck_location.save()
+            if request.FILES and request.FILES['image']:
+                media.handle_uploaded_file(request.FILES['image'])
 
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
             return HttpResponseRedirect('/duck/' + str(duck_id))
-
     # if a GET (or any other method) we'll create a blank form
     else:
         form = DuckForm()
-        map_data = {
-            'width': '100%',
-            'height': '400px',
-            'focus_lat': 35,
-            'focus_long': -30,
-            'focus_zoom': 1,
-            'location_list': [],
-            'duck_location_id': 0,
-        }
 
     return render(request, 'duck/mark.html', {'form': form, 'map': map_data})
 
@@ -134,7 +139,10 @@ def logout(request):
 
 def login(request):
     """Home view, displays login mechanism"""
-    print(request.user)
-    print(request.user)
     return render(request, 'duck/login.html')
+
+def flickr(request):
+    flickr_api.set_keys(api_key = settings.FLICKR_API_KEY, api_secret = settings.FLICKR_API_SECRET)
+    user = flickr_api.Person.findByUserName("duckiehunt")
+    return render(request, 'duck/flickr.html')
 

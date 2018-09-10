@@ -53,6 +53,8 @@ class DuckLocationPhoto(models.Model):
     duck_location = models.ForeignKey(DuckLocation, models.DO_NOTHING, null=True)
     flickr_photo_id = models.BigIntegerField(blank=True, null=True)
     flickr_thumbnail_url = models.TextField(blank=True, null=True)
+# Not sure if we want to do this or not yet
+#    photo = models.ImageField(blank=True, null=True)
 
     class Meta:
         db_table = 'duck_location_photo'
