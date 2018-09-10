@@ -1,7 +1,7 @@
 from django.core import serializers
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
-from django.contrib.auth import logout as auth_logout, login
+from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 import datetime
@@ -137,7 +137,4 @@ def login(request):
     print(request.user)
     print(request.user)
     return render(request, 'duck/login.html')
-
-    if request.user.is_authenticated:
-        return redirect('done')
 
