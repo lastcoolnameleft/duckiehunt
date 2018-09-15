@@ -114,7 +114,7 @@
             $.get(get_duck_url, (result) => {
                 var duck_name = result[0].fields.name;
                 console.log('Found duck name:' + duck_name);
-                if (!duck_name || duck_name == 'Undefined') {
+                if (!duck_name || duck_name == 'Undefined' || duck_name == 'Unnamed') {
                     enableDuckName();
                 } else {
                     disableDuckName(duck_name);

@@ -1,9 +1,9 @@
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import TestCase, RequestFactory, TestCase, Client
+""" Client Tests """
+from django.test import TestCase, RequestFactory, Client
 from django.contrib.auth import get_user_model
 
 from duck.models import Duck, DuckLocation, DuckLocationPhoto
-from duck.views import detail, mark, index
+from duck.views import detail, index
 from duck.forms import DuckForm
 
 # Create your tests here.
@@ -59,3 +59,20 @@ class SimpleTest(TestCase):
         self.assertEqual(duck.name, 'Unnamed')
         duck_location = DuckLocation.objects.filter(duck_id=duck_id)
         self.assertEqual(len(duck_location), 1)
+
+    # NOT READY YET.
+    def test_mark_no_name_rename(self):
+        self.client.force_login(self.user)
+        duck_id = '2'
+        data = {'duck_id': duck_id, 'location': 'northkapp', 'name': '',
+                'lat': '71.169493', 'lng': '25.7831639', 'date_time': '09/01/2018 23:04:08',
+                'comments': 'this is a comment'}
+        response = self.client.post('/mark/', data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/duck/' + duck_id)
+        duck = Duck.objects.get(pk=duck_id)
+        self.assertEqual(duck.name, 'Unnamed')
+        duck_location = DuckLocation.objects.filter(duck_id=duck_id)
+        self.assertEqual(len(duck_location), 1)
+
+     

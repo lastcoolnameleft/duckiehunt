@@ -1,4 +1,5 @@
-from django.conf.urls import url, include
+""" Duck URL router """
+from django.conf.urls import include
 from django.urls import path
 
 from . import views, apis
@@ -21,6 +22,4 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social'), name='logthru'),
-    # Tmp
-    path('flickr/', views.flickr, name='flickr'),
 ]

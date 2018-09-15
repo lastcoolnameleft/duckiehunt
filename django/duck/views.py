@@ -1,3 +1,4 @@
+""" Views for Django """
 from django.core import serializers
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
@@ -5,7 +6,6 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-import flickr_api
 import datetime
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
@@ -51,6 +51,7 @@ def detail(request, duck_id):
                   {'duck': duck, 'photos': photos, 'map': map_data,
                    'duck_location_list': duck_location_list, 'duck_list': duck_dropdown_list})
 
+""" Show /duck/$duck_id """
 def location(request, duck_location_id):
     duck_location = get_object_or_404(DuckLocation, pk=duck_location_id)
 
@@ -101,6 +102,9 @@ def mark(request):
             duck_id = form.cleaned_data['duck_id']
             try:
                 duck = Duck.objects.get(pk=duck_id)
+                if duck.name == 'Unnamed' and form.cleaned_data['name'] != 'Unnamed':
+                    duck.name = form.cleaned_data['name']
+                    duck.save()
             except Duck.DoesNotExist:
                 name = form.cleaned_data['name'] if form.cleaned_data['name'] else 'Unnamed'
                 duck = Duck(duck_id=duck_id,
@@ -119,7 +123,8 @@ def mark(request):
                                          approved='Y')
             duck_location.save()
             if request.FILES and request.FILES['image']:
-                media.handle_uploaded_file(request.FILES['image'])
+                media.handle_uploaded_file(request.FILES['image'], duck_id,
+                                           duck.name, form.cleaned_data['comments'])
 
             # process the data in form.cleaned_data as required
             # ...
@@ -140,9 +145,4 @@ def logout(request):
 def login(request):
     """Home view, displays login mechanism"""
     return render(request, 'duck/login.html')
-
-def flickr(request):
-    flickr_api.set_keys(api_key = settings.FLICKR_API_KEY, api_secret = settings.FLICKR_API_SECRET)
-    user = flickr_api.Person.findByUserName("duckiehunt")
-    return render(request, 'duck/flickr.html')
 
