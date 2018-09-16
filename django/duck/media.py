@@ -13,8 +13,9 @@ def handle_uploaded_file(uploaded_file, duck_id, duck_name, comments):
     tags = "duckiehunt"
 
     file_path = write_upload_to_file(uploaded_file, settings.UPLOAD_PATH)
-    upload_to_flickr(api_key, api_secret, flickr_auth_file, file_path,
-                     title, comments, is_public, tags)
+    photo_info = upload_to_flickr(api_key, api_secret, flickr_auth_file, file_path,
+                                  title, comments, is_public, tags)
+    return photo_info
 
 def write_upload_to_file(photo_file, upload_path):
     """ Save bufferred file in memory to disk """

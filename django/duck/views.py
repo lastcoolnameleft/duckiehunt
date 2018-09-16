@@ -123,13 +123,15 @@ def mark(request):
                                          approved='Y')
             duck_location.save()
             if request.FILES and request.FILES['image']:
-                media.handle_uploaded_file(request.FILES['image'], duck_id,
-                                           duck.name, form.cleaned_data['comments'])
+                photo_info = media.handle_uploaded_file(request.FILES['image'], duck_id,
+                                                        duck.name, form.cleaned_data['comments'])
+                duck_location_photo = DuckLocationPhoto(duck_location=duck_location,
+                                                        flickr_photo_id=photo_info['id'],
+                                                        flickr_thumbnail_url=photo_info['sizes']['Small 320']['source'])
+                duck_location_photo.save()
 
-            # process the data in form.cleaned_data as required
-            # ...
             # redirect to a new URL:
-            return HttpResponseRedirect('/duck/' + str(duck_id))
+            return HttpResponseRedirect('/location/' + str(duck_location.duck_location_id))
     # if a GET (or any other method) we'll create a blank form
     else:
         form = DuckForm()
@@ -141,8 +143,6 @@ def logout(request):
     auth_logout(request)
     return redirect('/')
 
-
 def login(request):
     """Home view, displays login mechanism"""
     return render(request, 'duck/login.html')
-
