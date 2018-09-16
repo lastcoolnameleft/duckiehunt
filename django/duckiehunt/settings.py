@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import flickr_api
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -141,3 +142,6 @@ try:
     from duckiehunt.local_settings import *
 except ImportError:
     pass
+
+flickr_api.set_keys(api_key=FLICKR_API_KEY, api_secret=FLICKR_API_SECRET)
+flickr_api.set_auth_handler(FLICKR_AUTH_FILE)
