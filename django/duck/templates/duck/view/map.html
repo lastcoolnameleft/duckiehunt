@@ -16,11 +16,11 @@
            
            function initMap() {
                var map = new google.maps.Map(document.getElementById('map'), {
-                   maxZoom: 15,
-                   center: { lat: focus_lat, lng: focus_long }
+                    zoom: focus_zoom,
+                    center: { lat: focus_lat, lng: focus_long }
                });
                var bounds = new google.maps.LatLngBounds();
-       
+
                location_list.forEach((location, index) => {
                    var position = new google.maps.LatLng( Number(location.fields.latitude), Number(location.fields.longitude) );
                    var marker = new google.maps.Marker({ position: position, map: map, icon: '/static/icons/duck-32x32.png' });
@@ -48,4 +48,5 @@
        <script async defer
            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU&callback=initMap">
        </script>
+
        
