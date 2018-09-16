@@ -9,6 +9,7 @@
               <li class='breadcrumb-item'><a href='/duck'>Duck</a></li>
               <li class='breadcrumb-item'>
                     <select onChange="javascript:redirectToDuck(this)">
+                      <option value=""></option>
 {% for duck_d in duck_list %}
                       <option value="{{ duck_d.duck_id }}"{% if duck_d.duck_id == duck.duck_id %} selected{% endif %}>{{ duck_d.name }} ({{ duck_d.duck_id }})</option>{% endfor %}
                     </select>
@@ -16,6 +17,7 @@
 {% if duck_location_list %}
               <li class='breadcrumb-item'>
                     <select onChange="javascript:redirectToDuckLocation(this)">
+                      <option value=""></option>
 {% for duck_l in duck_location_list %}
                       <option value="{{ duck_l.duck_location_id }}" {% if duck_l.duck_location_id == map.duck_location_id %}selected{% endif %}>{{ duck_l.location }}</option>{% endfor %}
                     </select>

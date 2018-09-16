@@ -5,7 +5,9 @@
 		{% for photo in photos %}
         <div class="col-lg-2 col-sm-2 mb-2">
             <!-- TODO REPLACE thumbnail '_t' with '_m_d'-->
-          <img class="img-fluid" src="{{ photo.flickr_thumbnail_url }}" alt="">
+          <a href='https://www.flickr.com/photos/duckiehunt/{{ photo.flickr_photo_id }}'>
+            <img class="img-fluid" src="{{ photo.flickr_thumbnail_url }}" alt="">
+          </a>
         </div>
         {% endfor %}
       </div>
