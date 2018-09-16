@@ -10,6 +10,7 @@ import datetime
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
 from duck import media
+from haversine import haversine
 
 def index(request):
     duck_location_list = DuckLocation.objects.all()
@@ -84,15 +85,6 @@ def faq(request):
 
 @login_required
 def mark(request):
-    map_data = {
-        'width': '100%',
-        'height': '400px',
-        'focus_lat': 35,
-        'focus_long': -30,
-        'focus_zoom': 1,
-        'location_list': [],
-        'duck_location_id': 0,
-    }
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -113,12 +105,17 @@ def mark(request):
                             comments='')
                 duck.save()
             #user = Users(id=1)
+            # Calculate the distance since last location
+            last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time')[0]
+            distance_travelled = haversine((last_duck_location.latitude, last_duck_location.longitude),
+                                           (form.cleaned_data['lat'], form.cleaned_data['lng']), miles=True)
             duck_location = DuckLocation(duck=duck,
                                          latitude=form.cleaned_data['lat'],
                                          longitude=form.cleaned_data['lng'],
                                          location=form.cleaned_data['location'],
                                          date_time=form.cleaned_data['date_time'],
                                          comments=form.cleaned_data['comments'],
+                                         distance_to=round(distance_travelled, 2),
                                          #user=user,
                                          approved='Y')
             duck_location.save()
@@ -136,6 +133,15 @@ def mark(request):
     else:
         form = DuckForm()
 
+    map_data = {
+        'width': '100%',
+        'height': '400px',
+        'focus_lat': 35,
+        'focus_long': -30,
+        'focus_zoom': 1,
+        'location_list': [],
+        'duck_location_id': 0,
+    }
     return render(request, 'duck/mark.html', {'form': form, 'map': map_data})
 
 def logout(request):
