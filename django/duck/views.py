@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
+from django.db.models import Sum
 import datetime
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
@@ -96,15 +96,13 @@ def mark(request):
                 duck = Duck.objects.get(pk=duck_id)
                 if duck.name == 'Unnamed' and form.cleaned_data['name'] != 'Unnamed':
                     duck.name = form.cleaned_data['name']
-                    duck.save()
             except Duck.DoesNotExist:
                 name = form.cleaned_data['name'] if form.cleaned_data['name'] else 'Unnamed'
                 duck = Duck(duck_id=duck_id,
                             name=name, approved='Y',
                             create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             comments='')
-                duck.save()
-            #user = Users(id=1)
+
             # Calculate the distance since last location
             last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time')[0]
             distance_travelled = haversine((last_duck_location.latitude, last_duck_location.longitude),
@@ -126,6 +124,9 @@ def mark(request):
                                                         flickr_photo_id=photo_info['id'],
                                                         flickr_thumbnail_url=photo_info['sizes']['Small 320']['source'])
                 duck_location_photo.save()
+
+            duck.total_distance = DuckLocation.objects.filter(duck_id=duck_id).aggregate(Sum('distance_to'))['distance_to__sum']
+            duck.save()
 
             # redirect to a new URL:
             return HttpResponseRedirect('/location/' + str(duck_location.duck_location_id))
