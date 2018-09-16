@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -24,6 +25,7 @@ class Duck(models.Model):
 class DuckLocation(models.Model):
     duck_location_id = models.AutoField(primary_key=True)
     duck = models.ForeignKey(Duck, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     link = models.TextField(blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)

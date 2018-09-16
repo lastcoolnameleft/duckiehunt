@@ -52,8 +52,8 @@ def detail(request, duck_id):
                   {'duck': duck, 'photos': photos, 'map': map_data,
                    'duck_location_list': duck_location_list, 'duck_list': duck_dropdown_list})
 
-""" Show /duck/$duck_id """
 def location(request, duck_location_id):
+    """ Show /duck/$duck_id """
     duck_location = get_object_or_404(DuckLocation, pk=duck_location_id)
 
     photos = DuckLocationPhoto.objects.filter(duck_location_id=duck_location_id)
@@ -114,7 +114,7 @@ def mark(request):
                                          date_time=form.cleaned_data['date_time'],
                                          comments=form.cleaned_data['comments'],
                                          distance_to=round(distance_travelled, 2),
-                                         #user=user,
+                                         user=request.user,
                                          approved='Y')
             duck_location.save()
             if request.FILES and request.FILES['image']:
@@ -125,7 +125,7 @@ def mark(request):
                                                         flickr_thumbnail_url=photo_info['sizes']['Small 320']['source'])
                 duck_location_photo.save()
 
-            duck.total_distance = DuckLocation.objects.filter(duck_id=duck_id).aggregate(Sum('distance_to'))['distance_to__sum']
+            duck.total_distance = round(DuckLocation.objects.filter(duck_id=duck_id).aggregate(Sum('distance_to'))['distance_to__sum'], 2)
             duck.save()
 
             # redirect to a new URL:
