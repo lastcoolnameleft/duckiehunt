@@ -77,14 +77,17 @@ def location(request, duck_location_id):
                    'duck_list': duck_dropdown_list})
 
 def duck_list(request):
+    """ lists all ducks """
     ducks = Duck.objects.all()
     return render(request, 'duck/list.html', {'duck_list': ducks})
 
 def faq(request):
+    """ shows faq """
     return render(request, 'duck/faq.html')
 
 @login_required
 def mark(request):
+    """ Adds a duck, location, photo and link from webform """
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:

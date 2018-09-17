@@ -20,9 +20,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'x7j0-o6h&loz+jkr4+$-*ii8xix#)g9hx38y#r7g^!&2zow=xl'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -139,7 +136,7 @@ LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'mark'
 
 try:
-    from duckiehunt.local_settings import *
+    from duckiehunt.secrets.settings import *
 except ImportError:
     pass
 
