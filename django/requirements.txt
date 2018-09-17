@@ -1,0 +1,3 @@
+social-auth-app-django
+flickr_api
+haversine

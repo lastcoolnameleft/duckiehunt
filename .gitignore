@@ -53,3 +53,4 @@ app/vendor/psr/
 # env stuff
 django/env/local.env
 local_settings.py
+secrets
