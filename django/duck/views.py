@@ -13,6 +13,7 @@ from duck import media
 from haversine import haversine
 
 def index(request):
+    """ / path """
     duck_location_list = DuckLocation.objects.all()
     duck_location_json = serializers.serialize('json', duck_location_list, use_natural_foreign_keys=True)
     map_data = {
@@ -28,6 +29,7 @@ def index(request):
     return render(request, 'duck/main.html', {'map': map_data})
 
 def detail(request, duck_id):
+    """ /duck/# path """
     duck = get_object_or_404(Duck, pk=duck_id)
     photos = DuckLocationPhoto.objects.filter(duck_location__duck_id=duck_id)
 

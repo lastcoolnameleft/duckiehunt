@@ -2,9 +2,8 @@
 from django.test import TestCase, RequestFactory, Client
 from django.contrib.auth import get_user_model
 
-from duck.models import Duck, DuckLocation, DuckLocationPhoto
-from duck.views import detail, index
-from duck.forms import DuckForm
+from duck.models import Duck, DuckLocation
+from duck.views import index
 
 # Create your tests here.
 class SimpleTest(TestCase):
