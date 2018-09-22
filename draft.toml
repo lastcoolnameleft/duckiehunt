@@ -8,3 +8,4 @@
     dockerfile = "Dockerfile"
     chart = "charts/php"
     set = []
+    registry = "duckiehunt.azurecr.io"

@@ -15,8 +15,8 @@ service:
   internalPort: 80
 
 deployment:
-  appConfigMountPath: /var/www/html/application/config/development/
-  imagesMountPath: /mnt/images
+  appConfigMountPath: /code/duckiehunt/secrets/
+  imagesMountPath: /code/uploads/
 
 resources:
   limits:
@@ -29,7 +29,7 @@ resources:
 volumes:
 - name: app-config
   secret:
-    secretName: duckiehunt-file
+    secretName: duckiehunt-django
 - name: images
   flexVolume:
     driver: "azure/blobfuse"
