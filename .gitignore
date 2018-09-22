@@ -37,6 +37,9 @@ config/minikube
 config/aks-prod
 config/aks-dev
 charts/*/charts/*.tgz
+config/aks-dev-django
+config/aks-prod-django
+config/aks-dev-php
 
 # JS
 node_modules
