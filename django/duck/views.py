@@ -158,3 +158,8 @@ def logout(request):
 def login(request):
     """Home view, displays login mechanism"""
     return render(request, 'duck/login.html')
+
+def profile(request):
+    """ Show profile data """
+    print(request.user.username)
+    return render(request, 'duck/profile.html', {'user': request.user})

@@ -1,0 +1,45 @@
+{% extends "../base.html" %}
+
+{% block content %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">Profile</h1>
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/">Home</a>
+        </li>
+        <li class='breadcrumb-item active'>Profile</li>
+    </ol>
+
+    <!-- Intro Content -->
+    <h2>User Info</h2>
+    <div class="row">
+      <div class="col-lg-12">
+          <dl class="row">
+              <dt class="col-sm-3">Id</dt>
+              <dd class="col-sm-9" id="userid">{{ user.id}}</dd>
+              <dt class="col-sm-3">Name</dt>
+              <dd class="col-sm-9" id="username">{{ user.username }}</dd>
+              <dt class="col-sm-3">First Name</dt>
+              <dd class="col-sm-9" id="first_name">{{ user.first_name }}</dd>
+              <dt class="col-sm-3">Last Name</dt>
+              <dd class="col-sm-9" id="last_name">{{ user.last_name }}</dd>
+              <dt class="col-sm-3">Email</dt>
+              <dd class="col-sm-9" id="email">{{ user.email }}</dd>
+              <dt class="col-sm-3">Is Active</dt>
+              <dd class="col-sm-9" id="is_active">{{ user.is_active }}</dd>
+              <dt class="col-sm-3">Is Superuser</dt>
+              <dd class="col-sm-9" id="is_superuser">{{ user.is_superuser }}</dd>
+              <dt class="col-sm-3">Last Login</dt>
+              <dd class="col-sm-9" id="last_login">{{ user.last_login }}</dd>
+              <dt class="col-sm-3">Date Joined</dt>
+              <dd class="col-sm-9" id="date_joined">{{ user.date_joined }}</dd>
+          </dl>
+      </div>
+    </div>
+</div>
+{% endblock %}

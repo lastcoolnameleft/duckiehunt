@@ -19,6 +19,7 @@ urlpatterns = [
     # APIs
     path('api/duck/<int:duck_id>', apis.detail, name='detail'),
     # Auth
+    path('profile', views.profile, name='profile'),
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social'), name='logthru'),
