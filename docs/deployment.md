@@ -14,7 +14,7 @@ kubectl create secret generic blobfusecreds --from-literal accountname=duckiehun
 
 ```shell
 docker build . -t duckiehunt
-docker run --name duckiehunt -p 80:80 --rm -v $PWD/app:/var/www/html -v $PWD/config/aks-dev:/var/www/html/application/config/development -e CI_BASE_URL=http://local.duckiehunt.com duckiehunt
+docker run -p 8000:8000 --name duckiehunt --rm -it -v $PWD/django:/code duckiehunt
 ```
 
 ## Dev K8S Env
@@ -22,7 +22,7 @@ docker run --name duckiehunt -p 80:80 --rm -v $PWD/app:/var/www/html -v $PWD/con
 ```shell
 kubectl create ns dev
 kubens dev
-kubectl create secret generic duckiehunt-file --from-file=config/aks-dev/duckiehunt.php --from-file=config/aks-dev/database.php --from-file=config/aks-dev/recaptcha.php
+kubectl create secret generic duckiehunt-django --from-file=config/aks-dev-django/settings.py --from-file=config/aks-dev-django/authfile
 draft up
 ```
 
@@ -31,6 +31,6 @@ draft up
 ```shell
 kubectl create ns prod
 kubens prod
-kubectl create secret generic duckiehunt-file --from-file=config/aks-prod/duckiehunt.php --from-file=config/aks-prod/database.php --from-file=config/aks-prod/recaptcha.php
+kubectl create secret generic duckiehunt-django --from-file=config/aks-prod-django/settings.py --from-file=config/aks-prod-django/authfile
 helm install charts/php --name duckiehunt-prod --namespace prod --values charts/php/values-prod.yaml
 ```
