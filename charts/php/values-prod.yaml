@@ -12,7 +12,7 @@ service:
   name: duckiehunt
   type: ClusterIP
   externalPort: 80
-  internalPort: 80
+  internalPort: 8000
 
 deployment:
   appConfigMountPath: /code/duckiehunt/secrets/
