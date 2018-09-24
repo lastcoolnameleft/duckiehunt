@@ -11,7 +11,7 @@
                     <select onChange="javascript:redirectToDuck(this)">
                       <option value=""></option>
 {% for duck_d in duck_list %}
-                      <option value="{{ duck_d.duck_id }}"{% if duck_d.duck_id == duck.duck_id %} selected{% endif %}>{{ duck_d.name }} ({{ duck_d.duck_id }})</option>{% endfor %}
+                      <option value="{{ duck_d.duck_id }}"{% if duck_d.duck_id == duck.duck_id %} selected{% endif %}>{{ duck_d.name|default:"Unnamed" }} ({{ duck_d.duck_id }})</option>{% endfor %}
                     </select>
               </li>
 {% if duck_location_list %}

@@ -25,16 +25,16 @@
                   <dd class="col-sm-9">{{ duck_location.date_time }}</dd>
 
                   <dt class="col-sm-3">Total Distance Travelled</dt>
-                  <dd class="col-sm-9">{{ duck.total_distance}} miles</dd>
+                  <dd class="col-sm-9">{{ duck.total_distance|floatformat:-2 }} miles</dd>
 
                   <dt class="col-sm-3">Distance to this point</dt>
-                  <dd class="col-sm-9">{{ duck_location.distance_to }} miles</dd>
+                  <dd class="col-sm-9">{{ duck_location.distance_to|floatformat:-2 }} miles</dd>
 
                   <dt class="col-sm-3">Latitude</dt>
-                  <dd class="col-sm-9">{{ duck_location.latitude }}</dd>
+                  <dd class="col-sm-9">{{ duck_location.latitude|floatformat:-5 }}</dd>
 
                   <dt class="col-sm-3">Longitude</dt>
-                  <dd class="col-sm-9">{{ duck_location.longitude}}</dd>
+                  <dd class="col-sm-9">{{ duck_location.longitude|floatformat:-5 }}</dd>
 {% if duck_links %}
                   <dt class="col-sm-3">Links</dt>
                   <dd class="col-sm-9">
