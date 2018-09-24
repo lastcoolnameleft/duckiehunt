@@ -15,7 +15,7 @@ from haversine import haversine
 def index(request):
     """ / path """
     duck_location_list = DuckLocation.objects.all()
-    duck_location_json = serializers.serialize('json', duck_location_list, use_natural_foreign_keys=True)
+    duck_location_json = serializers.serialize('json', duck_location_list)
     map_data = {
         'width': '100%',
         'height': '800px',

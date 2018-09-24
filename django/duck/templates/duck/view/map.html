@@ -28,7 +28,9 @@
                    if (!(focus_lat && focus_long)) {
                        bounds.extend(position);
                    }
-                   var duck_header = '<a href="/duck/' + location.fields.duck.duck_id + '">Duck #' + location.fields.duck.duck_id + ' (' + location.fields.duck.name + ')</a>';
+                   var duck_id = Number.isInteger(location.fields.duck) ? location.fields.duck : location.fields.duck.duck_id;
+                   var duck_name = location.fields.duck.name ? ' (' + location.fields.duck.name + ')' : '';
+                   var duck_header = '<a href="/duck/' + duck_id + '">Duck #' + duck_id + duck_name + '</a>';
                    var content = '<div id="content"><p>' + duck_header + '<br/>' + location.fields.comments + '</p></div>';
                    var infoWindow = new google.maps.InfoWindow({ content: content });
                    marker.addListener('click', () => { infoWindow.open(map, marker); });
