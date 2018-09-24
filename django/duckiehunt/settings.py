@@ -111,9 +111,6 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.facebook.FacebookOAuth2',
 )
 
-# https://github.com/python-social-auth/social-app-django/issues/132#issuecomment-375186943
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
-
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'mark'
