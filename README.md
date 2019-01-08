@@ -15,4 +15,4 @@ This repo has the following major components (each in their own subdirectory):
 
 ## Environments
 
-If you'd like to get Phippy and Friends to run locally, I'd be happy to work with you to document all of the steps.
+If you'd like to get Duckiehunt to run locally, I'd be happy to work with you to document all of the steps.
