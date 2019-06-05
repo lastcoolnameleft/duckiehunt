@@ -30,7 +30,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 *.swp
 docker-db/
 .env
-phpinfo.php
 uploads/
 tmp/
 config/minikube
@@ -39,19 +38,9 @@ config/aks-dev
 charts/*/charts/*.tgz
 config/aks-dev-django
 config/aks-prod-django
-config/aks-dev-php
 
 # JS
 node_modules
-
-# PHP Packages
-app/composer.phar
-app/vendor/autoload.php
-app/vendor/composer/
-app/vendor/guzzlehttp/
-app/vendor/league/
-app/vendor/paragonie/
-app/vendor/psr/
 
 # env stuff
 django/env/local.env

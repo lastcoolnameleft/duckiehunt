@@ -32,5 +32,5 @@ draft up
 kubectl create ns prod
 kubens prod
 kubectl create secret generic duckiehunt-django --from-file=config/aks-prod-django/settings.py --from-file=config/aks-prod-django/authfile
-helm install charts/php --name duckiehunt-prod --namespace prod --values charts/php/values-prod.yaml
+helm install charts/duckiehunt --name duckiehunt-prod --namespace prod --values charts/duckiehunt/values-prod.yaml
 ```

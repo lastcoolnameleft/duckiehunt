@@ -1,11 +1,11 @@
 [environments]
   [environments.development]
-    name = "duckiehunt-dev-php"
+    name = "duckiehunt-dev"
     namespace = "dev"
     wait = true
     watch = true
     auto-connect = false
     dockerfile = "Dockerfile"
-    chart = "charts/php"
+    chart = "charts/duckiehunt"
     set = []
     registry = "duckiehunt.azurecr.io"

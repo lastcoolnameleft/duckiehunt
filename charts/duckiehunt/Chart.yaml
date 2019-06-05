@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm chart for Duckiehunt
+name: Duckiehunt
+version: v0.1.0
