@@ -19,7 +19,7 @@ steps:
 - task: Docker@2
   inputs:
     containerRegistry: 'Duckiehunt ACR'
-    repository: 'duckiehunt'
+    repository: 'azuredevops'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
 - task: HelmDeploy@0
@@ -30,6 +30,6 @@ steps:
     chartType: 'FilePath'
     chartPath: 'charts/duckiehunt'
     releaseName: 'duckiehunt-prod'
-    overrideValues: 'image.repository=duckiehunt.azurecr.io/$(Build.Repository.Name),image.tag=$(Build.BuildId)'
+    overrideValues: 'image.repository=duckiehunt.azurecr.io/azuredevops,image.tag=$(Build.BuildId)'
     valueFile: 'charts/duckiehunt/values-prod.yaml'
     recreate: true
