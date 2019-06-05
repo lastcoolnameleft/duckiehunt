@@ -22,3 +22,14 @@ steps:
     repository: 'duckiehunt'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
+- task: HelmDeploy@0
+  inputs:
+    connectionType: 'Kubernetes Service Connection'
+    kubernetesServiceConnection: 'duckiehunt-prod'
+    command: 'upgrade'
+    chartType: 'FilePath'
+    chartPath: 'charts/duckiehunt'
+    releaseName: 'duckiehunt-prod'
+    overrideValues: 'image.repository=duckiehunt.azurecr.io/$(Build.Repository.Name),image.tag=$(Build.BuildId)'
+    valueFile: 'charts/duckiehunt/values-prod.yaml'
+    recreate: true
