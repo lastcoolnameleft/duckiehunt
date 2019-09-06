@@ -36,8 +36,8 @@ kubectl get --no-headers secrets -n test | awk '{print $1}' | grep -vE "(default
 kubectl get --no-headers secrets -n prod | awk '{print $1}' | grep -vE "(default-token|tls-secret|draft-pullsecret)" | xargs -L 1 -I{} sh -c "kubectl get secret -n prod -o yaml {} > secrets/prod/{}.yaml"
 
 # To re-create django secrets
-kubectl create secret generic duckiehunt-django --from-file=secrets/dev/settings.py --from-file=config/dev/authfile
-kubectl create secret generic duckiehunt-django --from-file=secrets/prod/settings.py --from-file=config/prod/authfile
+kubectl create secret generic duckiehunt-django --from-file=secrets/dev/settings.py --from-file=secrets/dev/authfile -n dev
+kubectl create secret generic duckiehunt-django --from-file=secrets/prod/settings.py --from-file=secrets/prod/authfile -n prod
 ```
 
 ```shell
