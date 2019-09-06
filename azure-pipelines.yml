@@ -38,6 +38,6 @@ steps:
     chartType: 'FilePath'
     chartPath: 'charts/duckiehunt'
     releaseName: 'duckiehunt-prod'
-    overrideValues: 'image.repository=duckiehunt.azurecr.io/azuredevops/duckiehunt,image.tag=$(Build.BuildId'
+    overrideValues: 'image.repository=duckiehunt.azurecr.io/azuredevops/duckiehunt,image.tag=$(Build.BuildId)'
     valueFile: 'charts/duckiehunt/values-prod.yaml'
     recreate: true
