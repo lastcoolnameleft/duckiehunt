@@ -10,7 +10,7 @@ import datetime
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
 from duck import media
-from haversine import haversine
+from haversine import haversine, Unit
 
 def index(request):
     """ / path """
@@ -111,7 +111,7 @@ def mark(request):
             # Calculate the distance since last location
             last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time')[0]
             distance_travelled = haversine((last_duck_location.latitude, last_duck_location.longitude),
-                                           (form.cleaned_data['lat'], form.cleaned_data['lng']), miles=True)
+                                           (form.cleaned_data['lat'], form.cleaned_data['lng']), unit=Unit.MILES)
             duck_location = DuckLocation(duck=duck,
                                          latitude=form.cleaned_data['lat'],
                                          longitude=form.cleaned_data['lng'],
