@@ -1,7 +1,0 @@
-dependencies:
-- name: nginx-ingress
-  version: "0.22.1"
-  repository: '@stable'
-- name: cert-manager
-  version: "0.4.0"
-  repository: '@stable'

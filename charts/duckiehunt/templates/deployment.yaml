@@ -21,34 +21,12 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
         volumeMounts:
         - name: app-config
           mountPath: {{ .Values.deployment.appConfigMountPath }}
         - name: images
           mountPath: {{ .Values.deployment.imagesMountPath }}
-        env:
-        - name: CI_BASE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: duckiehunt
-              key: CI_BASE_URL
-
-# This makes A LOT of log entries.  Slowing my roll for now            
-#        livenessProbe:
-#          httpGet:
-#            path: /
-#            port: 80
-#          initialDelaySeconds: 1
-#          periodSeconds: 60
-#        readinessProbe:
-#          httpGet:
-#            path: /
-#            port: 80
-#          initialDelaySeconds: 1
-#          periodSeconds: 60
-
-
-        resources:
-{{ toYaml .Values.resources | indent 12 }}
       volumes:
 {{ toYaml .Values.volumes | indent 8 }}

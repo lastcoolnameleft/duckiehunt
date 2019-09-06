@@ -1,6 +1,3 @@
-# Default values for Duckiehunt.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 replicaCount: 1
 
 image:
@@ -51,6 +48,8 @@ ingress:
     enabled: true
     name: letsencrypt-prod
     server: https://acme-v02.api.letsencrypt.org/directory
-  certificateName: dev-tls-secret
+    email: tommy@lastcoolnameleft.com
+  certificateName: dev-tls-secret-prod
   rootRedirect:
     enabled: false
+

@@ -4,8 +4,8 @@
     namespace = "dev"
     wait = true
     watch = true
+    watch-delay = 2
     auto-connect = false
     dockerfile = "Dockerfile"
-    chart = "charts/duckiehunt"
-    set = []
+    chart = ""
     registry = "duckiehunt.azurecr.io"

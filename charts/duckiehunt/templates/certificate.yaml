@@ -6,12 +6,6 @@ spec:
   secretName: {{ .Values.ingress.certificateName }}
   dnsNames:
   - {{ .Values.ingress.host }}
-  acme:
-    config:
-    - http01:
-        ingressClass: nginx
-      domains:
-      - {{ .Values.ingress.host }}
   issuerRef:
     name: {{ .Values.ingress.clusterIssuer.name }}
     kind: ClusterIssuer

@@ -6,8 +6,12 @@ metadata:
 spec:
   acme:
     server: {{ .Values.ingress.clusterIssuer.server }}
-    email: tommy@lastcoolnameleft.com
+    email: {{ .Values.ingress.clusterIssuer.email }}
     privateKeySecretRef:
       name: {{ .Values.ingress.clusterIssuer.name }}
-    http01: {}
+    # Add a single challenge solver, HTTP01 using nginx
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
 {{- end -}}

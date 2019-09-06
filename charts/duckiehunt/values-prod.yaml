@@ -1,11 +1,8 @@
-# Default values for Duckiehunt.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 replicaCount: 1
 
 image:
   repository: duckiehunt.azurecr.io/duckiehunt
-  tag: k8s
+  tag: latest
   pullPolicy: IfNotPresent
 
 service:
@@ -48,9 +45,11 @@ ingress:
   enabled: true
   host: www.duckiehunt.com
   clusterIssuer:
-    enabled: true
+    # Assume this is enabled by the dev instance
+    enabled: false
     name: letsencrypt-prod
     server: https://acme-v02.api.letsencrypt.org/directory
+    email: tommy@lastcoolnameleft.com
   certificateName: prod-tls-secret
   rootRedirect:
     enabled: true
