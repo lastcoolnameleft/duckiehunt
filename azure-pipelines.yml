@@ -22,10 +22,18 @@ steps:
     repository: 'azuredevops/duckiehunt'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
+
+- task: HelmInstaller@1
+  inputs:
+    helmVersionToInstall: 'v2.14.3'
+
 - task: HelmDeploy@0
   inputs:
-    connectionType: 'Kubernetes Service Connection'
-    kubernetesServiceConnection: 'duckiehunt-1-14-prod'
+    connectionType: 'Azure Resource Manager'
+    azureSubscription: 'Visual Studio Enterprise (040eedd7-f236-48b7-8e04-5965674df326)'
+    azureResourceGroup: 'duckiehunt'
+    kubernetesCluster: 'duckiehunt-1-14'
+    namespace: 'prod'
     command: 'upgrade'
     chartType: 'FilePath'
     chartPath: 'charts/duckiehunt'
