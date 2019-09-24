@@ -122,3 +122,5 @@ except ImportError:
 
 flickr_api.set_keys(api_key=FLICKR_API_KEY, api_secret=FLICKR_API_SECRET)
 flickr_api.set_auth_handler(FLICKR_AUTH_FILE)
+
+DEBUG = False
