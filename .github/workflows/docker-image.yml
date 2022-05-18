@@ -1,0 +1,25 @@
+name: Docker Image Build and Push
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: duckiehunt.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build the Docker image        
+      run: |
+        docker build . -t duckiehunt.azurecr.io/gh/duckiehunt:${{ GITHUB_RUN_NUMBER }}
+        docker push duckiehunt.azurecr.io/gh/duckiehunt:${{ GITHUB_RUN_NUMBER }}
