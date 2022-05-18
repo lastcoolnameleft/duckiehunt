@@ -24,6 +24,8 @@ jobs:
           echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
           echo "GITHUB_SHA: ${GITHUB_SHA}"
           echo "GITHUB_REF: ${GITHUB_REF}"
+          echo "GITHUB_REF (env.): ${{ env.GITHUB_RUN_NUMBER }}"
+          echo "GITHUB_REF: ${GITHUB_RUN_NUMBER}"
 
 
 
