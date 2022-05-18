@@ -20,8 +20,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-ALLOWED_HOSTS = ['local.duckiehunt.com', 'localhost', 'dev.duckiehunt.com', 'duckiehunt.com', 'www.duckiehunt.com', 'duckiehunt-dev-duckiehunt', 'duckiehunt-prod-duckiehunt']
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -122,5 +120,3 @@ except ImportError:
 
 flickr_api.set_keys(api_key=FLICKR_API_KEY, api_secret=FLICKR_API_SECRET)
 flickr_api.set_auth_handler(FLICKR_AUTH_FILE)
-
-DEBUG = False

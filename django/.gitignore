@@ -1,3 +1,4 @@
 *.pyc
 .vscode
 duckiehunt.sql
+django/duckiehunt/secrets/settings.py

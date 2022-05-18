@@ -149,7 +149,7 @@
             $('#id_location').focusout(() => {
                 console.log('fetching location');
                 var location = $('#id_location').get(0).value;
-                var key = 'AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos';
+                var key = 'AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU';
                 var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + location + '&key=' + key;
                 $.get(url, (result) => {
                     if (result.results.length === 0 || result.status !== "OK") {
@@ -175,7 +175,7 @@
     </script>
 
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU&callback=initMap">
     </script>
 
 {% endblock %}

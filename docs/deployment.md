@@ -4,20 +4,23 @@
 
 ### Create AKS Cluster
 ```shell
-AKS_CLUSTER=duckiehunt-1-14
+AKS_CLUSTER=duckiehunt-blue
 ACR_NAME=duckiehunt
 AKS_RG=duckiehunt
-az aks create --name $AKS_CLUSTER --resource-group $AKS_RG --dns-name-prefix $AKS_CLUSTER --enable-vmss --kubernetes-version 1.14.6 --location eastus --network-plugin kubenet --node-count 1 --node-vm-size Standard_B2s
-az aks get-credentials --name $AKS_CLUSTER --resource-group $AKS_RG
+az aks create \
+    --name $AKS_CLUSTER \
+    --resource-group $AKS_RG \
+    --dns-name-prefix $AKS_CLUSTER \
+    --enable-vmss \
+    --enable-managed-identity \
+    --location eastus \
+    --network-plugin kubenet \
+    --node-count 1 \
+    --node-vm-size Standard_B2s \
+    --auto-upgrade-channel stable \
+    --node-osdisk-type Ephemeral \
 
-# Fix SA for tiller
-# https://github.com/helm/helm/issues/3130#issuecomment-372931407
-kubectl --namespace kube-system create serviceaccount tiller
-kubectl create clusterrolebinding tiller-cluster-rule \
- --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-kubectl --namespace kube-system patch deploy tiller-deploy \
- -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' 
-helm init --service-account tiller
+az aks get-credentials --name $AKS_CLUSTER --resource-group $AKS_RG
 
 # Install AKS Blobfuse adapter
 https://github.com/Azure/kubernetes-volume-drivers/tree/master/flexvolume/blobfuse
