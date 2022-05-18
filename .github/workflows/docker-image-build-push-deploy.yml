@@ -1,0 +1,29 @@
+name: Docker Image Build and Push
+
+env:
+  AZURE_WEBAPP_NAME: duckiehunt
+  CONTAINER_REGISTRY: ${{ secrets.REGISTRY_URL }}  # set secret with Container Registry URL, example : xyz.azurecr.io 
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build-push-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.CONTAINER_REGISTRY }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build the Docker image        
+      run: |
+        docker build . -t ${CONTAINER_REGISTRY}/gh/duckiehunt:${GITHUB_RUN_NUMBER}
+        docker push ${CONTAINER_REGISTRY}/gh/duckiehunt:${GITHUB_RUN_NUMBER}
