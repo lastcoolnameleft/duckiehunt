@@ -37,4 +37,4 @@ jobs:
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} 
-        images: ${{ env.CONTAINER_REGISTRY }}/gh/duckiehunt:${GITHUB_RUN_NUMBER}
+        images: ${{ env.CONTAINER_REGISTRY }}/gh/duckiehunt:${{ env.GITHUB_RUN_NUMBER }}
