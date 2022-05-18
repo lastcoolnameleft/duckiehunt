@@ -17,6 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Azure authentication
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - uses: azure/docker-login@v1
       with:
         login-server: ${{ env.CONTAINER_REGISTRY }}
@@ -27,3 +32,9 @@ jobs:
       run: |
         docker build . -t ${CONTAINER_REGISTRY}/gh/duckiehunt:${GITHUB_RUN_NUMBER}
         docker push ${CONTAINER_REGISTRY}/gh/duckiehunt:${GITHUB_RUN_NUMBER}
+
+    - name: 'Deploy to Azure Web App for Container'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} 
+        images: ${{ env.CONTAINER_REGISTRY }}/gh/duckiehunt:${GITHUB_RUN_NUMBER}
