@@ -2,7 +2,7 @@ name: Docker Image Build and Push
 
 env:
   AZURE_WEBAPP_NAME: duckiehunt
-  CONTAINER_REGISTRY: ${{ secrets.REGISTRY_URL }}  # set secret with Container Registry URL, example : xyz.azurecr.io 
+  CONTAINER_REGISTRY: ${{ secrets.REGISTRY_URL }}
 
 on:
   push:
