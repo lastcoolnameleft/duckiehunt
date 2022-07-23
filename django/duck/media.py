@@ -16,11 +16,12 @@ def write_upload_to_file(photo_file, upload_path):
     """ Save bufferred file in memory to disk """
     fss = FileSystemStorage()
     filename = fss.save(upload_path + photo_file.name, photo_file)
-    uploaded_file_url = fss.url(filename)
+    uploaded_file_url = fss.path(filename)
     return uploaded_file_url
 
 def upload_to_flickr(photo_file, title, comments, is_public, tags):
     """ Upload file to flickr """
+    # No idea why, but is_public DOESN'T WORK.
     photo = flickr_api.upload(photo_file=photo_file, title=title, is_public=is_public,
                               tags=tags, description=comments)
     photo_info = photo.getInfo()

@@ -2,7 +2,10 @@
 
 ```
 docker build -t duckiehunt .
-docker run -p 8000:8000 --name duckiehunt --rm -it -v $PWD/django:/code duckiehunt
+docker compose -f docker-compose-mac.yaml up
+
+# Clear image cache
+docker rmi -f duckiehunt
 ```
 
 # Perform updates
@@ -13,7 +16,8 @@ python manage.py migrate
 ```
 
 # Reference for upgrading PIP packages
-https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip/43642193#43642193
+
+  https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip/43642193#43642193
 
 ```
 $ pip freeze > requirements.txt

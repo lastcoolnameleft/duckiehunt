@@ -1,8 +1,8 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "files.exclude": {
-        "node_modules/": true,
-        "tmp/": true
-    },
+    "sync-rsync.local": "/Users/thfalgou/git/lastcoolnameleft/duckiehunt/",
+    "sync-rsync.remote": "dh:/home/thfalgou/duckiehunt/",
+    "sync-rsync.onSave": true,
+    "sync-rsync.exclude": ["docker-db", "django/venv", ".git"],
     "python.pythonPath": "/usr/local/opt/python/bin/python3.7"
 }

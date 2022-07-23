@@ -2,82 +2,34 @@ version: "3.4"
 
 services:
 
-  traefik:
-    image: traefik:2.8
-    container_name: traefik
-    restart: always
-    command:
-      - "--api.insecure=true"
-      - "--log.level=DEBUG"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /etc/localtime:/etc/localtime:ro
-    ports:
-      - "80:80/tcp"
-      - "8080:8080/tcp"
-
-  whoami:
-    image: "traefik/whoami"
-    container_name: "simple-service"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
-
   duckiehunt:
     build:
       context: .
     container_name: duckiehunt
     volumes:
      - ./django:/code
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.duckiehunt.rule=Host(`duckiehunt.localhost`)"
-      - "traefik.http.routers.duckiehunt.entrypoints=web"
-      - "traefik.http.services.duckiehunt.loadbalancer.server.port=8000"
-    environment:
-      CI_BASE_URL: 'http://localhost.duckiehunt.com/'
-      CI_DATABASE_HOSTNAME: 'db'
-      CI_DATABASE_USERNAME: 'root'
-      CI_DATABASE_PASSWORD: ''
-      CI_DATABASE_DATABASE: 'duck_db'
-      FLICKR_API_KEY: FLICKR_API_KEY
-      FLICKR_API_SECRET: 
-      FLICKR_TOKEN: ${FLICKR_TOKEN}
-      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
-      FLICKR_ACCESS_TOKEN: ${FLICKR_ACCESS_TOKEN}
-      FLICKR_ACCESS_TOKEN_SECRET: ${FLICKR_ACCESS_TOKEN_SECRET}
-      FLICKR_USER_NSID: ${FLICKR_USER_NSID}
-      FLICKR_USER_NAME: ${FLICKR_USER_NAME}
-      FLICKR_PERMISSIONS: ${FLICKR_PERMISSIONS}
-      FLICKR_UPLOAD_IS_PUBLIC: ${FLICKR_UPLOAD_IS_PUBLIC}
-      FLICKR_UPLOAD_HIDDEN: ${FLICKR_UPLOAD_HIDDEN}
-      SENDGRID_USERNAME: ${SENDGRID_USERNAME}
-      SENDGRID_PASSWORD: ${SENDGRID_PASSWORD}
-      NOTIFY_EMAIL: ${NOTIFY_EMAIL}
-      RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
-      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
-      DH_AUTO_APPROVE: ${DH_AUTO_APPROVE}
-      FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}
-      FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    ports:
+      - "80:8000/tcp"
+    depends_on:
+      - mysql
 
-
-  mysql8:
+  mysql:
     image: mysql:8
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: enigma
-      MYSQL_DATABASE: duckiehunt
-      MYSQL_USER: duckiehunt
-      MYSQL_PASSWORD: enigma
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
-      - ./docker-db:/var/lib/mysql
+      - ./data/mysql8/data:/var/lib/mysql
     ports:
-      - "3306"
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PMA_ARBITRARY=1
+    depends_on:
+      - mysql
