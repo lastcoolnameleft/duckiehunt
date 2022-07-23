@@ -72,10 +72,10 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: enigma
+      MYSQL_ROOT_PASSWORD: 
       MYSQL_DATABASE: duckiehunt
       MYSQL_USER: duckiehunt
-      MYSQL_PASSWORD: enigma
+      MYSQL_PASSWORD: 
       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
     volumes:
       - ./docker-db:/var/lib/mysql
