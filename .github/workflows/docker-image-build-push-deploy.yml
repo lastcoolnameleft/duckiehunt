@@ -31,4 +31,5 @@ jobs:
     - name: Build the Docker image        
       run: |
         docker build . -t ${CONTAINER_REGISTRY}/gh/duckiehunt:${{ github.sha }} -t ${CONTAINER_REGISTRY}/gh/duckiehunt:latest
-        docker push ${CONTAINER_REGISTRY}/gh/duckiehunt:${{ github.sha }} ${CONTAINER_REGISTRY}/gh/duckiehunt:latest
+        docker push ${CONTAINER_REGISTRY}/gh/duckiehunt:${{ github.sha }}
+        docker push ${CONTAINER_REGISTRY}/gh/duckiehunt:latest
