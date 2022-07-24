@@ -87,6 +87,14 @@ def faq(request):
     """ shows faq """
     return render(request, 'duck/faq.html')
 
+def tos(request):
+    """ shows terms of service """
+    return render(request, 'duck/tos.html')
+
+def privacy(request):
+    """ shows privacy """
+    return render(request, 'duck/privacy.html')
+
 @login_required
 def mark(request):
     """ Adds a duck, location, photo and link from webform """
