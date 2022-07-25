@@ -1,4 +1,5 @@
 """ Views for Django """
+from operator import ne
 from django.core import serializers
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
@@ -6,7 +7,10 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+from django.core.mail import EmailMessage
+
 import datetime
+from duckiehunt.secrets.settings import *
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
 from duck import media
@@ -142,7 +146,17 @@ def mark(request):
             duck.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect('/location/' + str(duck_location.duck_location_id))
+            new_location_url = '/location/' + str(duck_location.duck_location_id)
+
+            msg = EmailMessage(
+                'Duckiehunt Update: Duck #' + str(duck_id),
+                'Duck #' + str(duck_id) + ' has moved!<br/>' + BASE_URL + new_location_url,
+                EMAIL_FROM, EMAIL_TO
+            )
+            msg.content_subtype = "html"
+            msg.send()
+
+            return HttpResponseRedirect(new_location_url)
     # if a GET (or any other method) we'll create a blank form
     else:
         form = DuckForm()

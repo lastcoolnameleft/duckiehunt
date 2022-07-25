@@ -6,6 +6,9 @@ docker compose -f docker-compose-mac.yaml up
 
 # Clear image cache
 docker rmi -f duckiehunt
+
+# Get Python Django shell
+docker exec -it duckiehunt-local python manage.py shell
 ```
 
 # Perform updates
