@@ -40,3 +40,10 @@ mysql -u $MYSQL_USER@$MYSQL_NAME -h ${MYSQL_SERVER} -p
 # Cleanup
 echo DROP USER \'$MYSQL_USER\'@\'${VM_IP}\'\;
 ```
+
+## Update secret files
+```
+sudo cp ./django/duckiehunt/secrets/settings-dev.py /data/duckiehunt-dev/secrets/settings.py
+sudo cp ./django/duckiehunt/secrets/settings-stg.py /data/duckiehunt-stg/secrets/settings.py
+sudo cp ./django/duckiehunt/secrets/settings-prod.py /data/duckiehunt-prod/secrets/settings.py
+```

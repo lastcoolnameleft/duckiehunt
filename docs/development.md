@@ -9,12 +9,18 @@ docker rmi -f duckiehunt
 
 # Get Python Django shell
 docker exec -it duckiehunt-local python manage.py shell
+
+# Clear ALL cache
+docker system prune
+
+# Rebuild images
+docker compose --file docker-compose-local.yaml build
 ```
 
 # Perform updates
 
 ```
-docker exec -it duckiehunt bash
+docker exec -it duckiehunt-local bash
 python manage.py migrate
 ```
 
