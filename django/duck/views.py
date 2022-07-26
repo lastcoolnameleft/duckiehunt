@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.core.mail import EmailMessage
+from django.contrib.auth.models import User
 
 import datetime
 from duckiehunt.secrets.settings import *
@@ -119,6 +120,19 @@ def mark(request):
                             name=name, approved='Y',
                             create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             comments='')
+                duck.save()
+                # Create new DuckLocation from it's origin
+                tommy = User.objects.get(id=1)
+                duck_location_start = DuckLocation(duck=duck,
+                             latitude='32.95159763382337',
+                             longitude='-96.90789423886032',
+                             location='Carrollton Plaza Arts Center, Carrollton, TX',
+                             date_time='2008-08-16 20:00:00',
+                             comments='Just got married!',
+                             distance_to=0,
+                             user=tommy,
+                             approved='Y')
+                duck_location_start.save()
 
             # Calculate the distance since last location
             last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time')[0]
