@@ -114,6 +114,7 @@
         $( "#id_name" ).prop( "disabled", true);
         $('#id_duck_id').focusout(() => checkDuckName());
 
+        // Allow user to set Duck name if not already specified
         function checkDuckName() {
             var duck_id = $('#id_duck_id').get(0).value;
             console.log('checkDuckName()::duck_id=' + duck_id);
@@ -155,28 +156,42 @@
                 center: { lat: 35, lng: -30 }
             });
 
-            // Map auto-center and focus on location
-            $('#id_location').focusout(() => {
-                console.log('fetching location');
-                var location = $('#id_location').get(0).value;
-                var key = 'AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos';
-                var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + location + '&key=' + key;
-                $.get(url, (result) => {
-                    if (result.results.length === 0 || result.status !== "OK") {
-                        alert('Invalid location.  Please try again.');
-                    } else {
-                        var position = {
-                            lat: result.results[0].geometry.location.lat,
-                            lng: result.results[0].geometry.location.lng
-                        };
-                        $('#id_lat')[0].value = position.lat;
-                        $('#id_lng')[0].value = position.lng;
+            // https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete
+            const input = document.getElementById("id_location");
+              // Specify just the place data fields that you need.
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                fields: ["geometry", "formatted_address", "name"],
+            });
+            autocomplete.bindTo("bounds", map);
+            const marker = new google.maps.Marker({ map: map, icon: '/static/icons/duck-32x32.png' });
+            marker.addListener("click", () => {
+                infowindow.open(map, marker);
+            });
+            autocomplete.addListener("place_changed", () => {
+                console.log('place changed');
+                const place = autocomplete.getPlace();
+                //console.log(place);
 
-                        map.setCenter(position);
-                        map.setZoom(7);
-                        var marker = new google.maps.Marker({ position: position, map: map, icon: '/static/icons/duck-32x32.png' });
-                    }
-                });
+                if (!place.geometry || !place.geometry.location) {
+                    // User entered the name of a Place that was not suggested and
+                    // pressed the Enter key, or the Place Details request failed.
+                    window.alert("No details available for input: '" + place.name + "'");
+                    return;
+                }
+
+                // https://developers.google.com/maps/documentation/javascript/reference/coordinates#LatLng
+                $('#id_lat')[0].value = place.geometry.location.lat();
+                $('#id_lng')[0].value = place.geometry.location.lng();
+
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);
+                }
+
+                marker.setPosition(place.geometry.location);
+                marker.setVisible(true);
             });
         }
 
@@ -184,8 +199,18 @@
         checkDuckName();
     </script>
 
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos&callback=initMap">
+    <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos&libraries=places&callback=initMap">
     </script>
+
+    <style>
+    #id_location {
+        width: 80%;
+    }
+
+    #id_name {
+        width: 30%;
+    }
+    </style>
 
 {% endblock %}

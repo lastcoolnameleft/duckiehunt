@@ -1,5 +1,15 @@
-## Admin
 
+## New Prod Push
+
+```
+az acr login -n duckiehunt
+docker pull duckiehunt.azurecr.io/gh/duckiehunt:latest
+cd duckiehunt/
+docker compose down
+docker compose up
+```
+
+## Admin
 ```
 Port forward for Traefik admin
 ssh -N -L 8080:localhost:8080 dh
@@ -11,9 +21,6 @@ ssh -N -L 8081:localhost:80 dh
 ssh-add -K ~/.ssh/id_rsa
 
 docker build -t duckiehunt:latest . # Don't do with secrets
-docker login duckiehunt.azurecr.io
-
-az acr login -n duckiehunt
 ```
 
 ### Create users
