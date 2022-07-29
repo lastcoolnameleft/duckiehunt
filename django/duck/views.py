@@ -92,6 +92,10 @@ def faq(request):
     """ shows faq """
     return render(request, 'duck/faq.html')
 
+def issue(request):
+    """ shows issue """
+    return render(request, 'duck/issue.html')
+
 def tos(request):
     """ shows terms of service """
     return render(request, 'duck/tos.html')

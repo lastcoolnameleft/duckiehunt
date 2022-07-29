@@ -1,0 +1,61 @@
+{% extends "../base.html" %}
+
+{% block content %}
+
+    <!-- Page Content -->
+    <div class="container">
+
+            <!-- Page Heading/Breadcrumbs -->
+            <h1 class="mt-4 mb-3">Issues?
+            </h1>
+            I'm just one dude working on this website. I can't promise the same level of features and uptime as Google.  Please let me know of any issues you encounter.  Thanks!
+            <br/>
+            <br/>
+            <div class="mb-4" id="accordion" role="tablist" aria-multiselectable="true">
+              <div class="card">
+                <div class="card-header" role="tab" id="heading1">
+                  <h5 class="mb-0">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                      The site crashed on me!
+                    </a>
+                  </h5>
+                </div>
+                <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="heading1">
+                  <div class="card-body">
+                    Email me <a href="mailto:tommy@duckiehunt.com?Subject=Site_crash" target="_top">tommy@lastcoolnameleft.com</a> what you were doing and what happened!  I'll work on this ASAP!
+                     </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" role="tab" id="heading2">
+                  <h5 class="mb-0">
+                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                      I posted the wrong location/details/etc.
+                    </a>
+                  </h5>
+                </div>
+                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="heading2">
+                  <div class="card-body">
+                    Email me <a href="mailto:tommy@duckiehunt.com?Subject=Site_crash" target="_top">tommy@lastcoolnameleft.com</a> the Duck # and the details you want to update.
+                     </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" role="tab" id="heading3">
+                  <h5 class="mb-0">
+                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                      Can you add a feature?
+                    </a>
+                  </h5>
+                </div>
+                <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="heading3">
+                  <div class="card-body">
+                    Email me <a href="mailto:tommy@duckiehunt.com?Subject=Site_crash" target="_top">tommy@lastcoolnameleft.com</a> the details about the feature you'd like.
+                     </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.container -->
+
+{% endblock %}
