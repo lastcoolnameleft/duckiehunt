@@ -46,3 +46,5 @@ node_modules
 django/env/local.env
 local_settings.py
 secrets
+django/duckiehunt/settings/
+data/

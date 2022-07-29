@@ -6,6 +6,8 @@ services:
     build:
       context: .
     container_name: duckiehunt-local
+    environment:
+      - DJANGO_SETTINGS_MODULE=duckiehunt.settings.local
     volumes:
      - ./django:/code
     ports:
