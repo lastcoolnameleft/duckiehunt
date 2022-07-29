@@ -41,8 +41,10 @@ services:
     build:
       context: .
     container_name: duckiehunt-dev
+    environment:
+      - DJANGO_SETTINGS_MODULE=duckiehunt.settings.development
     volumes:
-      - /data/duckiehunt-dev/secrets:/code/duckiehunt/secrets
+      - /data/duckiehunt-dev/settings:/code/duckiehunt/settings
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.duckiehunt-dev.rule=Host(`dev.duckiehunt.com`)"
@@ -58,7 +60,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=duckiehunt.settings.staging
     volumes:
-      - /data/duckiehunt-stg/secrets:/code/duckiehunt/secrets
+      - /data/duckiehunt-stg/settings:/code/duckiehunt/settings
       - /data/duckiehunt-stg/uploads:/code/uploads
     labels:
       - "traefik.enable=true"
@@ -81,7 +83,7 @@ services:
       - "traefik.http.routers.duckiehunt-prod.tls.certresolver=myresolver"
       - "traefik.http.services.duckiehunt-prod.loadbalancer.server.port=8000"
     volumes:
-      - /data/duckiehunt-prod/secrets:/code/duckiehunt/secrets
+      - /data/duckiehunt-prod/settings:/code/duckiehunt/settings
       - /data/duckiehunt-prod/uploads:/code/uploads
     depends_on:
       - traefik

@@ -11,7 +11,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 
 import datetime
-from duckiehunt.secrets.settings import *
+from django.conf import settings
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
 from duck import media
@@ -168,8 +168,8 @@ def mark(request):
 
             msg = EmailMessage(
                 'Duckiehunt Update: Duck #' + str(duck_id),
-                'Duck #' + str(duck_id) + ' has moved!<br/>' + BASE_URL + new_location_url,
-                EMAIL_FROM, EMAIL_TO
+                'Duck #' + str(duck_id) + ' has moved!<br/>' + settings.BASE_URL + new_location_url,
+                settings.EMAIL_FROM, settings.EMAIL_TO
             )
             msg.content_subtype = "html"
             msg.send()

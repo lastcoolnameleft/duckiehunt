@@ -53,4 +53,8 @@ echo DROP USER \'$MYSQL_USER\'@\'${VM_IP}\'\;
 sudo cp ./django/duckiehunt/settings/development.py /data/duckiehunt-dev/settings/development.py
 sudo cp ./django/duckiehunt/settings/staging.py /data/duckiehunt-stg/settings/staging.py
 sudo cp ./django/duckiehunt/settings/production.py /data/duckiehunt-prod/settings/production.py
+
+sudo cp ./django/duckiehunt/settings/flickr.auth /data/duckiehunt-dev/settings/flickr.auth
+sudo cp ./django/duckiehunt/settings/flickr.auth /data/duckiehunt-stg/settings/flickr.auth
+sudo cp ./django/duckiehunt/settings/flickr.auth /data/duckiehunt-prod/settings/flickr.auth
 ```
