@@ -1,0 +1,17 @@
+version: "3.4"
+
+services:
+  duckiehunt-stg:
+    image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"
+    container_name: duckiehunt-stg
+    environment:
+      - DJANGO_SETTINGS_MODULE=duckiehunt.settings.staging
+    volumes:
+      - /data/duckiehunt-stg/settings:/code/duckiehunt/settings
+      - /data/duckiehunt-stg/uploads:/code/uploads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiehunt-stg.rule=Host(`stg.duckiehunt.com`)"
+      - "traefik.http.routers.duckiehunt-stg.entrypoints=websecure"
+      - "traefik.http.routers.duckiehunt-stg.tls.certresolver=myresolver"
+      - "traefik.http.services.duckiehunt-stg.loadbalancer.server.port=8000"

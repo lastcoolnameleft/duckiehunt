@@ -1,12 +1,33 @@
+## New VM
+
+* Create DS2 VM in East US
+  * [Add Data Disk](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk)
+* [Install Docker Engine](https://docs.docker.com/engine/install/ubuntu/)
+* [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt)
+* [Add MySQL Firewall rule](https://docs.microsoft.com/en-us/azure/mysql/single-server/quickstart-create-mysql-server-database-using-azure-cli#configure-a-server-level-firewall-rule)
+  * `az mysql server firewall-rule create -g duckiehunt --server duckiehunt-mysql --name $RULE_NAME --start-ip-address $MY_IP --end-ip-address $MY_IP`
+
+After reboot
+
+```
+# https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk
+sudo mount /dev/sda1 /data
+```
 
 ## New Prod Push
 
 ```
 az acr login -n duckiehunt
 docker pull duckiehunt.azurecr.io/gh/duckiehunt:latest
-cd duckiehunt/
-docker compose down
-docker compose up
+docker compose --file ~/duckiehunt/docker-compose/management.yaml up -d
+docker compose --file ~/duckiehunt/docker-compose/development.yaml up -d
+docker compose --file ~/duckiehunt/docker-compose/staging.yaml up -d
+docker compose --file ~/duckiehunt/docker-compose/production.yaml up -d
+
+docker compose --file ~/duckiehunt/docker-compose/management.yaml down
+docker compose --file ~/duckiehunt/docker-compose/development.yaml down
+docker compose --file ~/duckiehunt/docker-compose/staging.yaml down
+docker compose --file ~/duckiehunt/docker-compose/production.yaml down
 ```
 
 ## Admin
@@ -33,11 +54,11 @@ FLUSH PRIVILEGES;
 
 # Azure DB for MySQL expects NO MYSQL_NAME when creating account, but does when logging in!
 VM_IP=$(curl -s ifconfig.me)
-MYSQL_NAME=  #this will be the hostname db
-MYSQL_SERVER=
-MYSQL_USER=''
+MYSQL_NAME=    # example: dh-m
+MYSQL_SERVER=  # example: dh-m.mysql.database.azure.com
+MYSQL_USER=''  # example: dh_s
 MYSQL_PASSWORD=`echo $RANDOM | md5sum | head -c 20; echo`
-MYSQL_DB=''
+MYSQL_DB=''    # example: dh_s
 echo CREATE USER \'$MYSQL_USER\'@\'${VM_IP}\' IDENTIFIED BY \'$MYSQL_PASSWORD\'\;
 echo GRANT CREATE, INSERT, UPDATE, SELECT on \`${MYSQL_DB}\`.* TO \'${MYSQL_USER}\' WITH GRANT OPTION\;
 echo FLUSH PRIVILEGES\;

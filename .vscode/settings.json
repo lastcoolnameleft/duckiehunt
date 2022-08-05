@@ -3,6 +3,6 @@
     "sync-rsync.local": "/Users/thfalgou/git/lastcoolnameleft/duckiehunt/",
     "sync-rsync.remote": "dh:/home/thfalgou/duckiehunt/",
     "sync-rsync.onSave": true,
-    "sync-rsync.exclude": ["docker-db", "django/venv", ".git"],
+    "sync-rsync.exclude": ["docker-db", "django/venv", ".git", "tmp", "docker-compose/data"],
     "python.pythonPath": "/usr/local/opt/python/bin/python3.7"
 }

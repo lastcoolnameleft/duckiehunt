@@ -1,0 +1,18 @@
+version: "3.4"
+
+services:
+  duckiehunt-dev:
+    build:
+      context: ..
+    container_name: duckiehunt-dev
+    command: "sleep 100000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=duckiehunt.settings.development
+    volumes:
+      - /data/duckiehunt-dev/settings:/code/duckiehunt/settings
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiehunt-dev.rule=Host(`dev.duckiehunt.com`)"
+      - "traefik.http.routers.duckiehunt-dev.entrypoints=websecure"
+      - "traefik.http.routers.duckiehunt-dev.tls.certresolver=myresolver"
+      - "traefik.http.services.duckiehunt-dev.loadbalancer.server.port=8000"

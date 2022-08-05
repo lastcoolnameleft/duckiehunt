@@ -1,0 +1,120 @@
+version: "3.4"
+
+services:
+
+  # https://doc.traefik.io/traefik/user-guides/docker-compose/basic-example/
+  # https://doc.traefik.io/traefik/user-guides/docker-compose/acme-http/
+  traefik:
+    image: traefik:2.8
+    container_name: traefik
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--log.level=INFO"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.admin.address=:8081"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=tommy@duckiehunt.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - /data/traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+      - /data/letsencrypt:/letsencrypt
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "8080:8080/tcp"
+      - "8081:8081/tcp"
+
+  duckiehunt-dev:
+    build:
+      context: .
+    container_name: duckiehunt-dev
+    volumes:
+      - /data/duckiehunt-dev/secrets:/code/duckiehunt/secrets
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiehunt-dev.rule=Host(`dev.duckiehunt.com`)"
+      - "traefik.http.routers.duckiehunt-dev.entrypoints=websecure"
+      - "traefik.http.routers.duckiehunt-dev.tls.certresolver=myresolver"
+      - "traefik.http.services.duckiehunt-dev.loadbalancer.server.port=8000"
+    depends_on:
+      - traefik
+
+  duckiehunt-stg:
+    image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"
+    container_name: duckiehunt-stg
+    volumes:
+      - /data/duckiehunt-stg/secrets:/code/duckiehunt/secrets
+      - /data/duckiehunt-stg/uploads:/code/uploads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiehunt-stg.rule=Host(`stg.duckiehunt.com`)"
+      - "traefik.http.routers.duckiehunt-stg.entrypoints=websecure"
+      - "traefik.http.routers.duckiehunt-stg.tls.certresolver=myresolver"
+      - "traefik.http.services.duckiehunt-stg.loadbalancer.server.port=8000"
+    depends_on:
+      - traefik
+
+  duckiehunt-prod:
+    image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"
+    container_name: duckiehunt
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiehunt-prod.rule=Host(`duckiehunt.com`) || Host(`www.duckiehunt.com`)"
+      - "traefik.http.routers.duckiehunt-prod.entrypoints=websecure"
+      - "traefik.http.routers.duckiehunt-prod.tls.certresolver=myresolver"
+      - "traefik.http.services.duckiehunt-prod.loadbalancer.server.port=8000"
+    volumes:
+      - /data/duckiehunt-prod/secrets:/code/duckiehunt/secrets
+      - /data/duckiehunt-prod/uploads:/code/uploads
+    depends_on:
+      - traefik
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - /data/prometheus/etc:/etc/prometheus/
+      - /data/prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.entrypoints=admin"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.localhost`)"
+      - "traefik.http.routers.prometheus.service=prometheus"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    depends_on:
+      - prometheus
+    volumes:
+      - /data/grafana/data:/var/lib/grafana
+      - /data/grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - /data/grafana/config/config.monitoring
+    user: "104"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.entrypoints=admin"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.localhost`)"
+      - "traefik.http.routers.grafana.service=grafana"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.docker.network=inbound"
