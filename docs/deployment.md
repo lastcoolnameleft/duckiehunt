@@ -51,6 +51,14 @@ docker build -t duckiehunt:latest . # Don't do with secrets
 create user dh@'%' identified by 'passwd';
 grant all on duckiehunt_dev.* to dh@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
+mysql -h 127.0.0.1 -u root duckiehunt_local < tmp/duckiehunt_prod.sql
+docker exec -it duckiehunt-local python manage.py migrate
+
+create user dh_local_test@'%' identified by 'passwd';
+grant all on duckiehunt_local_test.* to dh_local_test@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+mysql -h 127.0.0.1 -u root duckiehunt_local_test < tmp/duckiehunt_prod.sql
+docker exec -it duckiehunt-test python manage.py migrate
 
 # Azure DB for MySQL expects NO MYSQL_NAME when creating account, but does when logging in!
 VM_IP=$(curl -s ifconfig.me)
