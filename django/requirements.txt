@@ -5,7 +5,7 @@ chardet==4.0.0
 charset-normalizer==2.0.12
 cryptography==37.0.2
 defusedxml==0.7.1
-Django==4.0.6
+Django==4.0.7
 flickr-api==0.7.3
 haversine==2.5.1
 httplib2==0.20.4
