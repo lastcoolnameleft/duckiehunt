@@ -1,5 +1,7 @@
-FROM python:3
+FROM python:3-slim
 ENV PYTHONUNBUFFERED 1
+RUN apt-get update -y
+RUN apt install default-libmysqlclient-dev build-essential -y
 RUN mkdir /code
 WORKDIR /code
 ADD django/requirements.txt /code/
