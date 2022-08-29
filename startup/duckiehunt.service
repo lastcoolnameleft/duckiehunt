@@ -1,0 +1,8 @@
+[Unit]
+Description=Duckiehunt
+
+[Service]
+ExecStart=/home/thfalgou/duckiehunt/startup/duckiehunt-start.sh
+
+[Install]
+WantedBy=multi-user.target
