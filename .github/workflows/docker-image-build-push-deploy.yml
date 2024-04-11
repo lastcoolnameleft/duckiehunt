@@ -1,8 +1,11 @@
 name: Docker Image Build and Push
 
 env:
-  AZURE_WEBAPP_NAME: duckiehunt
   CONTAINER_REGISTRY: ${{ secrets.REGISTRY_URL }}
+
+permissions:
+  id-token: write
+  contents: read
 
 on:
   push:
@@ -27,8 +30,6 @@ jobs:
     - uses: azure/docker-login@v1
       with:
         login-server: ${{ env.CONTAINER_REGISTRY }}
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
 
     - name: Build the Docker image        
       run: |
