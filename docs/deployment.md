@@ -1,3 +1,5 @@
+# Deployment
+
 ## New VM
 
 * Create DS2 VM in East US
@@ -7,11 +9,14 @@
 * [Add MySQL Firewall rule](https://docs.microsoft.com/en-us/azure/mysql/single-server/quickstart-create-mysql-server-database-using-azure-cli#configure-a-server-level-firewall-rule)
   * `az mysql server firewall-rule create -g duckiehunt --server duckiehunt-mysql --name $RULE_NAME --start-ip-address $MY_IP --end-ip-address $MY_IP`
 * Add to `/etc/fstab`
-```
+
+```shell
 UUID=2a2c8bce-0de4-4916-b960-23482ba13920   /data   xfs   defaults,nofail   1   2
 ```
+
 * Install service
-```
+
+```shell
 sudo cp duckiehunt.service /etc/systemd/system/duckiehunt.service
 sudo chmod 744 /home/thfalgou/duckiehunt/startup/duckiehunt-start.sh
 sudo chmod 664 /etc/systemd/system/duckiehunt.service
@@ -20,17 +25,16 @@ sudo systemctl enable duckiehunt.service
 systemctl status duckiehunt
 ```
 
-
 After reboot
 
-```
+```shell
 # https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk
 sudo mount /dev/sda1 /data
 ```
 
 ## New Prod Push
 
-```
+```shell
 az acr login -n duckiehunt
 docker pull duckiehunt.azurecr.io/gh/duckiehunt:latest
 docker compose --file ~/duckiehunt/docker-compose/management.yaml up -d
@@ -45,11 +49,12 @@ docker compose --file ~/duckiehunt/docker-compose/production.yaml down
 ```
 
 ## Admin
-```
-Port forward for Traefik admin
+
+```shell
+#Port forward for Traefik admin
 ssh -N -L 8080:localhost:8080 dh
 
-Port forward for DH
+#Port forward for DH
 ssh -N -L 8081:localhost:80 dh
 
 # GH working
@@ -59,8 +64,8 @@ docker build -t duckiehunt:latest . # Don't do with secrets
 ```
 
 ### Create users
-```
 
+```shell
 # Dev (local)
 create user dh@'%' identified by 'passwd';
 grant all on duckiehunt_dev.* to dh@'%' WITH GRANT OPTION;
@@ -92,7 +97,8 @@ echo DROP USER \'$MYSQL_USER\'@\'${SRC_IP}\'\;
 ```
 
 ## Update secret files
-```
+
+```shell
 sudo cp ./django/duckiehunt/settings/development.py /data/duckiehunt-dev/settings/development.py
 sudo cp ./django/duckiehunt/settings/staging.py /data/duckiehunt-stg/settings/staging.py
 sudo cp ./django/duckiehunt/settings/production.py /data/duckiehunt-prod/settings/production.py

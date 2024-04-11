@@ -1,0 +1,8 @@
+Django
+requests
+social-auth-app-django
+social-auth-core
+mysqlclient
+flickr-api
+haversine
+whitenoise

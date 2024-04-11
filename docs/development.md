@@ -1,8 +1,11 @@
-# Build and run locally
+# Development
 
-```
-docker build -t duckiehunt .
-docker compose -f docker-compose-mac.yaml up
+Tools for running locally
+
+## Build and run locally
+
+```shell
+docker compose -f docker-compose/mac.yaml up --build
 
 # Clear image cache
 docker rmi -f duckiehunt
@@ -17,18 +20,24 @@ docker system prune
 docker compose --file docker-compose-local.yaml build
 ```
 
-# Perform updates
+## Perform updates
 
-```
+```shell
+# Re-create requirements
+docker exec -it duckiehunt-local sh
+pip install pip-tools
+pip-compile
+
+# Update database
 docker exec -it duckiehunt-local bash
 python manage.py migrate
 ```
 
-# Reference for upgrading PIP packages
+## Reference for upgrading PIP packages
 
-  https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip/43642193#43642193
+https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip/43642193#43642193
 
-```
+```shell
 $ pip freeze > requirements.txt
 Open the text file, replace the == with >=, or have sed do it for you:
 
