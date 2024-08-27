@@ -107,3 +107,10 @@ sudo cp ./django/duckiehunt/settings/flickr.auth /data/duckiehunt-dev/settings/f
 sudo cp ./django/duckiehunt/settings/flickr.auth /data/duckiehunt-stg/settings/flickr.auth
 sudo cp ./django/duckiehunt/settings/flickr.auth /data/duckiehunt-prod/settings/flickr.auth
 ```
+
+## Cleanup logs
+
+```
+# Cleanup traefik logs
+truncate -s 0 $(docker inspect --format='{{.LogPath}}' traefik)
+```
