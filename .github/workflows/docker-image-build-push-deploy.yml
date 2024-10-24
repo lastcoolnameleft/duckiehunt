@@ -92,4 +92,4 @@ jobs:
           cd ${{ env.VM_DIR }}
           docker system prune -f
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          docker rollout -f docker-compose/staging.yml --env-file staging.env duckiehunt-stg
+          docker rollout -f docker-compose/staging.yaml --env-file staging.env duckiehunt-stg
