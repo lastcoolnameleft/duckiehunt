@@ -7,8 +7,10 @@ env:
   IMAGE_TAG: ${{ github.head_ref || github.ref_name }}
 
 permissions:
-  id-token: write
   contents: read
+  packages: write
+  attestations: write
+  id-token: write
 
 on:
   push:
