@@ -28,7 +28,7 @@ haversine==2.8.1
     # via -r requirements.in
 httplib2==0.22.0
     # via oauth2
-idna==3.6
+idna==3.7
     # via requests
 mysqlclient==2.2.4
     # via -r requirements.in
