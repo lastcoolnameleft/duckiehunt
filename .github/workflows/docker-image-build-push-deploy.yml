@@ -76,7 +76,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: "docker-compose/staging.yml,docker-compose/production.yml"
+        source: "docker-compose/staging.yaml,docker-compose/production.yaml"
         target: /home/ghaction/duckiehunt/
 
     - name: executing remote ssh commands using password
