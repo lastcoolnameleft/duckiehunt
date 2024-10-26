@@ -1,7 +1,9 @@
+name: Production Push
+
 on: workflow_dispatch
 
 env:
-  VM_DIR: /home/ghaction/capeetal-tracker
+  VM_DIR: /home/ghaction/duckiehunt
 
 jobs:
   push-to-production:
