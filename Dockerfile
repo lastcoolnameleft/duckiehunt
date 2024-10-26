@@ -5,6 +5,7 @@ RUN apt install python3-dev default-libmysqlclient-dev pkg-config build-essentia
 RUN mkdir /code
 WORKDIR /code
 ADD django/requirements.txt /code/
+RUN pip install setuptools
 RUN pip install -r requirements.txt
 ADD django /code/
 #  https://stackoverflow.com/a/41061703

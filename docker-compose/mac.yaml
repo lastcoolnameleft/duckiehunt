@@ -1,23 +1,5 @@
 version: "3.4"
 services:
-
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-    volumes:
-      - ../data/mysql8/data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    healthcheck:
-      test: mysqladmin ping -h 127.0.0.1 -u root
-      start_period: 5s
-      interval: 5s
-      timeout: 5s
-      retries: 55
-
   duckiehunt:
     build:
       context: ..
@@ -26,35 +8,6 @@ services:
       - DJANGO_SETTINGS_MODULE=duckiehunt.settings.local
     volumes:
      - ../django:/code
+     - ../db:/db/
     ports:
-      - "80:8000/tcp"
-    depends_on:
-      mysql:
-        condition: service_healthy
-        restart: true
-
-  duckiehunt-test:
-    build:
-      context: ..
-    container_name: duckiehunt-test
-    environment:
-      - DJANGO_SETTINGS_MODULE=duckiehunt.settings.local-test
-    volumes:
-     - ../django:/code
-    ports:
-      - "81:8000/tcp"
-    depends_on:
-      mysql:
-        condition: service_healthy
-        restart: true
-
-  phpmyadmin:
-    image: phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    ports:
-      - 8082:80
-    environment:
-      - PMA_ARBITRARY=1
-    depends_on:
-      - mysql
+      - "8000:8000/tcp"

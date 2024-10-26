@@ -1,5 +1,4 @@
 version: "3.4"
-
 services:
   duckiehunt-stg:
     image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"
@@ -8,6 +7,7 @@ services:
       - DJANGO_SETTINGS_MODULE=duckiehunt.settings.staging
     volumes:
       - /data/duckiehunt-stg/settings:/code/duckiehunt/settings
+      - /data/duckiehunt-stg/db:/db
       - /data/duckiehunt-stg/uploads:/code/uploads
     labels:
       - "traefik.enable=true"
