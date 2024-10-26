@@ -2,7 +2,6 @@ version: "3.4"
 services:
   duckiehunt-stg:
     image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"
-    container_name: duckiehunt-stg
     environment:
       - DJANGO_SETTINGS_MODULE=duckiehunt.settings.staging
     volumes:
