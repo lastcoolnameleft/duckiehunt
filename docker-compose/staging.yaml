@@ -1,5 +1,4 @@
 name: dh-stg
-version: "3.4"
 services:
   duckiehunt-stg:
     image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"

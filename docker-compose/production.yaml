@@ -1,5 +1,4 @@
 name: dh-prod
-version: "3.4"
 services:
   duckiehunt-prod:
     image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"
