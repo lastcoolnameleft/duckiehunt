@@ -19,15 +19,13 @@ from haversine import haversine, Unit
 
 def index(request):
     """ / path """
-    duck_location_list = DuckLocation.objects.all()
-    duck_location_json = serializers.serialize('json', duck_location_list)
     map_data = {
         'width': '100%',
         'height': '800px',
         'focus_lat': 23,
         'focus_long': 10,
         'focus_zoom': 2,
-        'location_list': duck_location_json,
+        'location_list_api': '/api/locations',
         'duck_location_id': 0,
     }
 
@@ -43,14 +41,13 @@ def detail(request, duck_id):
     # https://stackoverflow.com/questions/34666892/trying-to-serialize-a-queryset-that-uses-select-related-cant-obtain-fields-o
     # https://docs.djangoproject.com/en/2.1/topics/serialization/#serialization-of-natural-keys
     duck_location_list = DuckLocation.objects.filter(duck_id=duck_id)
-    duck_location_json = serializers.serialize('json', duck_location_list, use_natural_foreign_keys=True)
     map_data = {
         'width': '100%',
         'height': '400px',
         'focus_lat': 0,
         'focus_long': 0,
         'focus_zoom': 2,
-        'location_list': duck_location_json,
+        'location_list_api': '/api/duck/' + str(duck_id) + '/locations',
         'duck_location_id': 0,
     }
     duck_dropdown_list = Duck.objects.all()
@@ -73,7 +70,7 @@ def location(request, duck_location_id):
         'focus_lat': 0,
         'focus_long': 0,
         'focus_zoom': 15,
-        'location_list': duck_location_json,
+        'location_list_api': '/api/location/' + str(duck_location_id),
         'duck_location_id': duck_location_id,
     }
     duck_dropdown_list = Duck.objects.all()
