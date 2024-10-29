@@ -11,3 +11,16 @@ services:
      - ../uploads:/uploads
     ports:
       - "8000:8000/tcp"
+
+  duckiehunt-test-env:
+    build:
+      context: ..
+    container_name: duckiehunt-test-env
+    environment:
+      - DJANGO_SETTINGS_MODULE=duckiehunt.settings.local
+    volumes:
+     - ../django:/code
+     - ../db:/db
+     - ../uploads:/uploads
+    ports:
+      - "8001:8000/tcp"
