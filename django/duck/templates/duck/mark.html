@@ -123,7 +123,7 @@
             }
             var get_duck_url = '/api/duck/' + duck_id;
             $.get(get_duck_url, (result) => {
-                var duck_name = result[0].fields.name;
+                var duck_name = result.name;
                 console.log('Found duck name:' + duck_name);
                 if (!duck_name || duck_name == 'Undefined' || duck_name == 'Unnamed') {
                     enableDuckName();

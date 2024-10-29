@@ -46,3 +46,19 @@ and execute:
 
 $ pip install -r requirements.txt --upgrade
 ```
+
+## Testing
+
+```shell
+pip install playwright pytest-playwright setuptools flickr-api
+playwright install
+pytest tests/test_basic.py
+
+pytest -s tests/create_auth.py
+# Provide password and use "say yes on phone/tablet"
+pytest tests/test_mark_duck.py
+
+# Haven't gotten working
+export DJANGO_SETTINGS_MODULE=duckiehunt.settings.local
+python django/manage.py test django/duck/tests
+```

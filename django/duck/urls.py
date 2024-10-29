@@ -20,7 +20,12 @@ urlpatterns = [
     path('view/location/<int:duck_location_id>', views.location, name='location'),
     path('location/<int:duck_location_id>', views.location, name='location'),
     # APIs
-    path('api/duck/<int:duck_id>', apis.detail, name='detail'),
+    path('api/duck/<int:duck_id>', apis.duck_detail, name='detail'),
+    path('api/ducks', apis.ducks_all),
+    path('api/locations', apis.locations_all),
+    path('api/duck/<int:duck_id>/locations', apis.duck_locations),
+    path('api/duck/<int:duck_id>/', apis.duck_locations),
+    path('api/location/<int:duck_location_id>', apis.location),
     # Auth
     path('profile', views.profile, name='profile'),
     path('login', views.login, name='login'),

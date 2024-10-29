@@ -8,47 +8,74 @@
       </style>
        
        <script>
+            (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+              key: "AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU",
+              v: "weekly",
+              // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+              // Add other bootstrap parameters as needed, using camel case.
+            });
+
            var focus_lat={{ map.focus_lat }};
            var focus_long={{ map.focus_long }};
            var focus_zoom={{ map.focus_zoom }};
            var duck_location_id={{ map.duck_location_id }};
-           var location_list={{ map.location_list|safe }};
-           
-           function initMap() {
-               var map = new google.maps.Map(document.getElementById('map'), {
+           var location_list_api='{{ map.location_list_api }}';
+          
+           let map;
+
+           async function initMap() {
+               const { Map } = await google.maps.importLibrary("maps");
+
+               map = new Map(document.getElementById('map'), {
                     zoom: focus_zoom,
                     center: { lat: focus_lat, lng: focus_long }
                });
                var bounds = new google.maps.LatLngBounds();
 
-               location_list.forEach((location, index) => {
-                   var position = new google.maps.LatLng( Number(location.fields.latitude), Number(location.fields.longitude) );
-                   var marker = new google.maps.Marker({ position: position, map: map, icon: '/static/icons/duck-32x32.png' });
-       
-                   if (!(focus_lat && focus_long)) {
-                       bounds.extend(position);
-                   }
-                   var duck_id = Number.isInteger(location.fields.duck) ? location.fields.duck : location.fields.duck.duck_id;
-                   var duck_name = location.fields.duck.name ? ' (' + location.fields.duck.name + ')' : '';
-                   var duck_header = '<a href="/duck/' + duck_id + '">Duck #' + duck_id + duck_name + '</a>';
-                   var content = '<div id="content"><p>' + duck_header + '<br/>' + location.fields.comments + '</p></div>';
-                   var infoWindow = new google.maps.InfoWindow({ content: content });
-                   marker.addListener('click', () => { infoWindow.open(map, marker); });
-                   if (location.pk == duck_location_id) {
-                       infoWindow.open(map, marker);
-                   }
-               });
-       
-               if (!(focus_lat && focus_long)) {
-                   map.fitBounds(bounds);
-                   map.setZoom(focus_zoom);
-               }
-       
-           }
-       </script>
-       
-       <script async defer
-           src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ9N94fMjCedY84yfdWjIw3uGIuOC8ymU&callback=initMap">
-       </script>
+               fetch(location_list_api)
+                .then(response => response.json())
+                .then(location_result=> {
+                    // If there's just one result, convert it to an array
+                    if (!Array.isArray(location_result)) {
+                        location_result = [location_result];
+                    }
+                    // Assuming the API returns an object with a 'value' property
+                    location_result.forEach((location) => {
 
-       
+                        var position = new google.maps.LatLng( Number(location.latitude), Number(location.longitude) );
+                        var marker = new google.maps.Marker({ position: position, map: map, icon: '/static/icons/duck-32x32.png' });
+            
+                        if (!(focus_lat && focus_long)) {
+                            bounds.extend(position);
+                        }
+                        //var duck_id = Number.isInteger(location.fields.duck) ? location.fields.duck : location.fields.duck.duck_id;
+                        var duck_name = location.duck__name ? ' (' + location.duck__name + ')' : '';
+                        var duck_header = '<a href="/duck/' + location.duck_id + '">Duck #' + location.duck_id + duck_name + '</a>';
+                        var content = '<div id="content"><p>' + duck_header + '<br/>' + location.comments + '</p></div>';
+                        var infoWindow = new google.maps.InfoWindow({ content: content });
+                        marker.addListener('click', () => { infoWindow.open(map, marker); });
+                        if (location.pk == duck_location_id) {
+                            infoWindow.open(map, marker);
+                        }
+                    });
+            
+                    if (!(focus_lat && focus_long)) {
+                        map.fitBounds(bounds);
+                        map.setZoom(focus_zoom);
+                    }
+ 
+               })
+               .catch(error => {
+                 console.error('Error fetching data:', error);
+               });
+           }
+
+           initMap();
+
+           function addMarker(lat, long, title, content) {
+               var position = new google.maps.LatLng(lat, long);
+               var marker = new google.maps.Marker({ position: position, map: map, title: title });
+               var infoWindow = new google.maps.InfoWindow({ content: content });
+               marker.addListener('click', () => { infoWindow.open(map, marker); });
+           }  
+       </script>
