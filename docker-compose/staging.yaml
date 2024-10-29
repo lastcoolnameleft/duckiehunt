@@ -14,3 +14,9 @@ services:
       - "traefik.http.routers.duckiehunt-stg.entrypoints=websecure"
       - "traefik.http.routers.duckiehunt-stg.tls.certresolver=myresolver"
       - "traefik.http.services.duckiehunt-stg.loadbalancer.server.port=8000"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
