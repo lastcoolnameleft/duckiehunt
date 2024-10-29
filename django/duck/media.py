@@ -1,5 +1,5 @@
 """ Helper functions for uploading image to Flickr """
-import flickr_api
+import flickr_api, os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
@@ -8,16 +8,25 @@ def handle_uploaded_file(uploaded_file, duck_id, duck_name, comments):
     title = 'Duck #' + str(duck_id) + ' (' + duck_name + ')'
     tags = "duckiehunt"
 
-    file_path = write_upload_to_file(uploaded_file, settings.UPLOAD_PATH)
+    file_path = save_uploaded_file(uploaded_file, settings.UPLOAD_PATH)
     photo_info = upload_to_flickr(file_path, title, comments, settings.FLICKR_PHOTO_IS_PUBLIC, tags)
     return photo_info
 
-def write_upload_to_file(photo_file, upload_path):
-    """ Save bufferred file in memory to disk """
-    fss = FileSystemStorage()
-    filename = fss.save(upload_path + photo_file.name, photo_file)
-    uploaded_file_url = fss.path(filename)
-    return uploaded_file_url
+def save_uploaded_file(uploaded_file, upload_path):
+    """
+    Save a Django uploaded file to the local disk.
+
+    Args:
+        uploaded_file: The uploaded file object.
+        upload_path: The path where the file should be saved.
+
+    Returns:
+        The file path where the uploaded file is saved.
+    """
+    fss = FileSystemStorage(location=upload_path)
+    filename = fss.save(uploaded_file.name, uploaded_file)
+    file_path = fss.path(filename)
+    return file_path
 
 def upload_to_flickr(photo_file, title, comments, is_public, tags):
     """ Upload file to flickr """
