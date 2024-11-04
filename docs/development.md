@@ -12,6 +12,7 @@ docker rmi -f duckiehunt
 
 # Get Python Django shell
 docker exec -it duckiehunt-local python manage.py shell
+> from duck.models import *
 
 # Clear ALL cache
 docker system prune

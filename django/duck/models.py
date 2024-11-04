@@ -60,4 +60,3 @@ class DuckLocationPhoto(models.Model):
 
     class Meta:
         db_table = 'duck_location_photo'
-

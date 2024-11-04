@@ -31,9 +31,22 @@ def index(request):
 
     return render(request, 'duck/main.html', {'map': map_data})
 
+def found(request, duck_id):
+    """ /found/# path """
+    try:
+        duck = Duck.objects.get(pk=duck_id)
+    except Duck.DoesNotExist:
+        duck = None
+
+    return render(request, 'duck/found.html', {'duck_id': duck_id, 'duck': duck})
+
 def detail(request, duck_id):
     """ /duck/# path """
-    duck = get_object_or_404(Duck, pk=duck_id)
+    try:
+        duck = Duck.objects.get(pk=duck_id)
+    except Duck.DoesNotExist:
+        return render(request, 'duck/detail-not-found.html', {'duck_id': duck_id})
+
     photos = DuckLocationPhoto.objects.filter(duck_location__duck_id=duck_id)
 
     # SCREW YOU DJANGO FOR NOT SUPPORT USING SELECT_RELATED + SERIALIZATION
@@ -102,7 +115,7 @@ def privacy(request):
     return render(request, 'duck/privacy.html')
 
 @login_required
-def mark(request):
+def mark(request, duck_id=None):
     """ Adds a duck, location, photo and link from webform """
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -174,7 +187,7 @@ def mark(request):
             return HttpResponseRedirect(new_location_url)
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = DuckForm()
+        form = DuckForm(initial={'duck_id': duck_id})
 
     map_data = {
         'width': '100%',

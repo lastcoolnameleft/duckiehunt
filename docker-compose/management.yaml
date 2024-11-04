@@ -1,15 +1,18 @@
 services:
-
   # https://doc.traefik.io/traefik/user-guides/docker-compose/basic-example/
   # https://doc.traefik.io/traefik/user-guides/docker-compose/acme-http/
   traefik:
-    image: traefik:2.8
+    image: traefik:3.2
     container_name: traefik
     restart: always
     network_mode: "host" # Needed to get other docker-compose in same host working
     command:
       - "--api.insecure=true"
       - "--log.level=INFO"
+      - "--log.maxsize=1"
+      - "--log.maxbackups=10"
+      - "--log.maxage=30"
+      - "--accesslog=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--metrics.prometheus=true"

@@ -13,9 +13,11 @@ urlpatterns = [
     path('privacy/', views.privacy, name='privacy'),
     path('tos/', views.tos, name='tos'),
     path('mark/', views.mark, name='mark'),
+    path('mark/<int:duck_id>', views.mark, name='mark'),
     # ex: /view/duck/5/
     path('view/duck/<int:duck_id>', views.detail, name='duck_list'),
     path('duck/<int:duck_id>', views.detail, name='detail'),
+    path('found/<int:duck_id>', views.found, name='found'),
     # ex: /view/location/500/
     path('view/location/<int:duck_location_id>', views.location, name='location'),
     path('location/<int:duck_location_id>', views.location, name='location'),

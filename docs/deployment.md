@@ -6,8 +6,6 @@
   * [Add Data Disk](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk)
 * [Install Docker Engine](https://docs.docker.com/engine/install/ubuntu/)
 * [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt)
-* [Add MySQL Firewall rule](https://docs.microsoft.com/en-us/azure/mysql/single-server/quickstart-create-mysql-server-database-using-azure-cli#configure-a-server-level-firewall-rule)
-  * `az mysql server firewall-rule create -g duckiehunt --server duckiehunt-mysql --name $RULE_NAME --start-ip-address $MY_IP --end-ip-address $MY_IP`
 * Add to `/etc/fstab`
 
 ```shell
@@ -63,39 +61,6 @@ ssh-add -K ~/.ssh/id_rsa
 docker build -t duckiehunt:latest . # Don't do with secrets
 ```
 
-### Create users
-
-```shell
-# Dev (local)
-create user dh@'%' identified by 'passwd';
-grant all on duckiehunt_dev.* to dh@'%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-mysql -h 127.0.0.1 -u root duckiehunt_local < tmp/duckiehunt_prod.sql
-docker exec -it duckiehunt-local python manage.py migrate
-
-create user dh_local_test@'%' identified by 'passwd';
-grant all on duckiehunt_local_test.* to dh_local_test@'%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-mysql -h 127.0.0.1 -u root duckiehunt_local_test < tmp/duckiehunt_prod.sql
-docker exec -it duckiehunt-test python manage.py migrate
-
-# Azure DB for MySQL expects NO MYSQL_NAME when creating account, but does when logging in!
-SRC_IP=$(curl -s ifconfig.me)
-MYSQL_NAME=    # example: dh-m
-MYSQL_SERVER=  # example: dh-m.mysql.database.azure.com
-MYSQL_USER=''  # example: dh_s
-MYSQL_PASSWORD=`echo $RANDOM | md5sum | head -c 20; echo`
-MYSQL_DB=''    # example: dh_s
-echo CREATE USER \'$MYSQL_USER\'@\'${SRC_IP}\' IDENTIFIED BY \'$MYSQL_PASSWORD\'\;
-echo "GRANT CREATE, INSERT, UPDATE, SELECT on \`${MYSQL_DB}\`.* TO '${MYSQL_USER}' WITH GRANT OPTION;"
-echo FLUSH PRIVILEGES\;
-# Test
-echo $MYSQL_PASSWORD
-mysql -u $MYSQL_USER@$MYSQL_NAME -h ${MYSQL_SERVER} -p
-# Cleanup
-echo DROP USER \'$MYSQL_USER\'@\'${SRC_IP}\'\;
-```
-
 ## Update secret files
 
 ```shell
@@ -113,4 +78,5 @@ sudo cp ./django/duckiehunt/settings/flickr.auth /data/duckiehunt-prod/settings/
 ```
 # Cleanup traefik logs
 truncate -s 0 $(docker inspect --format='{{.LogPath}}' traefik)
+sudo truncate -s 0 $(docker inspect --format='{{.LogPath}}' traefik) && docker restart traefik
 ```
