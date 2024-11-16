@@ -88,3 +88,19 @@
     cursor: pointer; }
     #auth_container .signup-btn:hover {
       background: #eee; }
+
+      .captcha_login {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 10px;
+        font-size: 16px;
+        color: white;
+        background-color: green;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    
+    .captcha_login:hover {
+        background-color: darkgreen;
+    }

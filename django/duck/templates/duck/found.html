@@ -8,12 +8,17 @@
 
       <!-- Intro Content -->
       <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-8">
           <br>
-           <h2>You found a duck!</h2>
+           <h2>
+              <center>
+                Congratulations, you found Duck #{{ duck_id }}!
+              </center>
+            </h2>
           <br>
-           <p>We're sorry, the duck you are looking for (#{{ duck_id }}) is not in the database!</p>
-           <p>Let us know in the <a href='/issue/'>Issue page</a>, we'll get right on it!  </p>
+          <h3>Now what?</h3>
+          <p>Now that you've found the duck, you can either keep it or hide it again for someone else to find. </p>
+          <p>Please <a href='/mark/{{ duck_id}}'>update it's location</a> and provide a picture so we can keep track of where the duck has been. </p>
           <br>
         </div>
       </div>

@@ -6,6 +6,7 @@ Tools for running locally
 
 ```shell
 docker compose -f docker-compose/mac.yaml up --build
+open http://localhost:8000
 
 # Clear image cache
 docker rmi -f duckiehunt
