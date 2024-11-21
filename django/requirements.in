@@ -5,3 +5,4 @@ social-auth-core
 flickr-api
 haversine
 whitenoise
+django-recaptcha

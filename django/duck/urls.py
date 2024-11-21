@@ -14,6 +14,8 @@ urlpatterns = [
     path('tos/', views.tos, name='tos'),
     path('mark/', views.mark, name='mark'),
     path('mark/<int:duck_id>', views.mark, name='mark'),
+    path('mark_captcha/', views.mark_captcha, name='mark_captcha'),
+    path('mark_captcha/<int:duck_id>', views.mark_captcha, name='mark_captcha'),
     # ex: /view/duck/5/
     path('view/duck/<int:duck_id>', views.detail, name='duck_list'),
     path('duck/<int:duck_id>', views.detail, name='detail'),

@@ -17,13 +17,14 @@
         <!-- Intro Content -->
         <div class="row">
           <div class="col-lg-8">
-            <p>To provide better security, we use the following options to log into Duckiehunt:</p>
+            <p>How would you like to prove that you're a human?</p>
             <div id="auth_wrapper">
               <div id="auth_container">
                 <div id="login_container">
                   <div id="social_login">
                     <a class="gg_login" href="{% url 'social:begin' 'google-oauth2' %}">Google</a>
                     <a class="fb_login" href="{% url 'social:begin' 'facebook' %}">Facebook</a>
+                    <a class="captcha_login" href="/mark_captcha/{{ duck_id }}">Captcha</a>
                   </div>
                 </div>
               </div>

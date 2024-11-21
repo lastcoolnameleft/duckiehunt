@@ -28,7 +28,7 @@
   #auth_container #social_login {
     margin-top: 18px;
     padding-bottom: 23px; }
-    #auth_container #social_login .fb_login, #auth_container #social_login .gg_login {
+    #auth_container #social_login .fb_login, #auth_container #social_login .gg_login, #auth_container #social_login .captcha_login{
       font-weight: normal;
       font-family: "proxima_nova_rgregular", sans-serif;
       line-height: 1;
@@ -55,6 +55,11 @@
       background: rgba(209, 62, 41, 0.9); }
     #auth_container #social_login .gg_login:hover {
       background: rgba(209, 62, 41, 1); }
+    #auth_container #social_login .captcha_login {
+      background: green;
+      background: rgba(12, 176, 34, 0.9); }
+    #auth_container #social_login .captcha_login:hover {
+      background: rgb(92, 157, 7); }
   #auth_container .login_or {
     background: url("../images/or.png") center top no-repeat;
     height: 9px;

@@ -1,9 +1,12 @@
 """ Form for Duckiehunt """
 from django import forms
+from django_recaptcha.fields import ReCaptchaField
+
 import datetime
 
 class DuckForm(forms.Form):
     """ Form for duckiehunt.  """
+    captcha = ReCaptchaField()
     duck_id = forms.IntegerField(label='Duck #', min_value=2, max_value=3000)
     name = forms.CharField(label='Duck name', max_length=100, disabled=False, required=False)
     location = forms.CharField(label='Location', max_length=100)

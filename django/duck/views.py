@@ -7,15 +7,10 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
-from django.core.mail import EmailMessage
-from django.contrib.auth.models import User
-
-import datetime
 from django.conf import settings
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from .forms import DuckForm
-from duck import media
-from haversine import haversine, Unit
+from duck import marker 
 
 def index(request):
     """ / path """
@@ -116,6 +111,14 @@ def privacy(request):
 
 @login_required
 def mark(request, duck_id=None):
+    user = request.user
+    return mark_process(request, duck_id, user, '/mark/')
+
+def mark_captcha(request, duck_id=None):
+    user = None
+    return mark_process(request, duck_id, user, '/mark_captcha/')
+
+def mark_process(request, duck_id, user, form_page):
     """ Adds a duck, location, photo and link from webform """
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -130,40 +133,19 @@ def mark(request, duck_id=None):
                     duck.name = form.cleaned_data['name']
             except Duck.DoesNotExist:
                 name = form.cleaned_data['name'] if form.cleaned_data['name'] else 'Unnamed'
-                duck = Duck(duck_id=duck_id,
-                            name=name, approved='Y',
-                            create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                            comments='')
-                duck.save()
-                # Create new DuckLocation from it's origin
-                tommy = User.objects.get(id=1)
-                duck_location_start = DuckLocation(duck=duck,
-                             latitude='32.95159763382337',
-                             longitude='-96.90789423886032',
-                             location='Carrollton Plaza Arts Center, Carrollton, TX',
-                             date_time='2008-08-16 20:00:00',
-                             comments='Just got married!',
-                             distance_to=0,
-                             user=tommy,
-                             approved='Y')
-                duck_location_start.save()
+                duck = marker.create_new_duck(duck_id, name)
 
-            # Calculate the distance since last location
-            last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time')[0]
-            distance_travelled = haversine((last_duck_location.latitude, last_duck_location.longitude),
-                                           (form.cleaned_data['lat'], form.cleaned_data['lng']), unit=Unit.MILES)
-            duck_location = DuckLocation(duck=duck,
-                                         latitude=form.cleaned_data['lat'],
-                                         longitude=form.cleaned_data['lng'],
-                                         location=form.cleaned_data['location'],
-                                         date_time=form.cleaned_data['date_time'],
-                                         comments=form.cleaned_data['comments'],
-                                         distance_to=round(distance_travelled, 2),
-                                         user=request.user,
-                                         approved='Y')
-            duck_location.save()
+            duck_location = marker.add_duck_location(duck_id,
+                                                     form.cleaned_data['lat'],
+                                                     form.cleaned_data['lng'],
+                                                     form.cleaned_data['location'],
+                                                     form.cleaned_data['date_time'],
+                                                     form.cleaned_data['comments'],
+                                                     user)
+
             if request.FILES and request.FILES['image']:
-                photo_info = media.handle_uploaded_file(request.FILES['image'], duck_id,
+                #marker.add_duck_location_photo(duck_location, request.FILES['image'], duck_id, duck.name, form.cleaned_data['comments'])
+                photo_info = marker.handle_uploaded_file(request.FILES['image'], duck_id,
                                                         duck.name, form.cleaned_data['comments'])
                 duck_location_photo = DuckLocationPhoto(duck_location=duck_location,
                                                         flickr_photo_id=photo_info['id'],
@@ -176,13 +158,7 @@ def mark(request, duck_id=None):
             # redirect to a new URL:
             new_location_url = '/location/' + str(duck_location.duck_location_id)
 
-            msg = EmailMessage(
-                'Duckiehunt Update: Duck #' + str(duck_id),
-                'Duck #' + str(duck_id) + ' has moved!<br/>' + settings.BASE_URL + new_location_url,
-                settings.EMAIL_FROM, settings.EMAIL_TO
-            )
-            msg.content_subtype = "html"
-            msg.send()
+            marker.email_duck_location(duck_id, new_location_url)
 
             return HttpResponseRedirect(new_location_url)
     # if a GET (or any other method) we'll create a blank form
@@ -198,7 +174,7 @@ def mark(request, duck_id=None):
         'location_list': [],
         'duck_location_id': 0,
     }
-    return render(request, 'duck/mark.html', {'form': form, 'map': map_data})
+    return render(request, 'duck/mark.html', {'form': form, 'map': map_data, 'form_page': form_page})
 
 def logout(request):
     """Logs out user"""
