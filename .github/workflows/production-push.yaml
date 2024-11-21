@@ -18,6 +18,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
+        script_stop: true
         script: |
           echo "Starting prod rollout"
           cd ${{ env.VM_DIR }}

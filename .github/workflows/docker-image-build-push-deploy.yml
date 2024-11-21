@@ -87,9 +87,12 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
+        script_stop: true
         script: |
           echo "Starting stg rollout"
           cd ${{ env.VM_DIR }}
           docker system prune -f
+          # https://github.com/orgs/community/discussions/43380
+          docker logout ghcr.io
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           docker rollout -f docker-compose/staging.yaml --env-file staging.env duckiehunt-stg
