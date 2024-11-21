@@ -9,6 +9,7 @@ services:
       - /data/duckiehunt-prod/uploads:/code/uploads
       - /data/duckiehunt-stg/db:/db
     labels:
+      - "duckiehunt.env=production"
       - "traefik.enable=true"
       - "traefik.http.routers.duckiehunt-prod.rule=Host(`duckiehunt.com`) || Host(`www.duckiehunt.com`)"
       - "traefik.http.routers.duckiehunt-prod.entrypoints=websecure"

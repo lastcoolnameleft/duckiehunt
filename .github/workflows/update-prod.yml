@@ -1,0 +1,22 @@
+on: workflow_dispatch
+name: Update Production DB
+env:
+  VM_DIR: /home/ghaction/duckiehunt
+jobs:
+  update-db-prod:
+    name: Update Production DB
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands
+      uses: appleboy/ssh-action@v1.0.3
+      if: github.event_name != 'pull_request'
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          echo "Starting Production DB update"
+          cd ${{ env.VM_DIR }}
+          CONTAINER_NAME=$(docker ps --filter "label=duckiehunt.env=production" --format "{{json .Names }}" | tr -d '"')
+          docker exec -it $CONTAINER_NAME python manage.py migrate
