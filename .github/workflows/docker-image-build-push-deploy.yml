@@ -92,6 +92,8 @@ jobs:
           echo "Starting stg rollout"
           cd ${{ env.VM_DIR }}
           docker system prune -f
+          echo "DUCKIEHUNT_IMAGE:  ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" > staging.env
+          echo "DUCKIEHUNT_IMAGE:  ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" > production.env
           # https://github.com/orgs/community/discussions/43380
           docker logout ghcr.io
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}

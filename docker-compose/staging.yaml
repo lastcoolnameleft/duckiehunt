@@ -1,7 +1,7 @@
 name: dh-stg
 services:
   duckiehunt-stg:
-    image: "duckiehunt.azurecr.io/gh/duckiehunt:latest"
+    image: ${DUCKIEHUNT_IMAGE}
     environment:
       - DJANGO_SETTINGS_MODULE=duckiehunt.settings.staging
     volumes:
@@ -9,6 +9,7 @@ services:
       - /data/duckiehunt-stg/db:/db
       - /data/duckiehunt-stg/uploads:/code/uploads
     labels:
+      - "duckiehunt.env=staging"
       - "traefik.enable=true"
       - "traefik.http.routers.duckiehunt-stg.rule=Host(`stg.duckiehunt.com`)"
       - "traefik.http.routers.duckiehunt-stg.entrypoints=websecure"
