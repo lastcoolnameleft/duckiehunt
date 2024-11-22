@@ -112,7 +112,7 @@ def privacy(request):
 @login_required
 def mark(request, duck_id=None):
     user = request.user
-    return mark_process(request, duck_id, user, '/mark/')
+    return mark_process(request, duck_id, user, '/mark/' + str(duck_id))
 
 def mark_captcha(request, duck_id=None):
     user = None
@@ -182,8 +182,10 @@ def logout(request):
     return redirect('/')
 
 def login(request):
+    next = request.GET.get('next', None)     
+    duck_id = next.split('/')[2] if next else None
     """Home view, displays login mechanism"""
-    return render(request, 'duck/login.html')
+    return render(request, 'duck/login.html', {'duck_id': duck_id})
 
 def profile(request):
     """ Show profile data """
