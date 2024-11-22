@@ -182,10 +182,13 @@ def logout(request):
     return redirect('/')
 
 def login(request):
-    next = request.GET.get('next', None)     
-    duck_id = next.split('/')[2] if next else None
     """Home view, displays login mechanism"""
-    return render(request, 'duck/login.html', {'duck_id': duck_id})
+    next = request.GET.get('next', None)
+    if next and len(next.split('/')) > 2:
+        duck_id = next.split('/')[2]
+    else:
+        duck_id = None
+    return render(request, 'duck/login.html', {'next': next, 'duck_id': duck_id})
 
 def profile(request):
     """ Show profile data """
