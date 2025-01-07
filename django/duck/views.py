@@ -112,7 +112,8 @@ def privacy(request):
 @login_required
 def mark(request, duck_id=None):
     user = request.user
-    return mark_process(request, duck_id, user, '/mark/' + str(duck_id))
+    url = '/mark/' + str(duck_id) if duck_id else '/mark/'
+    return mark_process(request, duck_id, user, url)
 
 def mark_captcha(request, duck_id=None):
     user = None

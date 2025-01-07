@@ -22,8 +22,8 @@
               <div id="auth_container">
                 <div id="login_container">
                   <div id="social_login">
-                    <a class="gg_login" href="{% url 'social:begin' 'google-oauth2' %}?next={{ next }}">Google</a>
-                    <a class="fb_login" href="{% url 'social:begin' 'facebook' %}?next={{ next }}">Facebook</a>
+                    <a class="gg_login" href="{% url 'social:begin' 'google-oauth2' %}{% if next %}?next={{ next }}{% endif %}">Google</a>
+                    <a class="fb_login" href="{% url 'social:begin' 'facebook' %}{% if next %}?next={{ next }}{% endif %}">Facebook</a>
                     <a class="captcha_login" href="/mark_captcha/{{ duck_id }}">Captcha</a>
                   </div>
                 </div>
