@@ -30,6 +30,8 @@ urlpatterns = [
     path('api/duck/<int:duck_id>/locations', apis.duck_locations),
     path('api/duck/<int:duck_id>/', apis.duck_locations),
     path('api/location/<int:duck_location_id>', apis.location),
+    # Version
+    path('api/version', apis.version, name='version'),
     # Auth
     path('profile', views.profile, name='profile'),
     path('login', views.login, name='login'),

@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse, HttpResponse
 from django.core import serializers
@@ -45,4 +46,9 @@ def location(request, duck_location_id):
         'comments': duck_location.comments,
     }
     return JsonResponse(duck_location_data)
+
+def version(request):
+    return JsonResponse({
+        'git_sha': os.environ.get('GIT_SHA', 'unknown'),
+    })
 
