@@ -1,5 +1,7 @@
 FROM python:3.12-slim
 ENV PYTHONUNBUFFERED 1
+ARG GIT_SHA=unknown
+ENV GIT_SHA=${GIT_SHA}
 RUN apt-get update -y
 RUN apt install python3-dev default-libmysqlclient-dev pkg-config build-essential libffi-dev -y
 RUN mkdir /code
