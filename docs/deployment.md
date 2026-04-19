@@ -34,6 +34,11 @@ sudo mount /dev/sda1 /data
 
 ```shell
 az acr login -n duckiehunt
+cd ~/duckiehunt
+docker compose -f docker-compose/staging.yaml --env-file stg.env up -d
+docker compose -f docker-compose/production.yaml --env-file prod.env up -d
+
+## Old
 docker pull duckiehunt.azurecr.io/gh/duckiehunt:latest
 docker compose --file ~/duckiehunt/docker-compose/management.yaml up -d
 docker compose --file ~/duckiehunt/docker-compose/development.yaml up -d
