@@ -59,49 +59,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see "[AUTOTITLE](/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds)." 
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
-
   update-stg:
-    name: Update VM (stg)
+    name: Update VM via Watchtower(stg)
     runs-on: ubuntu-latest
     needs: build-push-deploy
     steps:
 
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: copy docker compose via ssh
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        source: "docker-compose/staging.yaml,docker-compose/production.yaml"
-        target: /home/ghaction/duckiehunt/
-
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v1.0.3
-      if: github.event_name != 'pull_request'
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script_stop: true
-        script: |
-          echo "Starting stg rollout"
-          cd ${{ env.VM_DIR }}
-          docker system prune -f
-          echo "DUCKIEHUNT_IMAGE:  ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" > staging.env
-          echo "DUCKIEHUNT_IMAGE:  ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" > production.env
-          # https://github.com/orgs/community/discussions/43380
-          docker logout ghcr.io
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          docker rollout -f docker-compose/staging.yaml --env-file staging.env duckiehunt-stg
+      - name: Trigger Watchtower Update
+        run: |
+          curl -sf -X POST -H "Authorization: Bearer ${{ secrets.WATCHTOWER_TOKEN }}" \
+              "${{ secrets.WATCHTOWER_URL }}?images=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"

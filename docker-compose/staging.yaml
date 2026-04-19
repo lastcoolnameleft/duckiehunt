@@ -9,6 +9,7 @@ services:
       - /data/duckiehunt-stg/db:/db
       - /data/duckiehunt-stg/uploads:/code/uploads
     labels:
+      - "com.centurylinklabs.watchtower.enable=true"
       - "duckiehunt.env=staging"
       - "traefik.enable=true"
       - "traefik.http.routers.duckiehunt-stg.rule=Host(`stg.duckiehunt.com`)"
