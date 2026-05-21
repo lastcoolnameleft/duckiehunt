@@ -11,3 +11,15 @@
 - Headed mode: `pytest --headed tests/test_basic.py`
 - Auth tests (test_mark_duck.py) require auth.json
 - Install deps: `pip install playwright pytest-playwright setuptools flickr-api && playwright install`
+
+## Recent Work (2026-05-21T16:40)
+
+- Created `tests/staging/test_smoke.py` with 8 smoke tests
+  - Tests: homepage load, health check, login page load, mark page load, OAuth flow surfaces
+  - Uses `requests` and `pytest` (CI-friendly, no browser)
+  - Configurable via `DUCKIEHUNT_STAGING_URL` env var
+  - Polls for readiness before test run
+- Created `tests/production/test_smoke.py` with 5 critical path tests
+  - Minimal subset: homepage, health, mark page surface
+  - Same polling and env var pattern as staging
+- Both suites designed for Dewey's CI workflows
