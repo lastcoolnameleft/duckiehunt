@@ -5,7 +5,13 @@ Tools for running locally
 ## Build and run locally
 
 ```shell
+cp .env.example .env
+# Set DJANGO_SETTINGS_MODULE=duckiehunt.settings.local in .env for local use
+docker compose up --build
+
+# Legacy local compose path during migration validation
 docker compose -f docker-compose/mac.yaml up --build
+
 open http://localhost:8000
 
 # Clear image cache

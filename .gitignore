@@ -46,7 +46,8 @@ node_modules
 django/env/local.env
 local_settings.py
 secrets
-django/duckiehunt/settings/
+django/duckiehunt/settings/*
+!django/duckiehunt/settings/__init__.py
 data/
 tests/auth.json
 __pycache__
@@ -56,7 +57,8 @@ auth.json
 # Squad: ignore runtime state (logs, inbox, sessions)
 .squad/orchestration-log/
 .squad/log/
-.squad/decisions/inbox/
+.squad/decisions/inbox/*
+!.squad/decisions/inbox/*.md
 .squad/sessions/
 .squad/.scratch/
 # Squad: SubSquad activation file (local to this machine)

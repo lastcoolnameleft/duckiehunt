@@ -1,0 +1,44 @@
+name: ${COMPOSE_PROJECT_NAME:-duckiehunt}
+
+services:
+  duckiehunt:
+    image: ${IMAGE:-ghcr.io/lastcoolnameleft/duckiehunt:latest}
+    build:
+      context: .
+      args:
+        GIT_SHA: ${GIT_SHA:-unknown}
+    env_file:
+      - ${ENV_FILE:-.env}
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-duckiehunt.settings.production}
+    volumes:
+      - ${DATA_DIR:-.}/data:/app/data
+      - ${DATA_DIR:-.}/uploads:/app/uploads
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "duckiehunt.env=${DEPLOY_ENV:-staging}"
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}.rule=Host(`${TRAEFIK_HOST:-localhost}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}.entrypoints=websecure"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}.tls.certresolver=myresolver"
+      - "traefik.http.services.${COMPOSE_PROJECT_NAME:-duckiehunt}.loadbalancer.server.port=8000"
+    restart: unless-stopped
+    networks:
+      - traefik
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    command:
+      - --label-enable
+      - --cleanup
+      - --interval
+      - ${WATCHTOWER_POLL_INTERVAL:-300}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}

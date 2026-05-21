@@ -207,8 +207,16 @@
         checkDuckName();
     </script>
 
-    <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXHyk9hmL302x8fjkpEbw5kVI0hjxsaos&libraries=places&callback=initMap">
+    <script>
+        const googleMapsApiKey = "{{ GOOGLE_MAPS_API_KEY|escapejs }}";
+        if (googleMapsApiKey) {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsApiKey)}&libraries=places&callback=initMap`;
+            script.async = true;
+            document.body.appendChild(script);
+        } else {
+            console.warn('GOOGLE_MAPS_API_KEY is not configured.');
+        }
     </script>
 
     <style>

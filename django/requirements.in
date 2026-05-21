@@ -1,5 +1,6 @@
 Django
 requests
+gunicorn==23.0.0
 social-auth-app-django
 social-auth-core
 flickr-api

@@ -35,6 +35,14 @@ sudo mount /dev/sda1 /data
 ```shell
 az acr login -n duckiehunt
 cd ~/duckiehunt
+
+# Unified compose path (migration target)
+cp .env.example .env.stg
+cp .env.example .env.prod
+ENV_FILE=.env.stg docker compose --env-file .env.stg up -d
+ENV_FILE=.env.prod docker compose --env-file .env.prod up -d
+
+## Legacy until validation completes
 docker compose -f docker-compose/staging.yaml --env-file stg.env up -d
 docker compose -f docker-compose/production.yaml --env-file prod.env up -d
 

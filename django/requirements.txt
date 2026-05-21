@@ -27,6 +27,8 @@ django-recaptcha==4.0.0
     # via -r requirements.in
 flickr-api==0.7.7
     # via -r requirements.in
+gunicorn==23.0.0
+    # via -r requirements.in
 haversine==2.8.1
     # via -r requirements.in
 httplib2==0.22.0
@@ -39,6 +41,8 @@ oauthlib==3.2.2
     # via
     #   requests-oauthlib
     #   social-auth-core
+packaging==26.2
+    # via gunicorn
 pycparser==2.22
     # via cffi
 pyjwt==2.8.0

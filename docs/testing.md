@@ -10,6 +10,10 @@ pytest test_mark_duck.py
 
 # Run with browser
 pytest --headed test_basic.py
+
+cd django && python manage.py test duck.tests --settings=duckiehunt.settings.test
+
+
 ```
 
 Regenerate auth.json
