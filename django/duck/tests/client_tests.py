@@ -1,11 +1,13 @@
 """ Client Tests """
+from unittest.mock import patch
+
 from django.test import TestCase, RequestFactory, Client
 from django.contrib.auth import get_user_model
 
 from duck.models import Duck, DuckLocation
 from duck.views import index
 
-# Create your tests here.
+
 class SimpleTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -26,52 +28,60 @@ class SimpleTest(TestCase):
         response = self.client.get('/mark/')
         self.assertEqual(response.status_code, 200)
 
-    def test_mark_full(self):
+    @patch('duck.marker.email_duck_location')
+    def test_mark_full(self, mock_email):
         self.client.force_login(self.user)
         duck_id = '2'
         data = {'duck_id': duck_id, 'name': 'test duck ' + duck_id, 'location': 'northkapp',
                 'lat': '71.169493', 'lng': '25.7831639', 'date_time': '09/01/2018 23:04:08',
-                'comments': 'this is a comment'}
+                'comments': 'this is a comment', 'g-recaptcha-response': 'PASSED'}
         response = self.client.post('/mark/', data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/duck/' + duck_id)
+        self.assertIn('/location/', response.url)
         duck = Duck.objects.get(pk=duck_id)
         self.assertEqual(duck.name, 'test duck ' + duck_id)
-        duck_location = DuckLocation.objects.filter(duck_id=duck_id)
-        self.assertEqual(len(duck_location), 1)
-        self.assertEqual(duck_location[0].location, 'northkapp')
-        self.assertEqual(duck_location[0].latitude, 71.169493)
-        self.assertEqual(duck_location[0].longitude, 25.7831639)
-        self.assertEqual(duck_location[0].comments, 'this is a comment')
+        # Initial location + new location = 2
+        duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('duck_location_id')
+        self.assertEqual(len(duck_location), 2)
+        new_loc = duck_location[1]
+        self.assertEqual(new_loc.location, 'northkapp')
+        self.assertEqual(new_loc.latitude, 71.169493)
+        self.assertEqual(new_loc.longitude, 25.7831639)
+        self.assertEqual(new_loc.comments, 'this is a comment')
 
-
-    def test_mark_no_name(self):
+    @patch('duck.marker.email_duck_location')
+    def test_mark_no_name(self, mock_email):
         self.client.force_login(self.user)
         duck_id = '2'
         data = {'duck_id': duck_id, 'location': 'northkapp', 'name': '',
                 'lat': '71.169493', 'lng': '25.7831639', 'date_time': '09/01/2018 23:04:08',
-                'comments': 'this is a comment'}
+                'comments': 'this is a comment', 'g-recaptcha-response': 'PASSED'}
         response = self.client.post('/mark/', data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/duck/' + duck_id)
+        self.assertIn('/location/', response.url)
         duck = Duck.objects.get(pk=duck_id)
         self.assertEqual(duck.name, 'Unnamed')
         duck_location = DuckLocation.objects.filter(duck_id=duck_id)
-        self.assertEqual(len(duck_location), 1)
+        self.assertEqual(len(duck_location), 2)  # initial + new
 
-    # NOT READY YET.
-    def test_mark_no_name_rename(self):
+    @patch('duck.marker.email_duck_location')
+    def test_mark_no_name_rename(self, mock_email):
+        """An unnamed duck gets renamed when a new name is provided."""
         self.client.force_login(self.user)
         duck_id = '2'
+        # First mark: creates duck as Unnamed
         data = {'duck_id': duck_id, 'location': 'northkapp', 'name': '',
                 'lat': '71.169493', 'lng': '25.7831639', 'date_time': '09/01/2018 23:04:08',
-                'comments': 'this is a comment'}
-        response = self.client.post('/mark/', data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/duck/' + duck_id)
+                'comments': 'first', 'g-recaptcha-response': 'PASSED'}
+        self.client.post('/mark/', data)
         duck = Duck.objects.get(pk=duck_id)
         self.assertEqual(duck.name, 'Unnamed')
-        duck_location = DuckLocation.objects.filter(duck_id=duck_id)
-        self.assertEqual(len(duck_location), 1)
 
-     
+        # Second mark: renames the duck
+        data2 = {'duck_id': duck_id, 'location': 'oslo', 'name': 'Renamed Duck',
+                 'lat': '59.91', 'lng': '10.75', 'date_time': '10/01/2018 12:00:00',
+                 'comments': 'second', 'g-recaptcha-response': 'PASSED'}
+        response = self.client.post('/mark/', data2)
+        self.assertEqual(response.status_code, 302)
+        duck.refresh_from_db()
+        self.assertEqual(duck.name, 'Renamed Duck')
