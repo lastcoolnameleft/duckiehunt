@@ -1,0 +1,12 @@
+{
+  "universe_usage_history": [
+  {
+    "assignment_id": "ducktales-2026-05-21",
+    "universe": "DuckTales",
+    "created_at": "2026-05-21T15:12:07Z",
+    "agents": ["scrooge", "huey", "dewey", "louie"],
+    "reason": "User requested DuckTales universe for duckiehunt project"
+  }
+],
+  "assignment_cast_snapshots": {}
+}
