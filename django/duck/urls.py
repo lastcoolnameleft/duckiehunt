@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/duck/<int:duck_id>/locations', apis.duck_locations),
     path('api/duck/<int:duck_id>/', apis.duck_locations),
     path('api/location/<int:duck_location_id>', apis.location),
+    path('api/health', apis.health, name='health'),
     # Version
     path('api/version', apis.version, name='version'),
     # Auth

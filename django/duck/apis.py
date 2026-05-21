@@ -47,6 +47,23 @@ def location(request, duck_location_id):
     }
     return JsonResponse(duck_location_data)
 
+def health(request):
+    from django.db import connection
+
+    try:
+        connection.ensure_connection()
+        db_ok = True
+    except Exception:
+        db_ok = False
+
+    status = 'ok' if db_ok else 'degraded'
+    code = 200 if db_ok else 503
+    return JsonResponse(
+        {'status': status, 'sha': os.environ.get('GIT_SHA', 'unknown'), 'db': db_ok},
+        status=code,
+    )
+
+
 def version(request):
     return JsonResponse({
         'git_sha': os.environ.get('GIT_SHA', 'unknown'),
