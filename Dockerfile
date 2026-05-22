@@ -12,6 +12,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libffi-dev \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 COPY django/requirements.txt /app/requirements.txt
@@ -33,7 +34,6 @@ RUN chmod +x /docker-entrypoint.sh && \
     chown -R appuser:appuser /app /home/appuser /docker-entrypoint.sh
 
 WORKDIR /app/django
-USER appuser
 
 EXPOSE 8000
 
