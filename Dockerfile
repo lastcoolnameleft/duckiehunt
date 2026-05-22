@@ -25,7 +25,6 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh && \
     mkdir -p /app/data /app/uploads && \
     ln -s /app/django /code && \
-    ln -s /app/data /db && \
     ln -s /app/uploads /uploads && \
     DJANGO_SETTINGS_MODULE=duckiehunt.settings \
     DJANGO_SECRET_KEY=build-placeholder \

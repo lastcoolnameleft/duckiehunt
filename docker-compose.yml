@@ -10,7 +10,8 @@ services:
     env_file:
       - ${ENV_FILE:-.env}
     environment:
-      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-duckiehunt.settings.production}
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-duckiehunt.settings}
+      DJANGO_DATA_DIR: /app/data
     volumes:
       - ${DATA_DIR:-.}/data:/app/data
       - ${DATA_DIR:-.}/uploads:/app/uploads

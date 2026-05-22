@@ -2,13 +2,11 @@ import os
 from pathlib import Path
 
 import flickr_api
-from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 
 DJANGO_DIR = Path(__file__).resolve().parents[2]
 PROJECT_ROOT = DJANGO_DIR.parent
-DEFAULT_DATA_DIR = Path("/app/data") if PROJECT_ROOT == Path("/app") else PROJECT_ROOT / "db"
 TEST_RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
 TEST_RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 
@@ -63,18 +61,6 @@ def _default_base_url():
     return "http://localhost:8042" if DEBUG else "https://duckiehunt.com"
 
 
-
-def _database_path_from_url(database_url):
-    if not database_url.startswith("sqlite://"):
-        raise ImproperlyConfigured("DATABASE_URL must use sqlite:// for Duckiehunt.")
-
-    if database_url.startswith("sqlite:////"):
-        return str(Path("/" + database_url.removeprefix("sqlite:////").lstrip("/")))
-
-    relative_path = database_url.removeprefix("sqlite:///")
-    return str(_resolve_path(relative_path))
-
-
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "django-insecure-duckiehunt-local-dev-secret-key",
@@ -88,15 +74,9 @@ ALLOWED_HOSTS = _get_list(
 )
 CSRF_TRUSTED_ORIGINS = _get_list("DJANGO_CSRF_TRUSTED_ORIGINS", BASE_URL)
 
-DATA_DIR = _resolve_path(os.environ.get("DATA_DIR", str(DEFAULT_DATA_DIR)))
-_database_url = os.environ.get("DATABASE_URL", "").strip()
-_database_path = os.environ.get("DATABASE_PATH", "").strip()
-if _database_url:
-    DATABASE_NAME = _database_path_from_url(_database_url)
-elif _database_path:
-    DATABASE_NAME = str(_resolve_path(_database_path))
-else:
-    DATABASE_NAME = str(DATA_DIR / "duckiehunt.db")
+DATA_DIR = _resolve_path(os.environ.get("DJANGO_DATA_DIR", str(DJANGO_DIR / "data")))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATABASE_NAME = str(DATA_DIR / "duckiehunt.db")
 
 Path(DATABASE_NAME).parent.mkdir(parents=True, exist_ok=True)
 UPLOAD_PATH = str(DATA_DIR / "uploads")
