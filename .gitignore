@@ -29,7 +29,8 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 # User defined
 *.swp
 docker-db/
-.env
+.env*
+!.env.example
 uploads/
 tmp/
 config/minikube
