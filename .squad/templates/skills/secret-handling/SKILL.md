@@ -50,7 +50,7 @@ Spawned agents have read access to the entire repository, including `.env` files
 | Email Addresses | `user@example.com` (PII violation per team decision) | `[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}` |
 
 **What to write instead:**
-- Placeholder values: `DATABASE_URL=<set in .env>`
+- Placeholder values: `SENDGRID_API_KEY=<set in .env>`
 - Redacted references: `API key configured (see .env.example)`
 - Architecture notes: "App uses JWT auth — token stored in session"
 - Schema documentation: "Requires OPENAI_API_KEY, GITHUB_TOKEN (see .env.example for format)"
@@ -69,7 +69,7 @@ Spawned agents have read access to the entire repository, including `.env` files
      🚨 SECRET DETECTED — commit blocked
      
      File: .squad/decisions/inbox/river-db-config.md
-     Pattern: DATABASE_URL=postgres://user:password@localhost:5432/prod
+     Pattern: SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxx
      
      This file contains credentials and MUST NOT be committed.
      Please remove the secret, replace with placeholder, and try again.
@@ -118,13 +118,13 @@ Spawned agents have read access to the entire repository, including `.env` files
 Agent: "What environment variables does this app need?"
 → Reads `.env.example`:
     OPENAI_API_KEY=sk-...
-    DATABASE_URL=postgres://user:pass@localhost:5432/db
+    SENDGRID_API_KEY=SG....
     REDIS_URL=redis://localhost:6379
 
 → Writes to .squad/decisions/inbox/river-env-setup.md:
     "App requires three environment variables:
     - OPENAI_API_KEY (OpenAI API key, format: sk-...)
-    - DATABASE_URL (Postgres connection string)
+    - SENDGRID_API_KEY (SendGrid API key)
     - REDIS_URL (Redis connection string)
     See .env.example for full schema."
 ```
@@ -135,10 +135,10 @@ Agent: "What environment variables does this app need?"
 
 ```
 Agent: (reads .env)
-    DATABASE_URL=postgres://admin:super_secret_pw@prod.example.com:5432/appdb
+    SENDGRID_API_KEY=SG.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 → Writes to .squad/decisions/inbox/river-db-schema.md:
-    "Database connection: postgres://admin:super_secret_pw@prod.example.com:5432/appdb"
+    "SendGrid key: SG.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     
 🚨 VIOLATION: Live credential written to committed file
 ```
