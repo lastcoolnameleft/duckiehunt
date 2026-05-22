@@ -14,14 +14,12 @@ on:
         description: "Optional SHA to wait for before testing"
         default: ""
 
-env:
-  # Required secret: PROD_BASE_URL, e.g. https://duckiehunt.lastcoolnameleft.com
-  PROD_BASE_URL: ${{ inputs.base_url || secrets.PROD_BASE_URL }}
-
 jobs:
   wait-for-deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    env:
+      PROD_BASE_URL: ${{ inputs.base_url || secrets.PROD_BASE_URL }}
     outputs:
       sha_match: ${{ steps.poll.outputs.sha_match }}
     steps:
@@ -61,7 +59,7 @@ jobs:
     needs: wait-for-deploy
     runs-on: ubuntu-latest
     env:
-      PROD_BASE_URL: ${{ env.PROD_BASE_URL }}
+      PROD_BASE_URL: ${{ inputs.base_url || secrets.PROD_BASE_URL }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
