@@ -4,7 +4,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   VM_DIR: /home/ghaction/duckiehunt
-  IMAGE_TAG: ${{ github.head_ref || github.ref_name }}
+  IMAGE_TAG: latest
 
 permissions:
   contents: read
