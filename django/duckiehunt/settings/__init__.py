@@ -74,13 +74,14 @@ ALLOWED_HOSTS = _get_list(
 )
 CSRF_TRUSTED_ORIGINS = _get_list("DJANGO_CSRF_TRUSTED_ORIGINS", BASE_URL)
 
-DATA_DIR = _resolve_path(os.environ.get("DJANGO_DATA_DIR", str(DJANGO_DIR / "data")))
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-DATABASE_NAME = str(DATA_DIR / "duckiehunt.db")
+DB_DIR = _resolve_path(os.environ.get("DJANGO_DB_DIR", str(DJANGO_DIR / "data")))
+DB_DIR.mkdir(parents=True, exist_ok=True)
+DATABASE_NAME = str(DB_DIR / "duckiehunt.db")
 
-Path(DATABASE_NAME).parent.mkdir(parents=True, exist_ok=True)
-UPLOAD_PATH = str(DATA_DIR / "uploads")
+UPLOAD_PATH = str(_resolve_path(os.environ.get("DJANGO_UPLOAD_DIR", str(DJANGO_DIR / "uploads"))))
 Path(UPLOAD_PATH).mkdir(parents=True, exist_ok=True)
+
+SETTINGS_DIR = _resolve_path(os.environ.get("DJANGO_SETTINGS_DIR", str(DJANGO_DIR / "duckiehunt" / "settings")))
 
 INSTALLED_APPS = [
     "duck.apps.DuckConfig",
@@ -213,7 +214,7 @@ GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
 
 FLICKR_API_KEY = os.environ.get("FLICKR_API_KEY", "")
 FLICKR_API_SECRET = os.environ.get("FLICKR_API_SECRET", "")
-FLICKR_AUTH_FILE = os.environ.get("FLICKR_AUTH_FILE", "django/duckiehunt/settings/flickr.auth")
+FLICKR_AUTH_FILE = os.environ.get("FLICKR_AUTH_FILE", str(SETTINGS_DIR / "flickr.auth"))
 if FLICKR_AUTH_FILE:
     FLICKR_AUTH_FILE = str(_resolve_flickr_auth_file(FLICKR_AUTH_FILE))
 FLICKR_PHOTO_IS_PUBLIC = "1" if _get_bool("FLICKR_PHOTO_IS_PUBLIC", default=False) else "0"
