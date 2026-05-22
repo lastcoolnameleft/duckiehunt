@@ -44,6 +44,7 @@ config/aks-prod-django
 node_modules
 
 # env stuff
+django/staticfiles/
 django/env/local.env
 local_settings.py
 secrets

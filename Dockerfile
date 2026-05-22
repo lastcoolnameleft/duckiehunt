@@ -3,7 +3,7 @@ FROM python:3.12-slim
 ARG GIT_SHA=unknown
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=duckiehunt.settings.production \
+    DJANGO_SETTINGS_MODULE=duckiehunt.settings \
     GIT_SHA=${GIT_SHA} \
     HOME=/home/appuser
 
@@ -26,7 +26,7 @@ RUN chmod +x /docker-entrypoint.sh && \
     ln -s /app/django /code && \
     ln -s /app/data /db && \
     ln -s /app/uploads /uploads && \
-    DJANGO_SETTINGS_MODULE=duckiehunt.settings.production \
+    DJANGO_SETTINGS_MODULE=duckiehunt.settings \
     DJANGO_SECRET_KEY=build-placeholder \
     python /app/django/manage.py collectstatic --noinput && \
     adduser --system --group --home /home/appuser appuser && \

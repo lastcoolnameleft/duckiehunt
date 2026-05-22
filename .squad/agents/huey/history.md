@@ -19,3 +19,16 @@
 - Registered route in `django/duck/urls.py` as `path("api/health/", health, name="health")`
 - Validated with `manage.py check` and Django shell test
 - Provides readiness signal for CI deploy polling
+
+## Recent Work (2026-05-21T22:36)
+
+- Regenerated `django/requirements.txt` with `pip-compile --upgrade requirements.in` to clear Dependabot alerts
+- Upgraded key packages including Django 6.0.5, urllib3 2.7.0, cryptography 48.0.0, requests 2.34.2, PyJWT 2.13.0, idna 3.16, social-auth-app-django 5.9.0, and sqlparse 0.5.5
+- Installed the refreshed lockfile and validated with `DATABASE_PATH=db/duckiehunt.db python django/manage.py check`
+
+## Recent Work (2026-05-21T22:39)
+
+- Added `python-dotenv` to `django/requirements.in` and regenerated the pinned `django/requirements.txt` so unified settings can import `load_dotenv`
+- Updated the Docker build to use `DJANGO_SETTINGS_MODULE=duckiehunt.settings` for both the image environment and the `collectstatic` build step
+- Checked `docker-entrypoint.sh`; it does not set `DJANGO_SETTINGS_MODULE`, so no entrypoint change was needed
+- Revalidated settings loading with `DATABASE_PATH=db/duckiehunt.db python django/manage.py check`
