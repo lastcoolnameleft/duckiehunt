@@ -75,11 +75,9 @@ ALLOWED_HOSTS = _get_list(
 CSRF_TRUSTED_ORIGINS = _get_list("DJANGO_CSRF_TRUSTED_ORIGINS", BASE_URL)
 
 DB_DIR = _resolve_path(os.environ.get("DJANGO_DB_DIR", str(DJANGO_DIR / "data")))
-DB_DIR.mkdir(parents=True, exist_ok=True)
 DATABASE_NAME = str(DB_DIR / "duckiehunt.db")
 
 UPLOAD_PATH = str(_resolve_path(os.environ.get("DJANGO_UPLOAD_DIR", str(DJANGO_DIR / "uploads"))))
-Path(UPLOAD_PATH).mkdir(parents=True, exist_ok=True)
 
 SETTINGS_DIR = _resolve_path(os.environ.get("DJANGO_SETTINGS_DIR", str(DJANGO_DIR / "duckiehunt" / "settings")))
 

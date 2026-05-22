@@ -1,9 +1,7 @@
 #!/bin/sh
 set -e
 
-mkdir -p /app/data /app/uploads
-
-# Ensure appuser owns the data and uploads directories (handles root-owned volumes)
+# Ensure appuser owns writable directories (handles root-owned volumes)
 if [ "$(id -u)" = "0" ]; then
   chown -R appuser:appuser /app/data /app/uploads
   exec gosu appuser "$0" "$@"
