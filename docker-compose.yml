@@ -7,11 +7,12 @@ services:
       - ${ENV_FILE:-.env}
     environment:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-duckiehunt.settings}
-      DJANGO_DB_DIR: /app/data
+      DJANGO_DB_DIR: /app/db
       DJANGO_UPLOAD_DIR: /app/uploads
-      DJANGO_SETTINGS_DIR: /app/data/settings
+      DJANGO_SETTINGS_DIR: /app/settings
     volumes:
-      - ${DATA_DIR:-.}/data:/app/data
+      - ${DATA_DIR:-.}/settings:/app/settings
+      - ${DATA_DIR:-.}/db:/app/db
       - ${DATA_DIR:-.}/uploads:/app/uploads
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
