@@ -7,3 +7,4 @@ flickr-api
 haversine
 whitenoise
 django-recaptcha
+python-dotenv
