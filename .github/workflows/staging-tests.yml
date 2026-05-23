@@ -63,9 +63,16 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install test dependencies
-        run: pip install requests pytest
+        run: pip install requests pytest pytest-playwright playwright
+      - name: Install Playwright browsers
+        run: playwright install chromium --with-deps
       - name: Run staging smoke tests
-        run: pytest tests/staging/ -v --tb=short
+        run: pytest tests/staging/test_smoke.py -v --tb=short
+      - name: Run integration tests
+        env:
+          STG_TEST_USERNAME: ${{ secrets.STG_TEST_USERNAME }}
+          STG_TEST_PASSWORD: ${{ secrets.STG_TEST_PASSWORD }}
+        run: pytest tests/staging/test_mark_integration.py -v --tb=short
       - name: Create failure issue
         if: failure()
         uses: actions/github-script@v7

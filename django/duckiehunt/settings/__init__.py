@@ -168,6 +168,7 @@ STATIC_ROOT = str(DJANGO_DIR / "staticfiles")
 Path(STATIC_ROOT).mkdir(parents=True, exist_ok=True)
 
 AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
     "social_core.backends.google.GoogleOAuth2",
     "social_core.backends.facebook.FacebookOAuth2",
 )
