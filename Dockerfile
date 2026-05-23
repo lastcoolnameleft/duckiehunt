@@ -25,6 +25,11 @@ RUN chmod +x /docker-entrypoint.sh && \
     DJANGO_SECRET_KEY=build-placeholder \
     python /app/django/manage.py collectstatic --noinput
 
+RUN useradd -r -u 1000 -d /app appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
 WORKDIR /app/django
 
 EXPOSE 8000
