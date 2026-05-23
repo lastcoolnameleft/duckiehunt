@@ -43,7 +43,7 @@ class DuckLocation(models.Model):
 
 class DuckLocationLink(models.Model):
     duck_location_link_id = models.AutoField(primary_key=True)
-    duck_location = models.ForeignKey(DuckLocation, models.DO_NOTHING, null=True)
+    duck_location = models.ForeignKey(DuckLocation, on_delete=models.CASCADE, null=True)
     link = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
@@ -52,7 +52,7 @@ class DuckLocationLink(models.Model):
 
 class DuckLocationPhoto(models.Model):
     duck_location_photo_id = models.AutoField(primary_key=True)
-    duck_location = models.ForeignKey(DuckLocation, models.DO_NOTHING, null=True)
+    duck_location = models.ForeignKey(DuckLocation, on_delete=models.CASCADE, null=True)
     flickr_photo_id = models.BigIntegerField(blank=True, null=True)
     flickr_thumbnail_url = models.TextField(blank=True, null=True)
 # Not sure if we want to do this or not yet
