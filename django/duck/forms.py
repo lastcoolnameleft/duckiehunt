@@ -16,3 +16,9 @@ class DuckForm(forms.Form):
     lng = forms.FloatField(label='Longitude')
     comments = forms.CharField(widget=forms.Textarea(attrs={'cols': '50', 'rows': '5'}))
     image = forms.ImageField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        require_captcha = kwargs.pop('require_captcha', True)
+        super().__init__(*args, **kwargs)
+        if not require_captcha:
+            del self.fields['captcha']

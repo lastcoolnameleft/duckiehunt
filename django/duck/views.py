@@ -113,18 +113,18 @@ def privacy(request):
 def mark(request, duck_id=None):
     user = request.user
     url = '/mark/' + str(duck_id) if duck_id else '/mark/'
-    return mark_process(request, duck_id, user, url)
+    return mark_process(request, duck_id, user, url, require_captcha=False)
 
 def mark_captcha(request, duck_id=None):
     user = None
-    return mark_process(request, duck_id, user, '/mark_captcha/')
+    return mark_process(request, duck_id, user, '/mark_captcha/', require_captcha=True)
 
-def mark_process(request, duck_id, user, form_page):
+def mark_process(request, duck_id, user, form_page, require_captcha=True):
     """ Adds a duck, location, photo and link from webform """
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = DuckForm(request.POST)
+        form = DuckForm(request.POST, require_captcha=require_captcha)
         # check whether it's valid:
         if form.is_valid():
             duck_id = form.cleaned_data['duck_id']
@@ -164,7 +164,7 @@ def mark_process(request, duck_id, user, form_page):
             return HttpResponseRedirect(new_location_url)
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = DuckForm(initial={'duck_id': duck_id})
+        form = DuckForm(initial={'duck_id': duck_id}, require_captcha=require_captcha)
 
     map_data = {
         'width': '100%',

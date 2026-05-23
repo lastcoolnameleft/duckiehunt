@@ -337,3 +337,82 @@ class MarkProcessViewTest(TestCase):
 
         duck = Duck.objects.get(pk=200)
         self.assertEqual(duck.name, 'Unnamed')
+
+
+@override_settings(
+    RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+    RECAPTCHA_PRIVATE_KEY='6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
+    SILENCED_SYSTEM_CHECKS=['django_recaptcha.recaptcha_test_key_error'],
+)
+class MarkCaptchaSkipTest(TestCase):
+    """Tests that authenticated users don't need captcha on /mark/."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('captchatest', 'cap@test.com', 'pass')
+
+    @patch('duck.marker.email_duck_location')
+    def test_logged_in_user_can_submit_without_captcha(self, mock_email):
+        """Authenticated user on /mark/ should succeed without g-recaptcha-response."""
+        self.client.force_login(self.user)
+        data = {
+            'duck_id': '300',
+            'name': 'No Captcha Duck',
+            'location': 'Test City',
+            'lat': '30.0',
+            'lng': '-90.0',
+            'date_time': '01/01/2023 12:00:00',
+            'comments': 'No captcha needed',
+        }
+        response = self.client.post('/mark/', data)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/location/', response.url)
+
+        duck = Duck.objects.get(pk=300)
+        self.assertEqual(duck.name, 'No Captcha Duck')
+
+    def test_anonymous_user_fails_without_captcha(self):
+        """Anonymous user on /mark_captcha/ should fail without g-recaptcha-response."""
+        data = {
+            'duck_id': '301',
+            'name': 'Captcha Duck',
+            'location': 'Test City',
+            'lat': '30.0',
+            'lng': '-90.0',
+            'date_time': '01/01/2023 12:00:00',
+            'comments': 'Should fail',
+        }
+        response = self.client.post('/mark_captcha/', data)
+        # Should re-render form (not redirect) due to captcha failure
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'duck/mark.html')
+        self.assertFalse(Duck.objects.filter(pk=301).exists())
+
+    @patch('duck.marker.email_duck_location')
+    def test_anonymous_user_succeeds_with_captcha(self, mock_email):
+        """Anonymous user on /mark_captcha/ should succeed with valid captcha response."""
+        data = {
+            'duck_id': '302',
+            'name': 'Captcha OK Duck',
+            'location': 'Test City',
+            'lat': '30.0',
+            'lng': '-90.0',
+            'date_time': '01/01/2023 12:00:00',
+            'comments': 'Captcha passed',
+            'g-recaptcha-response': 'PASSED',
+        }
+        response = self.client.post('/mark_captcha/', data)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/location/', response.url)
+
+    def test_mark_page_has_no_captcha_field_for_logged_in_user(self):
+        """GET /mark/ for logged-in user should not render captcha widget."""
+        self.client.force_login(self.user)
+        response = self.client.get('/mark/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'g-recaptcha-response')
+
+    def test_mark_captcha_page_has_captcha_field(self):
+        """GET /mark_captcha/ should render captcha widget."""
+        response = self.client.get('/mark_captcha/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'recaptcha')
