@@ -14,7 +14,13 @@ UUID=2a2c8bce-0de4-4916-b960-23482ba13920   /data   xfs   defaults,nofail   1   
 
 ```shell
 scp .env.stg dh:duckiehunt/
-ssh dh "cd duckiehunt && docker compose -p duckiehunt-stg --env-file .env.stg up -d --force-recreate"
+ssh dh
+cd ~/duckiehunt
+docker compose -p duckiehunt-stg --env-file .env.stg down
+docker compose -p duckiehunt-stg --env-file .env.stg up -d --force-recreate
+
+docker compose -p duckiehunt-prod --env-file .env.prod down
+docker compose -p duckiehunt-prod --env-file .env.prod up -d --force-recreate
 
 ```
 
