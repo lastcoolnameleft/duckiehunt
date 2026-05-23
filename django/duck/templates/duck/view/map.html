@@ -46,9 +46,17 @@
                              if (!(focus_lat && focus_long)) {
                                  bounds.extend(position);
                              }
-                             var duck_name = location.duck__name ? ' (' + location.duck__name + ')' : '';
-                             var duck_header = '<a href="/duck/' + location.duck_id + '">Duck #' + location.duck_id + duck_name + '</a>';
-                             var content = '<div id="content"><p>' + duck_header + '<br/>' + location.comments + '</p></div>';
+
+                             function escapeHtml(str) {
+                                 if (!str) return '';
+                                 var div = document.createElement('div');
+                                 div.appendChild(document.createTextNode(str));
+                                 return div.innerHTML;
+                             }
+
+                             var duck_name = location.duck__name ? ' (' + escapeHtml(location.duck__name) + ')' : '';
+                             var duck_header = '<a href="/duck/' + encodeURIComponent(location.duck_id) + '">Duck #' + escapeHtml(String(location.duck_id)) + duck_name + '</a>';
+                             var content = '<div id="content"><p>' + duck_header + '<br/>' + escapeHtml(location.comments) + '</p></div>';
                              var infoWindow = new google.maps.InfoWindow({ content: content });
                              marker.addListener('click', () => { infoWindow.open(map, marker); });
                              if (location.pk == duck_location_id) {

@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import flickr_api
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 
@@ -61,12 +62,18 @@ def _default_base_url():
     return "http://localhost:8042" if DEBUG else "https://duckiehunt.com"
 
 
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-duckiehunt-local-dev-secret-key",
-)
+_SECRET_KEY_INSECURE = "django-insecure-duckiehunt-local-dev-secret-key"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 
 DEBUG = _get_bool("DJANGO_DEBUG", default=True)
+
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = _SECRET_KEY_INSECURE
+    else:
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY environment variable is required when DEBUG=False"
+        )
 BASE_URL = os.environ.get("DJANGO_BASE_URL", _default_base_url())
 ALLOWED_HOSTS = _get_list(
     "DJANGO_ALLOWED_HOSTS",
@@ -223,6 +230,18 @@ if FLICKR_API_KEY and FLICKR_API_SECRET:
 
 GIT_SHA = os.environ.get("GIT_SHA", "unknown")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Security hardening for production
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
     CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_SAMESITE = "Lax"
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
