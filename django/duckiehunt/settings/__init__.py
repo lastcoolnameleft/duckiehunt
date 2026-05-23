@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import flickr_api
+import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
@@ -230,6 +231,17 @@ if FLICKR_API_KEY and FLICKR_API_SECRET:
 
 GIT_SHA = os.environ.get("GIT_SHA", "unknown")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+SENTRY_ENVIRONMENT = os.environ.get("SENTRY_ENVIRONMENT", "development")
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=SENTRY_ENVIRONMENT,
+        release=GIT_SHA,
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+    )
 
 # Security hardening for production
 if not DEBUG:
