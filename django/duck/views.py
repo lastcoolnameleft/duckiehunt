@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core import serializers
+from django.core.cache import cache
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -10,7 +11,37 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from duck import marker
 
 from .forms import DuckForm, LoginForm, RegistrationForm
-from .models import Duck, DuckLocation, DuckLocationPhoto
+from .models import Duck, DuckLocation, DuckLocationLink, DuckLocationPhoto
+
+LOGIN_RATE_LIMIT = 5
+LOGIN_RATE_WINDOW = 300
+
+
+def _get_login_attempts_key(request):
+    """Get cache key for login rate limiting based on IP."""
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip() or request.META.get('REMOTE_ADDR', '')
+    return f'login_attempts_{ip}'
+
+
+def _is_login_rate_limited(request):
+    """Check if the IP has exceeded login attempts."""
+    key = _get_login_attempts_key(request)
+    attempts = cache.get(key, 0)
+    return attempts >= LOGIN_RATE_LIMIT
+
+
+def _record_failed_login(request):
+    """Record a failed login attempt."""
+    key = _get_login_attempts_key(request)
+    attempts = cache.get(key, 0)
+    cache.set(key, attempts + 1, LOGIN_RATE_WINDOW)
+
+
+def _clear_login_attempts(request):
+    """Clear login attempts on successful login."""
+    key = _get_login_attempts_key(request)
+    cache.delete(key)
+
 
 def index(request):
     """ / path """
@@ -69,6 +100,12 @@ def location(request, duck_location_id):
     duck_location = get_object_or_404(DuckLocation, pk=duck_location_id)
 
     photos = DuckLocationPhoto.objects.filter(duck_location_id=duck_location_id)
+    duck_links = list(
+        DuckLocationLink.objects.filter(duck_location_id=duck_location_id)
+        .exclude(link__isnull=True)
+        .exclude(link='')
+        .values_list('link', flat=True)
+    )
 
     duck_location_list = DuckLocation.objects.filter(duck_id=duck_location.duck.duck_id)
     duck_location_json = serializers.serialize('json', duck_location_list, use_natural_foreign_keys=True)
@@ -86,7 +123,7 @@ def location(request, duck_location_id):
     return render(request, 'duck/location.html',
                   {'photos': photos, 'map': map_data, 'duck': duck_location.duck,
                    'duck_location': duck_location, 'duck_location_list': duck_location_list,
-                   'duck_list': duck_dropdown_list})
+                   'duck_links': duck_links, 'duck_list': duck_dropdown_list})
 
 def duck_list(request):
     """ lists all ducks """
@@ -206,7 +243,10 @@ def login(request):
         return redirect(_get_next_url(request))
 
     error = None
-    if request.method == 'POST':
+    if _is_login_rate_limited(request):
+        error = 'Too many login attempts. Please try again in a few minutes.'
+        form = LoginForm()
+    elif request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(
@@ -215,8 +255,10 @@ def login(request):
                 password=form.cleaned_data['password'],
             )
             if user is not None:
+                _clear_login_attempts(request)
                 auth_login(request, user)
                 return redirect(_get_next_url(request))
+            _record_failed_login(request)
             error = 'Invalid username or password.'
     else:
         form = LoginForm()

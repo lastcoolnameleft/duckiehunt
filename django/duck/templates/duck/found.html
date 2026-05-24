@@ -1,28 +1,25 @@
 {% extends "../base.html" %}
 
 {% block content %}
-
-    <!-- Page Content -->
-    <div class="container">
-
-
-      <!-- Intro Content -->
-      <div class="row">
-        <div class="col-lg-8">
-          <br>
-           <h2>
-              <center>
-                Congratulations, you found Duck #{{ duck_id }}!
-              </center>
-            </h2>
-          <br>
-          <h3>Now what?</h3>
-          <p>Let us know where it's been and <a href='/mark/{{ duck_id}}'>update it's location</a> and provide a picture to share!</p>
-          <p>Now that you've found the duck, you can take it on your next adventures or hide it for someone else to find.</p>
-          <br>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5 text-center">
+                <div class="card-body py-5">
+                    <h1 class="display-4 mb-3">🎉</h1>
+                    <h2>Congratulations!</h2>
+                    <p class="lead">You found Duck #{{ duck_id }}!</p>
+                    {% if duck and duck.name and duck.name != "Unnamed" %}
+                    <p class="text-muted">Also known as <strong>{{ duck.name }}</strong></p>
+                    {% endif %}
+                    <hr>
+                    <h5>Now what?</h5>
+                    <p>Let us know where it's been! Update its location and share a photo of your adventure.</p>
+                    <p class="text-muted">After that, take it on your next adventure or hide it for someone else to find.</p>
+                    <a href="/mark/{{ duck_id }}" class="btn btn-primary btn-lg mt-3">Update Location</a>
+                </div>
+            </div>
         </div>
-      </div>
-      <!-- /.row -->
     </div>
-
+</div>
 {% endblock %}

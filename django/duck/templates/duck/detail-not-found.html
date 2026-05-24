@@ -1,23 +1,23 @@
 {% extends "../base.html" %}
 
 {% block content %}
-
-    <!-- Page Content -->
-    <div class="container">
-
-
-      <!-- Intro Content -->
-      <div class="row">
-        <div class="col-lg-6">
-          <br>
-           <h2>Duck Not Found</h2>
-          <br>
-           <p>We're sorry, the duck you are looking for (#{{ duck_id }}) is not in the database!</p>
-           <p>Let us know in the <a href='/issue/'>Issue page</a>, we'll get right on it!  </p>
-          <br>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5 text-center">
+                <div class="card-body py-5">
+                    <h1 class="display-4 mb-3">🔍</h1>
+                    <h2>Duck Not Found</h2>
+                    <p class="lead text-muted">Duck #{{ duck_id }} isn't in our database yet.</p>
+                    <hr>
+                    <p>Did you find this duck in the wild? You can register it!</p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="/mark/{{ duck_id }}" class="btn btn-primary">Register This Duck</a>
+                        <a href="/issue/" class="btn btn-outline-secondary">Report an Issue</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <!-- /.row -->
     </div>
-
+</div>
 {% endblock %}

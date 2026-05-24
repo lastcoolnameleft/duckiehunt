@@ -274,6 +274,33 @@ class RegistrationViewTest(TestCase):
         self.assertFalse(User.objects.filter(username='newtester').exists())
 
 
+class LoginRateLimitTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='ratelimited', password='testpass123')
+
+    def test_rate_limit_after_max_attempts(self):
+        """After 5 failed attempts, login is blocked."""
+        from django.core.cache import cache
+        cache.clear()
+        for _ in range(5):
+            response = self.client.post('/login', {'username': 'ratelimited', 'password': 'wrong'})
+            self.assertEqual(response.status_code, 200)
+        response = self.client.post('/login', {'username': 'ratelimited', 'password': 'testpass123'})
+        self.assertContains(response, 'Too many login attempts')
+
+    def test_successful_login_resets_counter(self):
+        """Successful login clears the rate limit counter."""
+        from django.core.cache import cache
+        cache.clear()
+        for _ in range(3):
+            self.client.post('/login', {'username': 'ratelimited', 'password': 'wrong'})
+        response = self.client.post('/login', {'username': 'ratelimited', 'password': 'testpass123'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.client.get('/logout')
+        cache_key = 'login_attempts_127.0.0.1'
+        self.assertEqual(cache.get(cache_key, 0), 0)
+
+
 class MarkProcessViewTest(TestCase):
     """Tests for the mark_process POST flow."""
 
