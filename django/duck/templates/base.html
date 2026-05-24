@@ -19,6 +19,12 @@
     <!-- Custom styles for this template -->
     <link href="/static/css/modern-business.css" rel="stylesheet">
 
+    <style>
+      html, body { height: 100%; }
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      footer { margin-top: auto; }
+    </style>
+
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YV9YXD3TSG"></script>
     <script>
@@ -34,7 +40,7 @@
 
   </head>
 
-  <body>
+  <body class="d-flex flex-column min-vh-100">
 
     <!-- Navigation -->
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top" style="background-color: #f1b70e;">
@@ -75,11 +81,16 @@
 {% block content %}{% endblock %}
 
     <!-- Footer -->
-    <footer class="py-5 bg-dark">
+    <footer class="py-4 bg-dark mt-auto">
         <div class="container">
-          <p class="m-0 text-center text-white">Copyright &copy; Duckiehunt 2024</p>
+          <p class="m-0 text-center text-white">Copyright &copy; Duckiehunt 2026</p>
+          <p class="m-0 text-center mt-2">
+            <a href="/faq" class="text-muted mx-2">FAQ</a>
+            <a href="/privacy" class="text-muted mx-2">Privacy</a>
+            <a href="/tos" class="text-muted mx-2">Terms</a>
+            <a href="/issue" class="text-muted mx-2">Contact</a>
+          </p>
         </div>
-        <!-- /.container -->
       </footer>
   
   
