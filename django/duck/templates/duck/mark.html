@@ -85,6 +85,12 @@
                     </div>
 
                     {% if form.captcha %}
+                    <div class="alert alert-info mb-3" role="alert">
+                        <strong>Want to skip the captcha?</strong>
+                        <a href="/login?next={{ form_page }}" class="alert-link">Log in</a> or
+                        <a href="/register?next={{ form_page }}" class="alert-link">create an account</a>
+                        to link this sighting to your profile.
+                    </div>
                     <div class="form-group mb-3 row">
                         <label class="col-sm-3 col-form-label">Captcha:</label>
                         <div class="col-sm-9">
