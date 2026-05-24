@@ -2,10 +2,13 @@
 import os
 
 import pytest
-from dotenv import load_dotenv
 
-# Load .env from repo root so tests pick up STG_* vars
-load_dotenv()
+# Load .env from repo root for local dev (optional in CI where secrets are injected)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 
 def pytest_collection_modifyitems(config, items):
