@@ -12,6 +12,9 @@
 - Models use explicit `db_table` names in Meta
 - Python deps managed with pip-compile: requirements.in → requirements.txt in `django/`
 - 2026-05-21T16:09:33.231-05:00: `duckiehunt.settings` is now the package entrypoint in `django/duckiehunt/settings/__init__.py`, with legacy per-environment modules preserved alongside it.
+- The homepage and duck list templates live in `django/duck/templates/duck/{main,list}.html`, while their data-loading view logic lives in `django/duck/views.py`.
+- When redesigning duck-facing pages, reuse the `detail.html` card pattern: bg-light hero cards, `h3 text-primary` stats, list-group timelines, responsive grids, and `btn btn-primary` CTAs.
+- Homepage aggregate stats are derived directly from `Duck` and `DuckLocation` in `django/duck/views.py`, including recent sightings from `DuckLocation.objects.select_related('duck').order_by('-date_time')[:5]`.
 
 ## Recent Work (2026-05-21T16:40)
 

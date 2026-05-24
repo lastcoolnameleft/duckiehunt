@@ -47,15 +47,23 @@ def index(request):
     """ / path """
     map_data = {
         'width': '100%',
-        'height': '800px',
+        'height': '550px',
         'focus_lat': 23,
         'focus_long': 10,
         'focus_zoom': 2,
         'location_list_api': '/api/locations',
         'duck_location_id': 0,
     }
+    total_distance = Duck.objects.aggregate(total_distance=Sum('total_distance'))['total_distance'] or 0
+    recent_locations = DuckLocation.objects.select_related('duck').order_by('-date_time')[:5]
 
-    return render(request, 'duck/main.html', {'map': map_data})
+    return render(request, 'duck/main.html', {
+        'map': map_data,
+        'total_ducks': Duck.objects.count(),
+        'total_locations': DuckLocation.objects.count(),
+        'total_distance': total_distance,
+        'recent_locations': recent_locations,
+    })
 
 def found(request, duck_id):
     """ /found/# path """
@@ -127,8 +135,11 @@ def location(request, duck_location_id):
 
 def duck_list(request):
     """ lists all ducks """
-    ducks = Duck.objects.all()
-    return render(request, 'duck/list.html', {'duck_list': ducks})
+    ducks = Duck.objects.order_by('-total_distance', 'duck_id')
+    return render(request, 'duck/list.html', {
+        'duck_list': ducks,
+        'duck_count': ducks.count(),
+    })
 
 def faq(request):
     """ shows faq """

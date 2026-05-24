@@ -1,102 +1,112 @@
 {% extends "../base.html" %}
 
 {% block content %}
+<div class="container">
+    <div class="card mb-4 mt-4 border-0 bg-light">
+        <div class="card-body py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h1 class="display-4 mb-3">Duckiehunt tracks rubber ducks around the world.</h1>
+                    <p class="lead mb-4">Follow each duck's journey, add the latest stop when one lands with you, and watch the map fill in with every new adventure.</p>
+                    <div>
+                        <a href="/mark" class="btn btn-primary mr-2 mb-2">Found a Duck?</a>
+                        <a href="/duck" class="btn btn-primary mb-2">Browse Ducks</a>
+                    </div>
+                </div>
+                <div class="col-lg-5 mt-4 mt-lg-0">
+                    <div class="d-flex justify-content-center">
+                        <div class="mx-4 text-center">
+                            <span class="h3 text-primary">{{ total_ducks }}</span>
+                            <br><small class="text-muted">Ducks</small>
+                        </div>
+                        <div class="mx-4 text-center">
+                            <span class="h3 text-primary">{{ total_locations }}</span>
+                            <br><small class="text-muted">Locations</small>
+                        </div>
+                        <div class="mx-4 text-center">
+                            <span class="h3 text-primary">{{ total_distance|floatformat:-2 }}</span>
+                            <br><small class="text-muted">Miles Travelled</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<!-- Page Content -->
-    <header>
-            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-              <ol class="carousel-indicators">
-                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-              </ol>
-              <div class="carousel-inner" role="listbox">
-                <!-- Slide One - Set the background image for this slide in the line below -->
-                <div class="carousel-item active">
-                  <div id="map"></div>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Global Duck Map</h5>
+            <a href="/duck" class="btn btn-primary btn-sm">Explore Ducks</a>
+        </div>
+        <div class="card-body p-0">
+            <div id="map" style="height: 550px; width: 100%;"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">How It Works</h5>
                 </div>
-                <!-- Slide Two - Set the background image for this slide in the line below -->
-                <div class="carousel-item" style="background-image: url('https://farm1.staticflickr.com/850/29848655078_9d8afd1c5d_b_d.jpg')">
-                <a href='https://www.flickr.com/photos/duckiehunt/29848655078/in/photostream/' target="_blank" >
-                  <div class="carousel-caption d-none d-md-block" style='text-shadow: black 0.1em 0.1em 0.2em'>
-                    <h3>Duck #42</h3>
-                    <p><a href='/view/location/715'>Blue Lagoon, Iceland</a></p>
-                  </div>
-                </a>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-4 mb-md-0">
+                            <span class="h3 text-primary d-block">1</span>
+                            <h6>Get a duck</h6>
+                            <p class="text-muted mb-0">Receive a Duckiehunt duck from a friend, event, or surprise discovery.</p>
+                        </div>
+                        <div class="col-md-4 mb-4 mb-md-0">
+                            <span class="h3 text-primary d-block">2</span>
+                            <h6>Travel</h6>
+                            <p class="text-muted mb-0">Take it on an adventure and bring the duck somewhere memorable.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="h3 text-primary d-block">3</span>
+                            <h6>Mark its location</h6>
+                            <p class="text-muted mb-0">Add the latest sighting so the next person can follow the journey.</p>
+                        </div>
+                    </div>
                 </div>
-                <!-- Slide Three -->
-                <div class="carousel-item" style="background-image: url('https://farm5.staticflickr.com/4120/4819252192_7591229ed0_b_d.jpg')">
-                <a href='https://www.flickr.com/photos/duckiehunt/4819252192/in/dateposted/' target="_blank" >
-                  <div class="carousel-caption d-none d-md-block" style='text-shadow: black 0.1em 0.1em 0.2em'>
-                    <h3>Duck #1099</h3>
-                    <p><a href='/view/location/715'>St. Peter's Basilica, Vatican City</a></p>
-                  </div>
-                </a>
-                </div>
-      
-              </div>
-              <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-              </a>
-              <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-              </a>
             </div>
-          </header>
-      
-      
-          <!-- Page Content -->
-          <div class="container">
-      
-            <h1 class="my-4">Welcome to Duckiehunt!</h1>
-      
-            <!-- Marketing Icons Section -->
-            <div class="row">
-              <div class="col-lg-4 mb-4">
-                <div class="card h-100">
-                  <h4 class="card-header">Mark a Duck's location</h4>
-                  <div class="card-body">
-                    <p class="card-text">If you found, or were given a duck, and would like to update it's new location, go here.</p>
-                  </div>
-                  <div class="card-footer">
-                    <a href="/mark" class="btn btn-primary">Mark a duck</a>
-                  </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Stops</h5>
                 </div>
-              </div>
-              <div class="col-lg-4 mb-4">
-                <div class="card h-100">
-                  <h4 class="card-header">History of Duckiehunt</h4>
-                  <div class="card-body">
-                    <p class="card-text">
-                        Duckiehunt hatched as a practical joke when a friend thought it would be hilarious to hide 1000 rubber duckies around the house after my honeymoon.
-                    </p>
-                  </div>
-                  <div class="card-footer">
-                    <a href="/faq" class="btn btn-primary">Learn More</a>
-                  </div>
+                <div class="card-body p-0">
+                    {% if recent_locations %}
+                    <div class="list-group list-group-flush">
+                        {% for location in recent_locations %}
+                        <a href="/location/{{ location.duck_location_id }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ location.location|default:"Unknown location" }}</h6>
+                                <small class="text-muted">Duck #{{ location.duck_id }}</small>
+                            </div>
+                            <small class="text-muted">{{ location.date_time|date:"N j, Y" }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">No duck sightings have been logged yet.</div>
+                    {% endif %}
                 </div>
-              </div>
-              <div class="col-lg-4 mb-4">
-                <div class="card h-100">
-                  <h4 class="card-header">Duck Viewing</h4>
-                  <div class="card-body">
-                    <p class="card-text">If you want to see a duck's history and photos, go here.</p>
-                  </div>
-                  <div class="card-footer">
-                    <a href="/duck" class="btn btn-primary">View a Duck</a>
-                  </div>
-                </div>
-              </div>
             </div>
-            <!-- /.row -->
-      
-            <hr>
-      
-      
-          </div>
-          <!-- /.container -->
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">History of Duckiehunt</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-3">Duckiehunt hatched as a practical joke when a friend thought it would be hilarious to hide 1000 rubber duckies around the house after my honeymoon.</p>
+            <p class="text-muted mb-0">What started as a joke turned into a shared travel log, with each duck carrying a small story from one place to the next.</p>
+        </div>
+    </div>
+
+</div>
+
 {% include "./view/map.html" %}
-
 {% endblock %}
