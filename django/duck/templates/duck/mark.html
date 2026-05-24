@@ -81,6 +81,7 @@
                             {{ form.comments.errors }}
                         </dd>
 
+                        {% if form.captcha %}
                         <dt class="col-sm-2">
                             <label for="{{ form.captcha.id_for_label }}">Captcha:</label>
                         </dt>
@@ -88,6 +89,7 @@
                             {{ form.captcha }}
                             {{ form.captcha.errors }}
                         </dd>
+                        {% endif %}
 
                         <dt class="col-sm-2">&nbsp;</dt>
                         <dd class="col-sm-10">

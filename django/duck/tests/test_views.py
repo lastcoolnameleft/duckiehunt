@@ -1,11 +1,23 @@
 """Tests for duck views (page rendering, auth, redirects)"""
+from types import SimpleNamespace
 from unittest.mock import patch
 
-from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from duck.models import Duck, DuckLocation, DuckLocationPhoto
+
+
+TEST_RECAPTCHA_SETTINGS = {
+    'RECAPTCHA_PUBLIC_KEY': '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+    'RECAPTCHA_PRIVATE_KEY': '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
+    'SILENCED_SYSTEM_CHECKS': ['django_recaptcha.recaptcha_test_key_error'],
+}
+
+
+def captcha_success_response():
+    return SimpleNamespace(is_valid=True, error_codes=[], extra_data={}, action=None)
 
 
 class HomepageViewTest(TestCase):
@@ -156,10 +168,11 @@ class AuthViewTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('tester', 'test@test.com', 'pass')
 
-    def test_mark_redirects_anonymous(self):
+    def test_mark_shows_captcha_for_anonymous_users(self):
         response = self.client.get('/mark/')
-        self.assertEqual(response.status_code, 302)
-        self.assertIn('/login', response.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'duck/mark.html')
+        self.assertContains(response, 'recaptcha')
 
     def test_mark_accessible_when_logged_in(self):
         self.client.force_login(self.user)
@@ -171,25 +184,43 @@ class AuthViewTest(TestCase):
         self.client.force_login(self.user)
         response = self.client.get('/mark/5')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('form', response.context)
+        self.assertEqual(response.context['form_page'], '/mark/5')
 
-    def test_mark_captcha_accessible_without_login(self):
+    def test_mark_captcha_redirects_to_mark(self):
         response = self.client.get('/mark_captcha/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'duck/mark.html')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/mark/')
+
+    def test_mark_captcha_redirects_to_mark_with_duck_id(self):
+        response = self.client.get('/mark_captcha/42')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/mark/42')
 
     def test_login_page(self):
         response = self.client.get('/login')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'duck/login.html')
+        self.assertIn('form', response.context)
 
-    def test_login_page_parses_next_param(self):
+    def test_login_page_keeps_next_param(self):
         response = self.client.get('/login?next=/mark/42')
-        self.assertEqual(response.context['duck_id'], '42')
+        self.assertEqual(response.context['next'], '/mark/42')
 
     def test_login_page_no_next(self):
         response = self.client.get('/login')
-        self.assertIsNone(response.context['duck_id'])
+        self.assertIsNone(response.context['next'])
+
+    def test_login_post_with_valid_credentials_logs_in(self):
+        response = self.client.post('/login?next=/mark/5', {'username': 'tester', 'password': 'pass'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/mark/5')
+        self.assertEqual(self.client.session.get('_auth_user_id'), str(self.user.pk))
+
+    def test_login_post_with_invalid_credentials_shows_error(self):
+        response = self.client.post('/login', {'username': 'tester', 'password': 'wrong'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'duck/login.html')
+        self.assertContains(response, 'Invalid username or password.')
 
     def test_logout_redirects(self):
         self.client.force_login(self.user)
@@ -202,6 +233,45 @@ class AuthViewTest(TestCase):
         response = self.client.get('/profile')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'duck/profile.html')
+
+
+@override_settings(**TEST_RECAPTCHA_SETTINGS)
+class RegistrationViewTest(TestCase):
+    def _valid_data(self, **overrides):
+        data = {
+            'username': 'newtester',
+            'email': 'new@test.com',
+            'password1': 'DuckStrongPass123!',
+            'password2': 'DuckStrongPass123!',
+            'g-recaptcha-response': 'PASSED',
+        }
+        data.update(overrides)
+        return data
+
+    def test_register_get_shows_form(self):
+        response = self.client.get('/register/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'duck/register.html')
+        self.assertIn('form', response.context)
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_register_post_creates_user_and_logs_in(self, mock_submit):
+        mock_submit.return_value = captcha_success_response()
+        response = self.client.post('/register/?next=/mark/7', self._valid_data())
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/mark/7')
+        user = User.objects.get(username='newtester')
+        self.assertEqual(user.email, 'new@test.com')
+        self.assertEqual(self.client.session.get('_auth_user_id'), str(user.pk))
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_register_post_with_mismatched_passwords_shows_error(self, mock_submit):
+        mock_submit.return_value = captcha_success_response()
+        response = self.client.post('/register/', self._valid_data(password2='MismatchPass123!'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'duck/register.html')
+        self.assertIn('password2', response.context['form'].errors)
+        self.assertFalse(User.objects.filter(username='newtester').exists())
 
 
 class MarkProcessViewTest(TestCase):
@@ -339,11 +409,7 @@ class MarkProcessViewTest(TestCase):
         self.assertEqual(duck.name, 'Unnamed')
 
 
-@override_settings(
-    RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
-    RECAPTCHA_PRIVATE_KEY='6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
-    SILENCED_SYSTEM_CHECKS=['django_recaptcha.recaptcha_test_key_error'],
-)
+@override_settings(**TEST_RECAPTCHA_SETTINGS)
 class MarkCaptchaSkipTest(TestCase):
     """Tests that authenticated users don't need captcha on /mark/."""
 
@@ -370,39 +436,10 @@ class MarkCaptchaSkipTest(TestCase):
         duck = Duck.objects.get(pk=300)
         self.assertEqual(duck.name, 'No Captcha Duck')
 
-    def test_anonymous_user_fails_without_captcha(self):
-        """Anonymous user on /mark_captcha/ should fail without g-recaptcha-response."""
-        data = {
-            'duck_id': '301',
-            'name': 'Captcha Duck',
-            'location': 'Test City',
-            'lat': '30.0',
-            'lng': '-90.0',
-            'date_time': '01/01/2023 12:00:00',
-            'comments': 'Should fail',
-        }
-        response = self.client.post('/mark_captcha/', data)
-        # Should re-render form (not redirect) due to captcha failure
+    def test_anonymous_user_mark_page_shows_captcha(self):
+        response = self.client.get('/mark/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'duck/mark.html')
-        self.assertFalse(Duck.objects.filter(pk=301).exists())
-
-    @patch('duck.marker.email_duck_location')
-    def test_anonymous_user_succeeds_with_captcha(self, mock_email):
-        """Anonymous user on /mark_captcha/ should succeed with valid captcha response."""
-        data = {
-            'duck_id': '302',
-            'name': 'Captcha OK Duck',
-            'location': 'Test City',
-            'lat': '30.0',
-            'lng': '-90.0',
-            'date_time': '01/01/2023 12:00:00',
-            'comments': 'Captcha passed',
-            'g-recaptcha-response': 'PASSED',
-        }
-        response = self.client.post('/mark_captcha/', data)
-        self.assertEqual(response.status_code, 302)
-        self.assertIn('/location/', response.url)
+        self.assertContains(response, 'recaptcha')
 
     def test_mark_page_has_no_captcha_field_for_logged_in_user(self):
         """GET /mark/ for logged-in user should not render captcha widget."""
@@ -411,8 +448,7 @@ class MarkCaptchaSkipTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'g-recaptcha-response')
 
-    def test_mark_captcha_page_has_captcha_field(self):
-        """GET /mark_captcha/ should render captcha widget."""
+    def test_mark_captcha_redirects(self):
         response = self.client.get('/mark_captcha/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'recaptcha')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/mark/')

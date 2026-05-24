@@ -22,8 +22,8 @@ class SimpleTest(TestCase):
 
     def test_secure_page(self):
         response = self.client.get('/mark/')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/login?next=/mark/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'recaptcha')
         self.client.force_login(self.user)
         response = self.client.get('/mark/')
         self.assertEqual(response.status_code, 200)

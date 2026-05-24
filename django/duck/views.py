@@ -1,16 +1,16 @@
 """ Views for Django """
-from operator import ne
-from django.core import serializers
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
-from django.contrib.auth import logout as auth_logout
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
 from django.conf import settings
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.core import serializers
+from django.db.models import Sum
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
+
+from duck import marker
+
+from .forms import DuckForm, LoginForm, RegistrationForm
 from .models import Duck, DuckLocation, DuckLocationPhoto
-from .forms import DuckForm
-from duck import marker 
 
 def index(request):
     """ / path """
@@ -109,15 +109,31 @@ def privacy(request):
     """ shows privacy """
     return render(request, 'duck/privacy.html')
 
-@login_required
+def _get_next_url(request, default='/mark/'):
+    next_url = request.POST.get('next') or request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return next_url
+    return default
+
+
 def mark(request, duck_id=None):
-    user = request.user
-    url = '/mark/' + str(duck_id) if duck_id else '/mark/'
-    return mark_process(request, duck_id, user, url, require_captcha=False)
+    user = request.user if request.user.is_authenticated else None
+    form_page = f'/mark/{duck_id}' if duck_id else '/mark/'
+    return mark_process(
+        request,
+        duck_id,
+        user,
+        form_page,
+        require_captcha=not request.user.is_authenticated,
+    )
+
 
 def mark_captcha(request, duck_id=None):
-    user = None
-    return mark_process(request, duck_id, user, '/mark_captcha/', require_captcha=True)
+    return redirect('mark', duck_id=duck_id) if duck_id else redirect('mark')
 
 def mark_process(request, duck_id, user, form_page, require_captcha=True):
     """ Adds a duck, location, photo and link from webform """
@@ -182,14 +198,55 @@ def logout(request):
     auth_logout(request)
     return redirect('/')
 
+
 def login(request):
-    """Home view, displays login mechanism"""
-    next = request.GET.get('next', None)
-    if next and len(next.split('/')) > 2:
-        duck_id = next.split('/')[2]
+    """Display and process username/password login."""
+    next_url = request.GET.get('next')
+    if request.user.is_authenticated:
+        return redirect(_get_next_url(request))
+
+    error = None
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(
+                request,
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password'],
+            )
+            if user is not None:
+                auth_login(request, user)
+                return redirect(_get_next_url(request))
+            error = 'Invalid username or password.'
     else:
-        duck_id = None
-    return render(request, 'duck/login.html', {'next': next, 'duck_id': duck_id})
+        form = LoginForm()
+
+    return render(request, 'duck/login.html', {'form': form, 'next': next_url, 'error': error})
+
+
+def register(request):
+    """Display and process registration."""
+    next_url = request.GET.get('next')
+    if request.user.is_authenticated:
+        return redirect(_get_next_url(request))
+
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = authenticate(
+                request,
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1'],
+            )
+            if user is not None:
+                auth_login(request, user)
+            return redirect(_get_next_url(request))
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'duck/register.html', {'form': form, 'next': next_url})
+
 
 def profile(request):
     """ Show profile data """

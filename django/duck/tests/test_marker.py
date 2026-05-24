@@ -3,9 +3,9 @@ import os
 import tempfile
 from unittest.mock import patch, MagicMock
 
-from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core import mail
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from duck.models import Duck, DuckLocation
@@ -103,6 +103,7 @@ class AddDuckLocationTest(TestCase):
         self.assertAlmostEqual(loc.distance_to, 0, places=1)
 
 
+@override_settings(EMAIL_TO=['test@example.com'])
 class EmailDuckLocationTest(TestCase):
     def test_sends_email_with_correct_content(self):
         marker.email_duck_location(5, '/location/100')
