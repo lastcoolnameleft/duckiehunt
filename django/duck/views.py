@@ -249,6 +249,11 @@ def register(request):
 
 
 def profile(request):
-    """ Show profile data """
-    print(request.user.username)
-    return render(request, 'duck/profile.html', {'user': request.user})
+    """Show profile data with user's duck location history."""
+    user = request.user
+    locations = DuckLocation.objects.filter(user=user).select_related('duck').order_by('-date_time')
+    return render(request, 'duck/profile.html', {
+        'user': user,
+        'locations': locations,
+        'location_count': locations.count(),
+    })
