@@ -1,6 +1,7 @@
 """ Views for Django """
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.core.cache import cache
 from django.db.models import Sum
@@ -301,6 +302,7 @@ def register(request):
     return render(request, 'duck/register.html', {'form': form, 'next': next_url})
 
 
+@login_required(login_url='/login')
 def profile(request):
     """Show profile data with user's duck location history."""
     user = request.user

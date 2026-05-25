@@ -16,15 +16,15 @@ urlpatterns = [
     path('mark/<int:duck_id>', views.mark, name='mark'),
     path('mark_captcha/', views.mark_captcha, name='mark_captcha'),
     path('mark_captcha/<int:duck_id>', views.mark_captcha, name='mark_captcha'),
-    # ex: /view/duck/5/
-    path('view/duck/<int:duck_id>', views.detail, name='duck_list'),
+    # ex: /view/duck/5/ (legacy URL)
+    path('view/duck/<int:duck_id>', views.detail, name='detail_legacy'),
     path('duck/<int:duck_id>', views.detail, name='detail'),
     path('found/<int:duck_id>', views.found, name='found'),
-    # ex: /view/location/500/
-    path('view/location/<int:duck_location_id>', views.location, name='location'),
+    # ex: /view/location/500/ (legacy URL)
+    path('view/location/<int:duck_location_id>', views.location, name='location_legacy'),
     path('location/<int:duck_location_id>', views.location, name='location'),
     # APIs
-    path('api/duck/<int:duck_id>', apis.duck_detail, name='detail'),
+    path('api/duck/<int:duck_id>', apis.duck_detail, name='api_duck_detail'),
     path('api/ducks', apis.ducks_all),
     path('api/locations', apis.locations_all),
     path('api/duck/<int:duck_id>/locations', apis.duck_locations),

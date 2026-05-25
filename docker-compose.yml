@@ -34,3 +34,8 @@ services:
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect.redirectregex.replacement=https://$${1}"
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect.redirectregex.permanent=true"
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
