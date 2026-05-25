@@ -56,8 +56,8 @@ class TestPublicEndpoints:
         ("path", "expected_text"),
         [
             ("/faq/", "FAQ"),
-            ("/privacy/", "PRIVACY POLICY"),
-            ("/tos/", "TERMS OF USE"),
+            ("/privacy/", "Privacy Policy"),
+            ("/tos/", "Terms of Use"),
         ],
     )
     def test_public_info_pages(self, base_url, anon_session, path, expected_text):
