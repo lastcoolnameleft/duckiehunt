@@ -2,6 +2,7 @@ name: ${COMPOSE_PROJECT_NAME:-duckiehunt}
 
 services:
   duckiehunt:
+    container_name: ${COMPOSE_PROJECT_NAME:-duckiehunt}
     image: ${IMAGE:-ghcr.io/lastcoolnameleft/duckiehunt:latest}
     env_file:
       - ${ENV_FILE:-.env}
