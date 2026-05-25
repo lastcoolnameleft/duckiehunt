@@ -19,8 +19,17 @@ services:
       - "duckiehunt.env=${DEPLOY_ENV:-staging}"
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      # Main router
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}.rule=Host(`${TRAEFIK_HOST:-localhost}`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}.entrypoints=websecure"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}.tls.certresolver=myresolver"
       - "traefik.http.services.${COMPOSE_PROJECT_NAME:-duckiehunt}.loadbalancer.server.port=8000"
+      # WWW redirect router
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}-www.rule=Host(`www.${TRAEFIK_HOST:-localhost}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}-www.entrypoints=websecure"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}-www.tls.certresolver=myresolver"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME:-duckiehunt}-www.middlewares=${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect"
+      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect.redirectregex.permanent=true"
     restart: unless-stopped
