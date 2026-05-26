@@ -18,4 +18,6 @@ print(f'Test user {user.username} {\"created\" if created else \"updated\"}')
 "
 fi
 
-exec gunicorn duckiehunt.wsgi:application --bind 0.0.0.0:8000
+exec gunicorn duckiehunt.wsgi:application --bind 0.0.0.0:8000 \
+  --access-logfile - \
+  --error-logfile -
