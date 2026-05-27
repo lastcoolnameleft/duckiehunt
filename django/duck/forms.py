@@ -1,6 +1,4 @@
 """Form definitions for Duckiehunt."""
-import datetime
-
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
@@ -55,7 +53,8 @@ class DuckForm(forms.Form):
     location = forms.CharField(label='Location', max_length=100)
     date_time = forms.DateTimeField(
         label='Date/Time',
-        initial=datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        input_formats=['%Y-%m-%dT%H:%M', '%Y-%m-%dT%H:%M:%S', '%m/%d/%Y %H:%M:%S'],
     )
     lat = forms.FloatField(label='Latitude', widget=forms.HiddenInput())
     lng = forms.FloatField(label='Longitude', widget=forms.HiddenInput())

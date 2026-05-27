@@ -28,7 +28,7 @@ class DuckFormTest(TestCase):
             'location': 'Austin, TX',
             'lat': '30.2672',
             'lng': '-97.7431',
-            'date_time': '01/15/2023 10:00:00',
+            'date_time': '2023-01-15T10:00',
             'comments': 'A comment',
         }
         data.update(overrides)
@@ -119,7 +119,7 @@ class DuckFormCaptchaTest(TestCase):
             'location': 'Austin, TX',
             'lat': '30.2672',
             'lng': '-97.7431',
-            'date_time': '01/15/2023 10:00:00',
+            'date_time': '2023-01-15T10:00',
             'comments': 'A comment',
         }
         data.update(overrides)
