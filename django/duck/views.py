@@ -11,7 +11,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 from duck import marker
 
-from .forms import DuckForm, LoginForm, RegistrationForm
+from .forms import CreateDuckForm, DuckForm, LoginForm, RegistrationForm
 from .models import Duck, DuckLocation, DuckLocationLink, DuckLocationPhoto
 
 LOGIN_RATE_LIMIT = 5
@@ -241,6 +241,44 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
         'duck_location_id': 0,
     }
     return render(request, 'duck/mark.html', {'form': form, 'map': map_data, 'form_page': form_page})
+
+
+@login_required
+def create_duck(request):
+    """Register a new duck."""
+    from .forms import CreateDuckForm
+    from .utils import next_available_duck_id, is_valid_duck_number
+    from django.utils import timezone
+
+    suggested_id = next_available_duck_id()
+
+    if request.method == 'POST':
+        form = CreateDuckForm(request.POST)
+        if form.is_valid():
+            duck_id = form.cleaned_data['duck_id']
+            name = form.cleaned_data['name']
+
+            # Auto-assign if not provided
+            if duck_id is None:
+                duck_id = next_available_duck_id()
+
+            duck = Duck(
+                duck_id=duck_id,
+                name=name,
+                create_time=timezone.now(),
+                created_by=request.user,
+                comments='',
+            )
+            duck.save()
+            return redirect('detail', duck_id=duck.duck_id)
+    else:
+        form = CreateDuckForm()
+
+    return render(request, 'duck/create.html', {
+        'form': form,
+        'suggested_id': suggested_id,
+    })
+
 
 def logout(request):
     """Logs out user"""

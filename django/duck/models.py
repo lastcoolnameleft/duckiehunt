@@ -10,7 +10,7 @@ class Duck(models.Model):
     duck_id = models.IntegerField(primary_key=True)
     create_time = models.DateTimeField(blank=True)
     name = models.CharField(max_length=128, blank=True, default=None)
-    #current_owner_id = models.IntegerField(blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_ducks')
     comments = models.TextField(blank=True, default=None)
     total_distance = models.FloatField(blank=True, default=0)
     approved = models.CharField(max_length=1, default='Y')

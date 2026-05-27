@@ -8,6 +8,7 @@ urlpatterns = [
     # ex: /
     path('', views.index, name='index'),
     path('duck/', views.duck_list, name='duck_list'),
+    path('duck/new', views.create_duck, name='create_duck'),
     path('faq/', views.faq, name='faq'),
     path('issue/', views.issue, name='issue'),
     path('privacy/', views.privacy, name='privacy'),

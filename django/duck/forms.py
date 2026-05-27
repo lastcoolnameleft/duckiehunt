@@ -48,7 +48,7 @@ class DuckForm(forms.Form):
     """Form for duck sightings."""
 
     captcha = ReCaptchaField()
-    duck_id = forms.IntegerField(label='Duck #', min_value=2, max_value=3000, widget=forms.NumberInput(attrs={'style': 'width: 6em;'}))
+    duck_id = forms.IntegerField(label='Duck #', min_value=2, max_value=99999, widget=forms.NumberInput(attrs={'style': 'width: 6em;'}))
     name = forms.CharField(label='Duck name', max_length=100, disabled=False, required=False)
     location = forms.CharField(label='Location', max_length=100)
     date_time = forms.DateTimeField(
@@ -70,3 +70,37 @@ class DuckForm(forms.Form):
         for field_name, field in self.fields.items():
             if field_name != 'captcha' and not isinstance(field.widget, forms.HiddenInput):
                 field.widget.attrs['class'] = 'form-control'
+
+
+class CreateDuckForm(forms.Form):
+    """Form for registering a new duck."""
+
+    duck_id = forms.IntegerField(
+        label='Duck #',
+        required=False,
+        min_value=2,
+        max_value=99999,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Leave blank for auto-assign'}),
+        help_text='Must not be a prime number. Leave blank to get the next available number.',
+    )
+    name = forms.CharField(
+        label='Duck name',
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Give your duck a name'}),
+    )
+
+    def clean_duck_id(self):
+        from .utils import is_valid_duck_number
+        from .models import Duck
+
+        duck_id = self.cleaned_data.get('duck_id')
+        if duck_id is None:
+            return duck_id
+
+        if not is_valid_duck_number(duck_id):
+            raise forms.ValidationError('Duck numbers cannot be prime numbers.')
+
+        if Duck.objects.filter(duck_id=duck_id).exists():
+            raise forms.ValidationError(f'Duck #{duck_id} is already taken.')
+
+        return duck_id

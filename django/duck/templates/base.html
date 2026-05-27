@@ -57,6 +57,11 @@
             <li class="nav-item">
               <a class="nav-link" href="/duck">View a duck</a>
             </li>
+{% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="/duck/new">Get a duck</a>
+            </li>
+{% endif %}
             <li class="nav-item">
               <a class="nav-link" href="/faq">FAQ</a>
             </li>
