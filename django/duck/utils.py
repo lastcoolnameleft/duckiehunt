@@ -1,6 +1,9 @@
 """Utility functions for duck number validation."""
 from .models import Duck
 
+# Duck #2 is special — it exists but is prime. Only user_id=1 can check it in.
+SPECIAL_DUCK_IDS = {2}
+
 
 def is_prime(n):
     """Check if a number is prime."""
@@ -19,7 +22,9 @@ def is_prime(n):
 
 
 def is_valid_duck_number(n):
-    """A valid duck number is > 1 and not prime."""
+    """A valid duck number is > 1 and not prime, or is a special duck."""
+    if n in SPECIAL_DUCK_IDS:
+        return True
     return n > 1 and not is_prime(n)
 
 

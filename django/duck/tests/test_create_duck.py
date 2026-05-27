@@ -25,13 +25,16 @@ class IsValidDuckNumberTest(TestCase):
         self.assertTrue(is_valid_duck_number(100))
 
     def test_invalid_primes(self):
-        self.assertFalse(is_valid_duck_number(2))
+        self.assertFalse(is_valid_duck_number(3))
         self.assertFalse(is_valid_duck_number(7))
         self.assertFalse(is_valid_duck_number(13))
 
     def test_invalid_low_numbers(self):
         self.assertFalse(is_valid_duck_number(0))
         self.assertFalse(is_valid_duck_number(1))
+
+    def test_special_duck_2_is_valid(self):
+        self.assertTrue(is_valid_duck_number(2))
 
 
 class NextAvailableDuckIdTest(TestCase):

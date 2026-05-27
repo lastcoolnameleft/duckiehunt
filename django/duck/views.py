@@ -193,6 +193,14 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
         # check whether it's valid:
         if form.is_valid():
             duck_id = form.cleaned_data['duck_id']
+
+            # Duck #2 is special — only user_id=1 can check it in
+            if duck_id == 2 and (not user or user.id != 1):
+                form.add_error('duck_id', 'Duck #2 is reserved.')
+                return render(request, 'duck/mark.html', {'form': form, 'map': {
+                    'width': '100%', 'height': '400px', 'location_list': [], 'duck_location_id': 0,
+                }, 'form_page': form_page})
+
             try:
                 duck = Duck.objects.get(pk=duck_id)
                 if duck.name == 'Unnamed' and form.cleaned_data['name'] != 'Unnamed':
