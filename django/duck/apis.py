@@ -2,7 +2,7 @@ import os
 from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse, HttpResponse
 from django.core import serializers
-from .models import Duck, DuckLocation, DuckLocationPhoto
+from .models import Duck, DuckLocation
 from django.db.models import F
 
 def duck_detail(request, duck_id):
@@ -29,11 +29,6 @@ def locations_all(request):
 def duck_locations(request, duck_id):
     duck_locations = DuckLocation.objects.filter(duck_id=duck_id).values('duck_id', 'duck__name', 'latitude', 'longitude', 'comments')
     summary = list(duck_locations)
-    return JsonResponse(summary, safe=False, content_type='application/json')
-
-def duck_photos(request, duck_id):
-    photos = DuckLocationPhoto.objects.filter(duck_location__duck_id=duck_id)
-    summary = list(photos)
     return JsonResponse(summary, safe=False, content_type='application/json')
 
 def location(request, duck_location_id):
