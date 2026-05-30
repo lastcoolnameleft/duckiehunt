@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import Duck, DuckLocation, DuckLocationPhoto
 from haversine import haversine, Unit
 from django.core.mail import EmailMessage
-import datetime
+from django.utils import timezone
 
 def create_new_duck(duck_id, name):
     """ Create a new Duck """
@@ -14,7 +14,7 @@ def create_new_duck(duck_id, name):
                 name=name, 
                 approved='Y',
                 total_distance=0,
-                create_time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                create_time=timezone.now(),
                 comments='')
     duck.save()
 
@@ -37,9 +37,12 @@ def add_initial_duck_location(duck):
 
 def add_duck_location(duck_id, latitude, longitude, location, date_time, comments, user):
     # Calculate the distance since last location
-    last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time')[0]
-    distance_travelled = haversine((last_duck_location.latitude, last_duck_location.longitude),
-                                    (latitude, longitude), unit=Unit.MILES)
+    last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time').first()
+    if last_duck_location is None:
+        distance_travelled = 0
+    else:
+        distance_travelled = haversine((last_duck_location.latitude, last_duck_location.longitude),
+                                        (latitude, longitude), unit=Unit.MILES)
     # Anonymous approval controlled by REQUIRE_ANONYMOUS_REVIEW env var
     if user:
         approved = 'Y'

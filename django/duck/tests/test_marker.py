@@ -102,6 +102,34 @@ class AddDuckLocationTest(TestCase):
         )
         self.assertAlmostEqual(loc.distance_to, 0, places=1)
 
+    def test_handles_empty_location_history(self):
+        """add_duck_location with no prior locations sets distance to 0."""
+        duck = Duck.objects.create(
+            duck_id=99, name='Fresh', create_time=timezone.now(),
+            total_distance=0, approved='Y', comments='',
+        )
+        loc = marker.add_duck_location(
+            duck_id=99,
+            latitude=40.0, longitude=-74.0,
+            location='Somewhere',
+            date_time='2020-01-01 00:00:00',
+            comments='First sighting',
+            user=self.user,
+        )
+        self.assertEqual(loc.distance_to, 0)
+
+
+class CreateNewDuckTimezoneTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='tommy', email='tommy@test.com', password='pass'
+        )
+
+    def test_create_time_is_timezone_aware(self):
+        """create_new_duck stores a timezone-aware datetime."""
+        duck = marker.create_new_duck(50, 'Aware Duck')
+        self.assertIsNotNone(duck.create_time.tzinfo)
+
 
 @override_settings(EMAIL_TO=['test@example.com'])
 class EmailDuckLocationTest(TestCase):
