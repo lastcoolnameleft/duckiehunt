@@ -17,7 +17,7 @@ TEST_RECAPTCHA_SETTINGS = {
     'SILENCED_SYSTEM_CHECKS': ['django_recaptcha.recaptcha_test_key_error'],
 }
 
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'tests', 'fixtures')
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'tests', 'playwright', 'fixtures')
 
 
 def _valid_mark_data(duck_id=100):

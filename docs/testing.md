@@ -9,36 +9,47 @@ cd django && python manage.py test duck.tests --verbosity=2
 
 ## Playwright tests (requires local dev server)
 
+All Playwright-based browser tests live in `tests/playwright/`.
+
 Start the dev server first:
 ```bash
 source venv/bin/activate
 cd django && python manage.py runserver 0.0.0.0:8042
 ```
 
-Basic smoke tests (no auth required):
+Run all local Playwright tests:
 ```bash
-pytest tests/test_basic.py
+pytest tests/playwright/ -v
 ```
 
-Mark duck test (requires auth.json):
+Run with visible browser:
 ```bash
-pytest tests/test_mark_duck.py --headed
+pytest tests/playwright/ -v --headed
 ```
 
-Photo upload test (requires auth.json):
+Run a specific test file:
 ```bash
-pytest tests/test_photo_upload.py -v --headed
+pytest tests/playwright/test_basic.py -v
+pytest tests/playwright/test_maps.py -v
+pytest tests/playwright/test_photo_upload.py -v --headed
 ```
 
-Run with browser hidden:
+Tests that require authentication need `auth.json` at the repo root:
+- `test_mark_duck.py`
+- `test_photo_upload.py`
+
+## Staging/Production tests (CI)
+
+These run in GitHub Actions against deployed environments:
 ```bash
-pytest tests/test_photo_upload.py -v
+pytest tests/staging/ -v
+pytest tests/production/ -v
 ```
 
 ## Generating auth.json
 
 ```bash
-npx playwright codegen http://localhost:8042 --save-storage=tests/auth.json
+npx playwright codegen http://localhost:8042 --save-storage=auth.json
 ```
 
 Or use the helper script:

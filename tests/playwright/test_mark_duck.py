@@ -1,8 +1,12 @@
+import os
 from playwright.sync_api import Playwright, sync_playwright, expect
+
+AUTH_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "auth.json")
+
 def test_mark_duck(playwright: Playwright) -> None:
     duck_id = '2012'
     browser = playwright.chromium.launch(headless=False, timeout=5000)
-    context = browser.new_context(storage_state="auth.json")
+    context = browser.new_context(storage_state=AUTH_FILE)
     # Open new page
     page = context.new_page()
     # Go to http://localhost:8001/

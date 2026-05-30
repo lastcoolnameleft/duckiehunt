@@ -24,7 +24,7 @@ from playwright.sync_api import Page, expect
 
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8042")
-AUTH_FILE = os.path.join(os.path.dirname(__file__), "auth.json")
+AUTH_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "auth.json")
 FIXTURE_IMAGE = os.path.join(os.path.dirname(__file__), "fixtures", "test_duck.jpg")
 
 # Use a high duck_id unlikely to conflict
