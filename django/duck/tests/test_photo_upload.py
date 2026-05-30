@@ -1,0 +1,129 @@
+"""Tests for the full image upload path (mocks only the Flickr API call)."""
+import os
+import tempfile
+from unittest.mock import patch, MagicMock
+
+from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
+from django.utils import timezone
+
+from duck.models import Duck, DuckLocation, DuckLocationPhoto
+
+
+TEST_RECAPTCHA_SETTINGS = {
+    'RECAPTCHA_PUBLIC_KEY': '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+    'RECAPTCHA_PRIVATE_KEY': '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
+    'SILENCED_SYSTEM_CHECKS': ['django_recaptcha.recaptcha_test_key_error'],
+}
+
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'tests', 'fixtures')
+
+
+def _valid_mark_data(duck_id=100):
+    return {
+        'duck_id': duck_id,
+        'name': 'Photo Duck',
+        'location': 'Dallas, TX',
+        'date_time': '2026-01-15T12:00',
+        'lat': '33.0',
+        'lng': '-97.0',
+        'comments': 'Has a photo!',
+    }
+
+
+@override_settings(**TEST_RECAPTCHA_SETTINGS)
+class FullImageUploadPathTest(TestCase):
+    """Test the complete upload path: form validation → disk save → DB record.
+
+    Only upload_to_flickr is mocked (the external HTTP boundary).
+    """
+
+    def setUp(self):
+        self.upload_dir = tempfile.mkdtemp()
+        self.user = User.objects.create_user('tommy', 'tommy@test.com', 'pass')
+        self.duck = Duck.objects.create(
+            duck_id=100, name='Photo Duck', create_time=timezone.now(),
+            comments='', total_distance=0, approved='Y',
+        )
+        DuckLocation.objects.create(
+            duck=self.duck, latitude=32.95, longitude=-96.90,
+            location='Origin', date_time=timezone.now(),
+            comments='start', distance_to=0, user=self.user, approved='Y',
+        )
+        self.client.force_login(self.user)
+
+    @patch('duck.marker.upload_to_flickr')
+    @patch('duck.marker.email_duck_location')
+    @override_settings(UPLOAD_PATH=None)  # will be set in test
+    def test_full_upload_path_saves_file_and_creates_record(self, mock_email, mock_flickr):
+        """Image goes through form validation, saves to disk, creates DuckLocationPhoto."""
+        # Configure mock to return realistic Flickr response
+        mock_flickr.return_value = {
+            'id': 99999,
+            'sizes': {'Small 320': {'source': 'https://flickr.com/fake/thumb.jpg'}},
+        }
+
+        # Use the real test fixture image
+        fixture_path = os.path.join(FIXTURES_DIR, 'test_duck.jpg')
+        with open(fixture_path, 'rb') as f:
+            image_data = f.read()
+
+        image = SimpleUploadedFile('test_duck.jpg', image_data, content_type='image/jpeg')
+        data = _valid_mark_data()
+        data['image'] = image
+
+        with self.settings(UPLOAD_PATH=self.upload_dir):
+            response = self.client.post('/mark/', data)
+
+        # Should redirect to new location page
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/location/', response.url)
+
+        # Verify file was saved to disk
+        saved_files = os.listdir(self.upload_dir)
+        self.assertEqual(len(saved_files), 1)
+        self.assertTrue(saved_files[0].endswith('.jpg'))
+
+        # Verify upload_to_flickr was called with the saved file path
+        mock_flickr.assert_called_once()
+        call_args = mock_flickr.call_args
+        saved_path = call_args[0][0]
+        self.assertTrue(os.path.exists(saved_path))
+
+        # Verify DuckLocationPhoto record was created
+        photo = DuckLocationPhoto.objects.filter(
+            duck_location__duck_id=100
+        ).first()
+        self.assertIsNotNone(photo)
+        self.assertEqual(photo.flickr_photo_id, 99999)
+        self.assertEqual(photo.flickr_thumbnail_url, 'https://flickr.com/fake/thumb.jpg')
+
+    @patch('duck.marker.email_duck_location')
+    def test_no_photo_record_created_without_image(self, mock_email):
+        """Submitting without an image creates no DuckLocationPhoto."""
+        data = _valid_mark_data()
+        response = self.client.post('/mark/', data)
+        self.assertEqual(response.status_code, 302)
+
+        photos = DuckLocationPhoto.objects.filter(duck_location__duck_id=100)
+        self.assertEqual(photos.count(), 0)
+
+    @patch('duck.marker.email_duck_location')
+    def test_invalid_image_rejected_no_side_effects(self, mock_email):
+        """A non-image file is rejected; no location or photo is created."""
+        initial_location_count = DuckLocation.objects.filter(duck_id=100).count()
+
+        data = _valid_mark_data()
+        data['image'] = SimpleUploadedFile('evil.exe', b'MZ\x90\x00' * 100, content_type='application/x-msdownload')
+        response = self.client.post('/mark/', data)
+
+        # Form re-renders (no redirect)
+        self.assertEqual(response.status_code, 200)
+
+        # No new location or photo created
+        self.assertEqual(
+            DuckLocation.objects.filter(duck_id=100).count(),
+            initial_location_count,
+        )
+        self.assertEqual(DuckLocationPhoto.objects.filter(duck_location__duck_id=100).count(), 0)

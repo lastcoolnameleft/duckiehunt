@@ -5,3 +5,4 @@ from .test_views import *
 from .test_marker import *
 from .test_create_duck import *
 from .test_mark_security import *
+from .test_photo_upload import *

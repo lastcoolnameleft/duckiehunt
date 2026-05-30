@@ -1,22 +1,47 @@
 # Testing
 
-Uses [Playwright](https://playwright.dev/python/docs/running-tests).
+## Django unit tests
 
-Basic run test:
-```
-cd tests
-pytest test_basic.py
-pytest test_mark_duck.py
-
-# Run with browser
-pytest --headed test_basic.py
-
-cd django && python manage.py test duck.tests --settings=duckiehunt.settings.test
-
-
+```bash
+source venv/bin/activate
+cd django && python manage.py test duck.tests --verbosity=2
 ```
 
-Regenerate auth.json
+## Playwright tests (requires local dev server)
+
+Start the dev server first:
+```bash
+source venv/bin/activate
+cd django && python manage.py runserver 0.0.0.0:8042
 ```
-npx playwright codegen http://localhost:81 --save-storage=auth.json
+
+Basic smoke tests (no auth required):
+```bash
+pytest tests/test_basic.py
+```
+
+Mark duck test (requires auth.json):
+```bash
+pytest tests/test_mark_duck.py --headed
+```
+
+Photo upload test (requires auth.json):
+```bash
+pytest tests/test_photo_upload.py -v --headed
+```
+
+Run with browser hidden:
+```bash
+pytest tests/test_photo_upload.py -v
+```
+
+## Generating auth.json
+
+```bash
+npx playwright codegen http://localhost:8042 --save-storage=tests/auth.json
+```
+
+Or use the helper script:
+```bash
+python tests/create_auth.py
 ```
