@@ -106,6 +106,8 @@ class TestMarkDuckIntegration:
         page.fill("input[name='location']", "Test Location, Staging")
         page.evaluate("document.querySelector('input[name=\"lat\"]').value = '29.9511'")
         page.evaluate("document.querySelector('input[name=\"lng\"]').value = '-90.0715'")
+        # Fill date_time (required datetime-local field)
+        page.fill("input[name='date_time']", "2026-01-15T12:00")
         page.fill("textarea[name='comments']", self.unique_comment)
 
         # Step 3: Submit
