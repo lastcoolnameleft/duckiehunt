@@ -34,7 +34,7 @@ django-recaptcha==4.1.0
     # via -r django/requirements.in
 flickr-api==0.8.0
     # via -r django/requirements.in
-gunicorn==23.0.0
+gunicorn==26.0.0
     # via -r django/requirements.in
 haversine==2.9.0
     # via -r django/requirements.in
