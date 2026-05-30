@@ -208,7 +208,7 @@
         const googleMapsApiKey = "{{ GOOGLE_MAPS_API_KEY|escapejs }}";
         if (googleMapsApiKey) {
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsApiKey)}&libraries=places&callback=initMap`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsApiKey)}&v=quarterly&libraries=places&callback=initMap`;
             script.async = true;
             document.body.appendChild(script);
         } else {
