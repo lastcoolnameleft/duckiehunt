@@ -73,6 +73,35 @@ jobs:
           STG_TEST_USERNAME: ${{ secrets.STG_TEST_USERNAME }}
           STG_TEST_PASSWORD: ${{ secrets.STG_TEST_PASSWORD }}
         run: pytest tests/staging/test_mark_integration.py -v --tb=short
+      - name: Close resolved staging issues
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'bug',
+              per_page: 50,
+            });
+            for (const issue of issues.data) {
+              if (issue.title.startsWith('Staging smoke test failed')) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  state: 'closed',
+                  state_reason: 'completed',
+                });
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `Resolved — staging smoke tests passed on ${context.sha.substring(0, 7)}.`,
+                });
+              }
+            }
       - name: Create failure issue
         if: failure()
         uses: actions/github-script@v7
