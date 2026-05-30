@@ -40,6 +40,11 @@ def add_duck_location(duck_id, latitude, longitude, location, date_time, comment
     last_duck_location = DuckLocation.objects.filter(duck_id=duck_id).order_by('-date_time')[0]
     distance_travelled = haversine((last_duck_location.latitude, last_duck_location.longitude),
                                     (latitude, longitude), unit=Unit.MILES)
+    # Anonymous approval controlled by REQUIRE_ANONYMOUS_REVIEW env var
+    if user:
+        approved = 'Y'
+    else:
+        approved = 'N' if os.environ.get('REQUIRE_ANONYMOUS_REVIEW', '').lower() in ('1', 'true', 'yes') else 'Y'
     duck_location = DuckLocation(duck_id=duck_id,
                                     latitude=latitude,
                                     longitude=longitude,
@@ -48,7 +53,7 @@ def add_duck_location(duck_id, latitude, longitude, location, date_time, comment
                                     comments=comments,
                                     distance_to=round(distance_travelled, 2),
                                     user=user,
-                                    approved='Y')
+                                    approved=approved)
     duck_location.save()
     return duck_location
 

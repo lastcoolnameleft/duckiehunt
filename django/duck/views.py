@@ -189,7 +189,7 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = DuckForm(request.POST, require_captcha=require_captcha)
+        form = DuckForm(request.POST, request.FILES, require_captcha=require_captcha)
         # check whether it's valid:
         if form.is_valid():
             duck_id = form.cleaned_data['duck_id']
@@ -217,9 +217,9 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
                                                      form.cleaned_data['comments'],
                                                      user)
 
-            if request.FILES and request.FILES['image']:
-                #marker.add_duck_location_photo(duck_location, request.FILES['image'], duck_id, duck.name, form.cleaned_data['comments'])
-                photo_info = marker.handle_uploaded_file(request.FILES['image'], duck_id,
+            image = form.cleaned_data.get('image')
+            if image:
+                photo_info = marker.handle_uploaded_file(image, duck_id,
                                                         duck.name, form.cleaned_data['comments'])
                 duck_location_photo = DuckLocationPhoto(duck_location=duck_location,
                                                         flickr_photo_id=photo_info['id'],
@@ -232,7 +232,9 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
             # redirect to a new URL:
             new_location_url = '/location/' + str(duck_location.duck_location_id)
 
-            marker.email_duck_location(duck_id, new_location_url)
+            # Only send email notification for approved submissions
+            if duck_location.approved == 'Y':
+                marker.email_duck_location(duck_id, new_location_url)
 
             return HttpResponseRedirect(new_location_url)
     # if a GET (or any other method) we'll create a blank form
