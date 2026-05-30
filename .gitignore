@@ -50,6 +50,7 @@ local_settings.py
 secrets
 django/duckiehunt/settings/*
 !django/duckiehunt/settings/__init__.py
+!django/duckiehunt/settings/test.py
 data/
 tests/auth.json
 __pycache__
