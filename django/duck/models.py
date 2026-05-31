@@ -58,6 +58,8 @@ class DuckLocationPhoto(models.Model):
     photo_provider = models.CharField(max_length=50, blank=True, null=True)
     photo_id = models.CharField(max_length=255, blank=True, null=True)
     thumbnail_url = models.TextField(blank=True, null=True)
+    # Local file path relative to UPLOAD_PATH (for backup/local serving)
+    local_path = models.CharField(max_length=512, blank=True, null=True)
 
     @property
     def display_thumbnail_url(self):
