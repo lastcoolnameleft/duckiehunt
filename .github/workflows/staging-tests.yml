@@ -58,8 +58,8 @@ jobs:
     env:
       STG_BASE_URL: ${{ inputs.base_url || secrets.STG_BASE_URL }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install test dependencies
@@ -75,7 +75,7 @@ jobs:
         run: pytest tests/staging/test_mark_integration.py -v --tb=short
       - name: Close resolved staging issues
         if: success()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const issues = await github.rest.issues.listForRepo({
@@ -104,7 +104,7 @@ jobs:
             }
       - name: Create failure issue
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const sha = '${{ github.event.workflow_run.head_sha || github.sha }}'.substring(0, 7);
