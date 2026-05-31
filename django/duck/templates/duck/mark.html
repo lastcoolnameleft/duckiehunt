@@ -24,7 +24,7 @@
                     {{ form.lat.as_hidden }}
                     {{ form.lng.as_hidden }}
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label for="{{ form.duck_id.id_for_label }}" class="col-sm-3 col-form-label">Duck #:</label>
                         <div class="col-sm-9">
                             {{ form.duck_id }}
@@ -32,7 +32,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label for="{{ form.name.id_for_label }}" class="col-sm-3 col-form-label">Name:</label>
                         <div class="col-sm-9">
                             {{ form.name }}
@@ -41,7 +41,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label for="{{ form.location.id_for_label }}" class="col-sm-3 col-form-label">Location:</label>
                         <div class="col-sm-9">
                             {% if form.lat.errors or form.lng.errors %}
@@ -52,14 +52,14 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Map:</label>
                         <div class="col-sm-9">
                             <div id="map"></div>
                         </div>
                     </div>
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label for="{{ form.date_time.id_for_label }}" class="col-sm-3 col-form-label">Date/Time:</label>
                         <div class="col-sm-9">
                             {{ form.date_time }}
@@ -68,7 +68,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label for="{{ form.image.id_for_label }}" class="col-sm-3 col-form-label">Image:</label>
                         <div class="col-sm-9">
                             {{ form.image }}
@@ -76,7 +76,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label for="{{ form.comments.id_for_label }}" class="col-sm-3 col-form-label">Comments:</label>
                         <div class="col-sm-9">
                             {{ form.comments }}
@@ -91,7 +91,7 @@
                         <a href="/register?next={{ form_page }}" class="alert-link">create an account</a>
                         to link this sighting to your profile.
                     </div>
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Captcha:</label>
                         <div class="col-sm-9">
                             {{ form.captcha }}
@@ -100,7 +100,7 @@
                     </div>
                     {% endif %}
 
-                    <div class="form-group mb-3 row">
+                    <div class="mb-3 row">
                         <div class="col-sm-9 offset-sm-3">
                             <button class="btn btn-primary" id="buttonSubmit" type="submit">Submit new location</button>
                         </div>
@@ -121,47 +121,63 @@
     </style>
 
     <script>
-        $(document).ready(function() {
-            $("#formMark").submit(function() {
-                $("#buttonSubmit").html(
-                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...'
-                );
-                $("#buttonSubmit").prop('disabled', true);
-            });
-        });
-        $( "#id_name" ).prop( "disabled", true);
-        $('#id_duck_id').focusout(() => checkDuckName());
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('formMark');
+            const submitBtn = document.getElementById('buttonSubmit');
+            const nameField = document.getElementById('id_name');
+            const duckIdField = document.getElementById('id_duck_id');
+            const nameNotification = document.getElementById('name_notification');
 
-        function checkDuckName() {
-            var duck_id = $('#id_duck_id').get(0).value;
-            if (!parseInt(duck_id) || 1 >= parseInt(duck_id)) {
-                return;
+            form.addEventListener('submit', function() {
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+                submitBtn.disabled = true;
+            });
+
+            nameField.disabled = true;
+
+            duckIdField.addEventListener('blur', checkDuckName);
+
+            function checkDuckName() {
+                var duck_id = duckIdField.value;
+                if (!parseInt(duck_id) || 1 >= parseInt(duck_id)) {
+                    return;
+                }
+                var get_duck_url = '/api/duck/' + duck_id;
+                fetch(get_duck_url)
+                    .then(response => {
+                        if (!response.ok) {
+                            if (response.status === 404) {
+                                enableDuckName();
+                            }
+                            throw new Error('Not found');
+                        }
+                        return response.json();
+                    })
+                    .then(result => {
+                        var duck_name = result.name;
+                        if (!duck_name || duck_name === 'Undefined' || duck_name === 'Unnamed') {
+                            enableDuckName();
+                        } else {
+                            disableDuckName(duck_name);
+                        }
+                    })
+                    .catch(() => {});
             }
-            var get_duck_url = '/api/duck/' + duck_id;
-            $.get(get_duck_url, (result) => {
-                var duck_name = result.name;
-                if (!duck_name || duck_name == 'Undefined' || duck_name == 'Unnamed') {
-                    enableDuckName();
-                } else {
-                    disableDuckName(duck_name);
-                }
-            }).fail((result) => {
-                if (result.status == 404) {
-                    enableDuckName()
-                }
-            });
-        }
 
-        function enableDuckName() {
-            $('#id_name').prop('disabled', false);
-            $('#id_name').val('');
-            $('#name_notification').text('This Duck does not have a name yet! Please be creative, not dirty.');
-        }
-        function disableDuckName(duck_name) {
-            $('#id_name').prop('disabled', true);
-            $('#id_name').val(duck_name);
-            $('#name_notification').text('');
-        }
+            function enableDuckName() {
+                nameField.disabled = false;
+                nameField.value = '';
+                nameNotification.textContent = 'This Duck does not have a name yet! Please be creative, not dirty.';
+            }
+
+            function disableDuckName(duck_name) {
+                nameField.disabled = true;
+                nameField.value = duck_name;
+                nameNotification.textContent = '';
+            }
+
+            checkDuckName();
+        });
 
         function initMap() {
             var map = new google.maps.Map(document.getElementById('map'), {
@@ -186,8 +202,8 @@
                     return;
                 }
 
-                $('#id_lat')[0].value = place.geometry.location.lat();
-                $('#id_lng')[0].value = place.geometry.location.lng();
+                document.getElementById('id_lat').value = place.geometry.location.lat();
+                document.getElementById('id_lng').value = place.geometry.location.lng();
 
                 if (place.geometry.viewport) {
                     map.fitBounds(place.geometry.viewport);
@@ -201,7 +217,6 @@
             });
         }
 
-        checkDuckName();
     </script>
 
     <script>
