@@ -1,7 +1,7 @@
 """ Client Tests """
 from unittest.mock import patch
 
-from django.test import TestCase, RequestFactory, Client
+from django.test import TestCase, RequestFactory, Client, override_settings
 from django.contrib.auth import get_user_model
 
 from duck.models import Duck, DuckLocation
@@ -20,6 +20,11 @@ class SimpleTest(TestCase):
         response = index(request)
         self.assertEqual(response.status_code, 200)
 
+    @override_settings(
+        RECAPTCHA_PUBLIC_KEY='real-key-would-go-here',
+        RECAPTCHA_PRIVATE_KEY='real-private-key',
+        TEST_RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+    )
     def test_secure_page(self):
         response = self.client.get('/mark/')
         self.assertEqual(response.status_code, 200)

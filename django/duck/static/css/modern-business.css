@@ -27,3 +27,34 @@ body {
 .portfolio-item {
   margin-bottom: 30px;
 }
+
+/* OAuth button styles */
+.btn-oauth-google {
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  color: #3c4043;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-oauth-google:hover {
+  background: #f7f8f8;
+}
+
+.btn-oauth-facebook {
+  gap: 10px;
+  background: #1877f2;
+  border: 1px solid #1877f2;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-oauth-facebook:hover {
+  background: #166fe5;
+}

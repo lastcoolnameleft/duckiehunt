@@ -1,3 +1,4 @@
+{% load static %}
       <style>
         #map {
           width: {{ map.width }}; 
@@ -7,83 +8,15 @@
         }
       </style>
        
-       <script>
-            const googleMapsApiKey = "{{ GOOGLE_MAPS_API_KEY|escapejs }}";
-            if (googleMapsApiKey) {
-                (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-                  key: googleMapsApiKey,
-                  v: "quarterly",
-                });
-
-                var focus_lat={{ map.focus_lat }};
-                var focus_long={{ map.focus_long }};
-                var focus_zoom={{ map.focus_zoom }};
-                var duck_location_id={{ map.duck_location_id }};
-                var location_list_api='{{ map.location_list_api }}';
-                
-                let map;
-
-                async function initMap() {
-                    const { Map } = await google.maps.importLibrary("maps");
-
-                    map = new Map(document.getElementById('map'), {
-                         zoom: focus_zoom,
-                         center: { lat: focus_lat, lng: focus_long }
-                    });
-                    var bounds = new google.maps.LatLngBounds();
-
-                    fetch(location_list_api)
-                     .then(response => response.json())
-                     .then(location_result=> {
-                         if (!Array.isArray(location_result)) {
-                             location_result = [location_result];
-                         }
-                         location_result.forEach((location) => {
-
-                             var position = new google.maps.LatLng( Number(location.latitude), Number(location.longitude) );
-                             var marker = new google.maps.Marker({ position: position, map: map, icon: '/static/icons/duck-32x32.png' });
-                 
-                             if (!(focus_lat && focus_long)) {
-                                 bounds.extend(position);
-                             }
-
-                             function escapeHtml(str) {
-                                 if (!str) return '';
-                                 var div = document.createElement('div');
-                                 div.appendChild(document.createTextNode(str));
-                                 return div.innerHTML;
-                             }
-
-                             var duck_name = location.duck__name ? ' (' + escapeHtml(location.duck__name) + ')' : '';
-                             var duck_header = '<a href="/duck/' + encodeURIComponent(location.duck_id) + '">Duck #' + escapeHtml(String(location.duck_id)) + duck_name + '</a>';
-                             var content = '<div id="content"><p>' + duck_header + '<br/>' + escapeHtml(location.comments) + '</p></div>';
-                             var infoWindow = new google.maps.InfoWindow({ content: content });
-                             marker.addListener('click', () => { infoWindow.open(map, marker); });
-                             if (location.pk == duck_location_id) {
-                                 infoWindow.open(map, marker);
-                             }
-                         });
-                 
-                         if (!(focus_lat && focus_long)) {
-                             map.fitBounds(bounds);
-                             map.setZoom(focus_zoom);
-                         }
-      
-                    })
-                    .catch(error => {
-                      console.error('Error fetching data:', error);
-                    });
-                }
-
-                initMap();
-
-                function addMarker(lat, long, title, content) {
-                    var position = new google.maps.LatLng(lat, long);
-                    var marker = new google.maps.Marker({ position: position, map: map, title: title });
-                    var infoWindow = new google.maps.InfoWindow({ content: content });
-                    marker.addListener('click', () => { infoWindow.open(map, marker); });
-                }
-            } else {
-                console.warn('GOOGLE_MAPS_API_KEY is not configured.');
-            }
-       </script>
+      <script>
+          window.GOOGLE_MAPS_API_KEY = "{{ GOOGLE_MAPS_API_KEY|escapejs }}";
+          window.DUCK_ICON_URL = "{% static 'icons/duck-32x32.png' %}";
+          window.MAP_CONFIG = {
+              focusLat: {{ map.focus_lat }},
+              focusLong: {{ map.focus_long }},
+              focusZoom: {{ map.focus_zoom }},
+              duckLocationId: {{ map.duck_location_id }},
+              locationListApi: '{{ map.location_list_api }}'
+          };
+      </script>
+      <script src="{% static 'js/map-view.js' %}"></script>

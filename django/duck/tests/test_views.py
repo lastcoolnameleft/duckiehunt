@@ -168,6 +168,11 @@ class AuthViewTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('tester', 'test@test.com', 'pass')
 
+    @override_settings(
+        RECAPTCHA_PUBLIC_KEY='real-key-would-go-here',
+        RECAPTCHA_PRIVATE_KEY='real-private-key',
+        TEST_RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+    )
     def test_mark_shows_captcha_for_anonymous_users(self):
         response = self.client.get('/mark/')
         self.assertEqual(response.status_code, 200)
