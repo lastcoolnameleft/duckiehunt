@@ -82,14 +82,7 @@ These run automatically in GitHub Actions against deployed environments:
 ## Git & GitHub Workflow
 
 - Use `Fixes #N` in commit messages to auto-close GitHub issues when pushed to master
-- Do NOT manually close issues with `gh issue close` — let GitHub handle it on push
 - CI builds and deploys on push to `master` branch
-- Always separate `git add` and `git commit` into two steps:
-  1. Show the user what files will be staged (e.g., `git status --short`)
-  2. Ask the user to approve before running `git add`
-  3. After staging is approved, present the commit message and ask user to confirm
-- Never combine `git add` and `git commit` into a single command
-- Never auto-commit without explicit user approval at each step
 
 ## Key Conventions
 
