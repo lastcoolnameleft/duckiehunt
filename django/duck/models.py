@@ -31,7 +31,7 @@ class DuckLocation(models.Model):
     comments = models.TextField(blank=True, null=True)
     flickr_photo_id = models.BigIntegerField(blank=True, null=True)
     duck_history_id = models.IntegerField(blank=True, null=True)
-    date_time = models.DateTimeField(blank=True, null=True)
+    date_time = models.DateTimeField(blank=True, null=True, db_index=True)
     location = models.TextField(blank=True, null=True)
     approved = models.CharField(max_length=1, blank=True, null=True)
     distance_to = models.FloatField(blank=True, null=True)
