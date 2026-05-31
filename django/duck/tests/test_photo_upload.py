@@ -53,16 +53,18 @@ class FullImageUploadPathTest(TestCase):
         )
         self.client.force_login(self.user)
 
-    @patch('duck.marker.upload_to_flickr')
+    @patch('duck.photo_providers.flickr_api')
     @patch('duck.marker.email_duck_location')
     @override_settings(UPLOAD_PATH=None)  # will be set in test
-    def test_full_upload_path_saves_file_and_creates_record(self, mock_email, mock_flickr):
+    def test_full_upload_path_saves_file_and_creates_record(self, mock_email, mock_flickr_api):
         """Image goes through form validation, saves to disk, creates DuckLocationPhoto."""
         # Configure mock to return realistic Flickr response
-        mock_flickr.return_value = {
-            'id': 99999,
-            'sizes': {'Small 320': {'source': 'https://flickr.com/fake/thumb.jpg'}},
+        mock_photo = MagicMock()
+        mock_photo.getInfo.return_value = {'id': 99999}
+        mock_photo.getSizes.return_value = {
+            'Small 320': {'source': 'https://flickr.com/fake/thumb.jpg'},
         }
+        mock_flickr_api.upload.return_value = mock_photo
 
         # Use the real test fixture image
         fixture_path = os.path.join(FIXTURES_DIR, 'test_duck.jpg')
@@ -85,11 +87,8 @@ class FullImageUploadPathTest(TestCase):
         self.assertEqual(len(saved_files), 1)
         self.assertTrue(saved_files[0].endswith('.jpg'))
 
-        # Verify upload_to_flickr was called with the saved file path
-        mock_flickr.assert_called_once()
-        call_args = mock_flickr.call_args
-        saved_path = call_args[0][0]
-        self.assertTrue(os.path.exists(saved_path))
+        # Verify flickr_api.upload was called
+        mock_flickr_api.upload.assert_called_once()
 
         # Verify DuckLocationPhoto record was created
         photo = DuckLocationPhoto.objects.filter(

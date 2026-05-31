@@ -81,13 +81,17 @@ def email_duck_location(duck_id, duck_location_url):
     msg.send()
 
 def handle_uploaded_file(uploaded_file, duck_id, duck_name, comments):
-    """ Upload duck location image to flickr """
-    title = 'Duck #' + str(duck_id) + ' (' + duck_name + ')'
-    tags = "duckiehunt"
+    """Upload a duck photo via the configured photo provider."""
+    from .photo_providers import get_photo_provider
 
-    file_path = save_uploaded_file(uploaded_file, settings.UPLOAD_PATH)
-    photo_info = upload_to_flickr(file_path, title, comments, settings.FLICKR_PHOTO_IS_PUBLIC, tags)
-    return photo_info
+    title = 'Duck #' + str(duck_id) + ' (' + duck_name + ')'
+    provider = get_photo_provider()
+    result = provider.upload(uploaded_file, title, comments, tags='duckiehunt')
+    # Return in legacy format for backwards compatibility with views.py
+    return {
+        'id': result['id'],
+        'sizes': {'Small 320': {'source': result['thumbnail_url']}},
+    }
 
 def save_uploaded_file(uploaded_file, upload_path):
     """
@@ -106,7 +110,7 @@ def save_uploaded_file(uploaded_file, upload_path):
     return file_path
 
 def upload_to_flickr(photo_file, title, comments, is_public, tags):
-    """ Upload file to flickr """
+    """ Upload file to flickr (legacy — use photo_providers instead) """
     # No idea why, but is_public DOESN'T WORK.
     photo = flickr_api.upload(photo_file=photo_file, title=title, is_public=is_public,
                               tags=tags, description=comments)

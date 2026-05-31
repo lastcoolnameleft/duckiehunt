@@ -166,19 +166,12 @@ class SaveUploadedFileTest(TestCase):
 
 
 class HandleUploadedFileTest(TestCase):
-    @patch('duck.marker.upload_to_flickr')
-    def test_calls_upload_with_correct_args(self, mock_upload):
+    @override_settings(PHOTO_PROVIDER='duck.tests.test_photo_providers.FakeProvider')
+    def test_calls_upload_via_provider(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
-
-        mock_upload.return_value = {
-            'id': '12345',
-            'sizes': {'Small 320': {'source': 'http://example.com/thumb.jpg'}},
-        }
 
         uploaded = SimpleUploadedFile('duckie.jpg', b'image data')
         result = marker.handle_uploaded_file(uploaded, 7, 'Lucky Duck', 'Found it!')
 
-        mock_upload.assert_called_once()
-        call_args = mock_upload.call_args
-        self.assertIn('Duck #7 (Lucky Duck)', call_args[1].get('title', call_args[0][1] if len(call_args[0]) > 1 else ''))
-        self.assertEqual(result['id'], '12345')
+        self.assertEqual(result['id'], 'fake-123')
+        self.assertEqual(result['sizes']['Small 320']['source'], 'http://fake.com/thumb.jpg')

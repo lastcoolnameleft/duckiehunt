@@ -54,8 +54,15 @@ class DuckLocationPhoto(models.Model):
     duck_location = models.ForeignKey(DuckLocation, on_delete=models.CASCADE, null=True)
     flickr_photo_id = models.BigIntegerField(blank=True, null=True)
     flickr_thumbnail_url = models.TextField(blank=True, null=True)
-# Not sure if we want to do this or not yet
-#    photo = models.ImageField(blank=True, null=True)
+    # Provider-agnostic fields (for migration away from Flickr)
+    photo_provider = models.CharField(max_length=50, blank=True, null=True)
+    photo_id = models.CharField(max_length=255, blank=True, null=True)
+    thumbnail_url = models.TextField(blank=True, null=True)
+
+    @property
+    def display_thumbnail_url(self):
+        """Return thumbnail URL from new field or legacy Flickr field."""
+        return self.thumbnail_url or self.flickr_thumbnail_url or ''
 
     class Meta:
         db_table = 'duck_location_photo'
