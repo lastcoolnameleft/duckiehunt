@@ -31,7 +31,27 @@ Run a specific test file:
 ```bash
 pytest tests/playwright/test_basic.py -v
 pytest tests/playwright/test_maps.py -v
+pytest tests/playwright/test_ui_components.py -v
 pytest tests/playwright/test_photo_upload.py -v --headed
+```
+
+### UI component tests
+
+After Bootstrap/CSS/JS changes, verify all interactive UI still works:
+```bash
+pytest tests/playwright/test_ui_components.py -v
+```
+
+This covers:
+- **Navbar**: desktop visibility, mobile collapse, hamburger expand
+- **Accordions**: FAQ and Issue page open/close
+- **Mark form JS**: name field disable/enable via fetch, submit button spinner
+- **Create form**: page loads with expected fields
+- **Footer**: links present and navigable
+
+Run with `--headed` to watch the browser interactions visually:
+```bash
+pytest tests/playwright/test_ui_components.py -v --headed
 ```
 
 Tests that require authentication need `auth.json` at the repo root:

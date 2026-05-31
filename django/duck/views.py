@@ -172,12 +172,16 @@ def _get_next_url(request, default='/mark/'):
 def mark(request, duck_id=None):
     user = request.user if request.user.is_authenticated else None
     form_page = f'/mark/{duck_id}' if duck_id else '/mark/'
+    require_captcha = not request.user.is_authenticated
+    # Skip captcha when no real reCAPTCHA keys are configured (dev/test)
+    if getattr(settings, 'RECAPTCHA_PUBLIC_KEY', '') == getattr(settings, 'TEST_RECAPTCHA_PUBLIC_KEY', ''):
+        require_captcha = False
     return mark_process(
         request,
         duck_id,
         user,
         form_page,
-        require_captcha=not request.user.is_authenticated,
+        require_captcha=require_captcha,
     )
 
 

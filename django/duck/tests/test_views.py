@@ -463,7 +463,13 @@ class MarkCaptchaSkipTest(TestCase):
         duck = Duck.objects.get(pk=300)
         self.assertEqual(duck.name, 'No Captcha Duck')
 
+    @override_settings(
+        RECAPTCHA_PUBLIC_KEY='real-key-would-go-here',
+        RECAPTCHA_PRIVATE_KEY='real-private-key',
+        TEST_RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+    )
     def test_anonymous_user_mark_page_shows_captcha(self):
+        """When real reCAPTCHA keys are set, anonymous users see captcha."""
         response = self.client.get('/mark/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'recaptcha')

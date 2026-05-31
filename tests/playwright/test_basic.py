@@ -22,8 +22,8 @@ def test_mark_new_duck_login(
 ):
     page.goto(f"{BASE_URL}/mark")
 
-    # Unauthenticated users should see a login link
-    login_link = page.locator("a:has-text('Log in')")
+    # Unauthenticated users should see a Login link in the navbar
+    login_link = page.locator("a.nav-link:has-text('Login')")
     expect(login_link).to_be_visible()
 
 def test_existing_location(

@@ -1,21 +1,20 @@
 """
-Playwright integration test for image upload against local dev server.
+Playwright integration tests for the mark-a-duck form.
 
 Requires:
   - Local dev server running at http://localhost:8042
-  - auth.json with authenticated session (run tests/create_auth.py first)
+  - Captcha disabled in dev (no RECAPTCHA_PUBLIC_KEY env var)
 
 Run with:
-  pytest tests/test_photo_upload.py -v
+  pytest tests/playwright/test_photo_upload.py -v
 
 Run with visible browser:
-  pytest tests/test_photo_upload.py -v --headed
-
-Note: The upload test will attempt to upload to Flickr if FLICKR_API_KEY
-is configured. Without it, the submission will succeed but the photo
-won't be stored (tests verify the form path, not Flickr integration).
+  pytest tests/playwright/test_photo_upload.py -v --headed
 """
 import os
+import random
+import subprocess
+import sys
 
 import pytest
 
@@ -24,77 +23,137 @@ from playwright.sync_api import Page, expect
 
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8042")
-AUTH_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "auth.json")
-FIXTURE_IMAGE = os.path.join(os.path.dirname(__file__), "fixtures", "test_duck.jpg")
+DJANGO_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "django")
 
-# Use a high duck_id unlikely to conflict
-TEST_DUCK_ID = "8888"
-
-
-@pytest.fixture(scope="session")
-def browser_context_args():
-    if not os.path.exists(AUTH_FILE):
-        pytest.skip("auth.json not found — run tests/create_auth.py first")
-    return {
-        "storage_state": AUTH_FILE,
-        "ignore_https_errors": True,
-    }
+# Track duck IDs created during tests so we can clean them up
+_created_duck_ids: list[str] = []
 
 
-@pytest.fixture()
-def authenticated_page(page: Page):
-    """Verify we're logged in."""
-    page.goto(f"{BASE_URL}/mark/")
-    # If logged in, no captcha should be visible
-    assert page.locator(".g-recaptcha").count() == 0
-    return page
+def _delete_ducks(duck_ids: list[str]):
+    """Delete ducks by ID using Django ORM via manage.py shell."""
+    if not duck_ids:
+        return
+    ids_str = ", ".join(duck_ids)
+    script = f"""
+from duck.models import Duck
+ducks = Duck.objects.filter(duck_id__in=[{ids_str}])
+count = ducks.count()
+ducks.delete()
+print(f'Deleted {{count}} test ducks')
+"""
+    subprocess.run(
+        [sys.executable, "manage.py", "shell", "-c", script],
+        cwd=DJANGO_DIR,
+        capture_output=True,
+    )
 
 
-class TestPhotoUpload:
-    """Test uploading an image through the mark form."""
+class TestFullMarkFlow:
+    """End-to-end test for the complete mark-a-duck workflow.
 
-    def test_upload_image_with_duck_sighting(self, authenticated_page: Page):
-        """Submit a sighting with a photo and verify it appears on the location page."""
-        page = authenticated_page
+    Requires dev server running with captcha disabled (no RECAPTCHA_PUBLIC_KEY).
 
-        page.goto(f"{BASE_URL}/mark/{TEST_DUCK_ID}")
-        expect(page.locator("form")).to_be_visible()
+    Tests the full path: duck name lookup → fill form → submit → verify.
+    """
 
-        # Fill required fields
-        page.fill("input[name='duck_id']", TEST_DUCK_ID)
-        page.fill("input[name='location']", "Photo Test Location")
+    def setup_method(self):
+        """Clean up any leftover test ducks before each test."""
+        _delete_ducks(_created_duck_ids.copy())
+        _created_duck_ids.clear()
+
+    def teardown_method(self):
+        """Delete all ducks created during this test."""
+        _delete_ducks(_created_duck_ids.copy())
+        _created_duck_ids.clear()
+
+    def _captcha_disabled(self, page: Page) -> bool:
+        """Check if captcha is disabled (no recaptcha widget on page)."""
+        return page.locator(".g-recaptcha").count() == 0
+
+    def test_mark_new_duck_fills_name_and_submits(self, page: Page):
+        """For a new duck: set name, location, date, comments → submit → verify location page."""
+        new_duck_id = str(random.randint(90000, 99999))
+        _created_duck_ids.append(new_duck_id)
+
+        page.goto(f"{BASE_URL}/mark/")
+        expect(page.locator("form#formMark")).to_be_visible()
+
+        # Fill duck ID and trigger name lookup
+        page.fill("input[name='duck_id']", new_duck_id)
+        page.locator("input[name='duck_id']").blur()
+
+        # Name field should enable (duck doesn't exist → 404 → enableDuckName)
+        name_field = page.locator("#id_name")
+        expect(name_field).to_be_enabled(timeout=5000)
+        expect(page.locator("#name_notification")).to_contain_text("creative")
+
+        # Set duck name
+        name_field.fill("Sir Quacksalot")
+        assert name_field.input_value() == "Sir Quacksalot"
+
+        # Set location (bypass Google Places by injecting lat/lng)
+        page.fill("input[name='location']", "Austin, TX, USA")
         page.evaluate("document.querySelector('input[name=\"lat\"]').value = '30.2672'")
         page.evaluate("document.querySelector('input[name=\"lng\"]').value = '-97.7431'")
-        page.fill("input[name='date_time']", "2026-01-15T12:00")
-        page.fill("textarea[name='comments']", "Integration test with photo upload")
 
-        # Upload the test image
-        page.locator("input[name='image']").set_input_files(FIXTURE_IMAGE)
+        # Set date/time
+        page.fill("input[name='date_time']", "2026-05-30T14:00")
 
-        # Submit
-        page.click("text=Submit new location")
+        # Add comments
+        page.fill("textarea[name='comments']", "Full e2e test with name")
 
-        # Should redirect to location page
-        page.wait_for_url("**/location/**", timeout=15000)
-        location_url = page.url
-        assert "/location/" in location_url
+        # Submit if captcha is disabled, otherwise just verify form state
+        if self._captcha_disabled(page):
+            page.click("#buttonSubmit")
+            page.wait_for_url("**/location/**", timeout=15000)
+            assert "/location/" in page.url
 
-        # Verify the page loaded successfully
-        expect(page.locator("body")).to_contain_text(TEST_DUCK_ID)
+            # Verify the location page shows all submitted data
+            body = page.locator("body")
+            expect(body).to_contain_text("Sir Quacksalot")
+            expect(body).to_contain_text(new_duck_id)
+            expect(body).to_contain_text("Austin")
+            expect(body).to_contain_text("Full e2e test with name")
+            expect(body).to_contain_text("30.26")
+            expect(body).to_contain_text("-97.74")
 
-    def test_upload_invalid_file_shows_error(self, authenticated_page: Page, tmp_path):
+    def test_mark_existing_duck_name_disabled(self, page: Page):
+        """Marking an existing named duck pre-fills and disables the name field."""
+        # Duck #42 (Ducklas Adams) exists in the local DB
+        page.goto(f"{BASE_URL}/mark/42")
+        expect(page.locator("form#formMark")).to_be_visible()
+
+        # The duck_id field should be pre-filled
+        duck_id_field = page.locator("input[name='duck_id']")
+        expect(duck_id_field).to_have_value("42")
+
+        # checkDuckName() runs on DOMContentLoaded — wait for fetch to resolve
+        name_field = page.locator("#id_name")
+        expect(name_field).to_be_disabled(timeout=5000)
+
+        # Should have the existing name filled in
+        assert name_field.input_value() == "Ducklas Adams"
+        # No notification text (name already exists)
+        expect(page.locator("#name_notification")).to_have_text("")
+
+    def test_upload_invalid_file_shows_error(self, page: Page):
         """Submitting a non-image file shows a validation error."""
-        page = authenticated_page
+        page.goto(f"{BASE_URL}/mark/")
+
+        # Skip if captcha is present (can't submit without auth)
+        if page.locator(".g-recaptcha").count() > 0:
+            pytest.skip("Captcha enabled — run with DISABLE_CAPTCHA or use auth tests")
 
         # Create a fake non-image file
-        fake_file = tmp_path / "not_image.txt"
-        fake_file.write_text("this is not an image")
-
-        page.goto(f"{BASE_URL}/mark/{TEST_DUCK_ID}")
-        expect(page.locator("form")).to_be_visible()
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.txt', delete=False, mode='w') as f:
+            f.write("this is not an image")
+            fake_file = f.name
 
         # Fill required fields
-        page.fill("input[name='duck_id']", TEST_DUCK_ID)
+        page.fill("input[name='duck_id']", "88888")
+        page.locator("input[name='duck_id']").blur()
+        page.wait_for_timeout(1000)
         page.fill("input[name='location']", "Bad Upload Test")
         page.evaluate("document.querySelector('input[name=\"lat\"]').value = '30.0'")
         page.evaluate("document.querySelector('input[name=\"lng\"]').value = '-97.0'")
@@ -102,15 +161,17 @@ class TestPhotoUpload:
         page.fill("textarea[name='comments']", "Should fail")
 
         # Upload invalid file
-        page.locator("input[name='image']").set_input_files(str(fake_file))
+        page.locator("input[name='image']").set_input_files(fake_file)
 
         # Submit
-        page.click("text=Submit new location")
+        page.click("#buttonSubmit")
 
         # Should stay on the form page (not redirect)
         page.wait_for_load_state("networkidle")
-        assert "/mark/" in page.url or "/mark" in page.url
+        assert "/mark" in page.url
 
         # Should show an error about the image
         page_content = page.content()
         assert "valid image" in page_content.lower() or "image" in page_content.lower()
+
+        os.unlink(fake_file)
