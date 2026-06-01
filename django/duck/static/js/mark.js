@@ -105,4 +105,70 @@ function initMap() {
         marker.setPosition(place.geometry.location);
         marker.setVisible(true);
     });
+
+    // "Use my location" button — browser geolocation
+    var locationBtn = document.getElementById('btnUseMyLocation');
+    var locationStatus = document.getElementById('location_status');
+
+    if (locationBtn && navigator.geolocation) {
+        locationBtn.addEventListener('click', function() {
+            locationBtn.disabled = true;
+            locationBtn.textContent = 'Getting location...';
+            locationStatus.textContent = '';
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+
+                    document.getElementById('id_lat').value = lat;
+                    document.getElementById('id_lng').value = lng;
+
+                    var latlng = new google.maps.LatLng(lat, lng);
+                    map.setCenter(latlng);
+                    map.setZoom(15);
+                    marker.setPosition(latlng);
+                    marker.setVisible(true);
+
+                    // Reverse geocode to get a readable address
+                    var geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ location: latlng }, function(results, status) {
+                        if (status === 'OK' && results[0]) {
+                            input.value = results[0].formatted_address;
+                            locationStatus.textContent = 'Location set from your device';
+                            locationStatus.className = 'form-text text-success';
+                        } else {
+                            input.value = lat.toFixed(4) + ', ' + lng.toFixed(4);
+                            locationStatus.textContent = 'Coordinates set (could not resolve address)';
+                            locationStatus.className = 'form-text text-success';
+                        }
+                        locationBtn.disabled = false;
+                        locationBtn.textContent = 'Use my location';
+                    });
+                },
+                function(error) {
+                    locationBtn.disabled = false;
+                    locationBtn.textContent = 'Use my location';
+                    var msg = 'Unable to get location. ';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            msg += 'Permission denied — you can type a location instead.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            msg += 'Position unavailable — try again or type a location.';
+                            break;
+                        case error.TIMEOUT:
+                            msg += 'Request timed out — try again.';
+                            break;
+                    }
+                    locationStatus.textContent = msg;
+                    locationStatus.className = 'form-text text-danger';
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+            );
+        });
+    } else if (locationBtn) {
+        // Browser doesn't support geolocation
+        locationBtn.style.display = 'none';
+    }
 }

@@ -111,6 +111,35 @@ class TestMarkFormJS:
         assert result["disabled"] is True
         assert result["hasSpinner"] is True
 
+    def test_use_my_location_button_visible(self, page: Page):
+        """'Use my location' button is visible on the mark form."""
+        page.goto(f"{BASE_URL}/mark")
+        btn = page.locator("#btnUseMyLocation")
+        expect(btn).to_be_visible()
+        expect(btn).to_contain_text("Use my location")
+
+    def test_use_my_location_fills_coordinates(self, page: Page):
+        """Geolocation fills lat/lng when browser provides position."""
+        page.goto(f"{BASE_URL}/mark")
+
+        # Mock the geolocation API to return Austin, TX coordinates
+        page.evaluate("""() => {
+            navigator.geolocation.getCurrentPosition = function(success) {
+                success({
+                    coords: { latitude: 30.2672, longitude: -97.7431, accuracy: 10 }
+                });
+            };
+        }""")
+
+        page.click("#btnUseMyLocation")
+        # Wait for geocoder response or timeout
+        page.wait_for_timeout(2000)
+
+        lat_val = page.locator("#id_lat").input_value()
+        lng_val = page.locator("#id_lng").input_value()
+        assert lat_val == "30.2672"
+        assert lng_val == "-97.7431"
+
 
 class TestCreateForm:
     """Test create duck form page."""

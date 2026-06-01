@@ -48,7 +48,13 @@
                             {% if form.lat.errors or form.lng.errors %}
                             <div class="text-danger mb-1">Unable to find Lat/Long for the location. Please try again.</div>
                             {% endif %}
-                            {{ form.location }}
+                            <div class="input-group">
+                                {{ form.location }}
+                                <button type="button" id="btnUseMyLocation" class="btn btn-outline-secondary" title="Use my current location">
+                                    Use my location
+                                </button>
+                            </div>
+                            <div id="location_status" class="form-text"></div>
                             {{ form.location.errors }}
                         </div>
                     </div>
