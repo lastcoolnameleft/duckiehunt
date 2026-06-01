@@ -73,6 +73,10 @@ jobs:
           STG_TEST_USERNAME: ${{ secrets.STG_TEST_USERNAME }}
           STG_TEST_PASSWORD: ${{ secrets.STG_TEST_PASSWORD }}
         run: pytest tests/staging/test_mark_integration.py -v --tb=short
+      - name: Run Playwright tests against staging
+        env:
+          BASE_URL: ${{ env.STG_BASE_URL }}
+        run: pytest tests/playwright/ -m staging_safe -v --tb=short
       - name: Close resolved staging issues
         if: success()
         uses: actions/github-script@v9

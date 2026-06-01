@@ -16,6 +16,8 @@ import pytest
 pytest.importorskip("playwright")
 from playwright.sync_api import Page, expect
 
+pytestmark = pytest.mark.staging_safe
+
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8042")
 
