@@ -21,3 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
+handler404 = 'duck.views.custom_404'
+handler500 = 'duck.views.custom_500'
+
