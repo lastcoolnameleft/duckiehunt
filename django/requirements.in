@@ -9,3 +9,4 @@ whitenoise
 django-recaptcha
 python-dotenv
 sentry-sdk[django]
+Pillow
