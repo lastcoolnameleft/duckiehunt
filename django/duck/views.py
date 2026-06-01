@@ -223,12 +223,18 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
 
             image = form.cleaned_data.get('image')
             if image:
-                photo_info = marker.handle_uploaded_file(image, duck_id,
-                                                        duck.name, form.cleaned_data['comments'])
-                duck_location_photo = DuckLocationPhoto(duck_location=duck_location,
-                                                        flickr_photo_id=photo_info['id'],
-                                                        flickr_thumbnail_url=photo_info['sizes']['Small 320']['source'])
-                duck_location_photo.save()
+                try:
+                    photo_info = marker.handle_uploaded_file(image, duck_id,
+                                                            duck.name, form.cleaned_data['comments'])
+                    duck_location_photo = DuckLocationPhoto(duck_location=duck_location,
+                                                            flickr_photo_id=photo_info['id'],
+                                                            flickr_thumbnail_url=photo_info['sizes']['Small 320']['source'])
+                    duck_location_photo.save()
+                except Exception as e:
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.exception('Photo upload failed for duck #%s', duck_id)
+                    # Sighting is still saved — photo just won't be attached
 
             duck.total_distance = round(DuckLocation.objects.filter(duck_id=duck_id).aggregate(Sum('distance_to'))['distance_to__sum'], 2)
             duck.save()
