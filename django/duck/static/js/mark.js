@@ -1,21 +1,138 @@
 /**
  * Mark-a-duck form logic: duck name lookup, form submit spinner,
- * and Google Maps Places autocomplete integration.
+ * image compression, and Google Maps Places autocomplete integration.
  *
  * Expected DOM elements:
  *   #formMark, #buttonSubmit, #id_name, #id_duck_id, #name_notification,
- *   #map, #id_location, #id_lat, #id_lng
+ *   #map, #id_location, #id_lat, #id_lng, #id_image, #image_status
  *
  * Expected globals (set by template):
  *   window.GOOGLE_MAPS_API_KEY
  *   window.DUCK_ICON_URL
  */
+
+var MAX_IMAGE_WIDTH = 1920;
+var MAX_IMAGE_HEIGHT = 1920;
+var IMAGE_QUALITY = 0.85;
+var MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+/**
+ * Compress an image file client-side before upload.
+ * Returns a Promise that resolves to a compressed File, or the original if not an image.
+ */
+function compressImage(file) {
+    return new Promise(function(resolve) {
+        if (!file.type.startsWith('image/') || file.type === 'image/gif') {
+            resolve(file);
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                var width = img.width;
+                var height = img.height;
+
+                // Only resize if larger than max dimensions
+                if (width <= MAX_IMAGE_WIDTH && height <= MAX_IMAGE_HEIGHT && file.size <= 2 * 1024 * 1024) {
+                    resolve(file);
+                    return;
+                }
+
+                // Calculate new dimensions maintaining aspect ratio
+                if (width > MAX_IMAGE_WIDTH) {
+                    height = Math.round(height * MAX_IMAGE_WIDTH / width);
+                    width = MAX_IMAGE_WIDTH;
+                }
+                if (height > MAX_IMAGE_HEIGHT) {
+                    width = Math.round(width * MAX_IMAGE_HEIGHT / height);
+                    height = MAX_IMAGE_HEIGHT;
+                }
+
+                var canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(function(blob) {
+                    var compressed = new File([blob], file.name, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    resolve(compressed);
+                }, 'image/jpeg', IMAGE_QUALITY);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById('formMark');
     var submitBtn = document.getElementById('buttonSubmit');
     var nameField = document.getElementById('id_name');
     var duckIdField = document.getElementById('id_duck_id');
     var nameNotification = document.getElementById('name_notification');
+    var imageInput = document.getElementById('id_image');
+    var imageStatus = document.getElementById('image_status');
+    var imagePreview = document.getElementById('image_preview');
+
+    function showPreview(file) {
+        if (!imagePreview || !file || !file.type.startsWith('image/')) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+            imagePreview.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Client-side image compression on file select
+    if (imageInput) {
+        imageInput.addEventListener('change', function() {
+            var file = imageInput.files[0];
+            if (!file) {
+                if (imagePreview) imagePreview.classList.add('d-none');
+                return;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                if (imageStatus) {
+                    imageStatus.textContent = 'File is too large (max 10MB). Please choose a smaller image.';
+                    imageStatus.className = 'form-text text-danger';
+                }
+                if (imagePreview) imagePreview.classList.add('d-none');
+                imageInput.value = '';
+                return;
+            }
+
+            showPreview(file);
+
+            if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) {
+                if (imageStatus) {
+                    imageStatus.textContent = 'Compressing image...';
+                    imageStatus.className = 'form-text text-muted';
+                }
+                compressImage(file).then(function(compressed) {
+                    // Replace the file input with compressed version
+                    var dt = new DataTransfer();
+                    dt.items.add(compressed);
+                    imageInput.files = dt.files;
+                    var sizeMB = (compressed.size / 1024 / 1024).toFixed(1);
+                    if (imageStatus) {
+                        imageStatus.textContent = 'Image compressed to ' + sizeMB + 'MB';
+                        imageStatus.className = 'form-text text-success';
+                    }
+                    showPreview(compressed);
+                });
+            } else if (imageStatus) {
+                imageStatus.textContent = '';
+            }
+        });
+    }
 
     form.addEventListener('submit', function() {
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';

@@ -79,6 +79,8 @@
                         <label for="{{ form.image.id_for_label }}" class="col-sm-3 col-form-label">Image:</label>
                         <div class="col-sm-9">
                             {{ form.image }}
+                            <div id="image_status" class="form-text"></div>
+                            <img id="image_preview" class="mt-2 rounded d-none" style="max-width: 200px; max-height: 200px;" alt="Preview">
                             {{ form.image.errors }}
                         </div>
                     </div>

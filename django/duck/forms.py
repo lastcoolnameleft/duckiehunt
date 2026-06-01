@@ -61,6 +61,12 @@ class DuckForm(forms.Form):
     comments = forms.CharField(widget=forms.Textarea(attrs={'cols': '50', 'rows': '5'}))
     image = forms.ImageField(required=False)
 
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if image and image.size > 10 * 1024 * 1024:  # 10MB limit
+            raise forms.ValidationError('Image file is too large (max 10MB). Please resize and try again.')
+        return image
+
     def __init__(self, *args, **kwargs):
         require_captcha = kwargs.pop('require_captcha', True)
         super().__init__(*args, **kwargs)
