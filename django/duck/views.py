@@ -383,9 +383,19 @@ def profile(request):
         'location_count': locations.count(),
     })
 
+def custom_403(request, exception):
+    import sentry_sdk
+    sentry_sdk.capture_message(f"403: {request.path}", level="warning")
+    return render(request, '403.html', status=403)
+
+
 def custom_404(request, exception):
+    import sentry_sdk
+    sentry_sdk.capture_message(f"404: {request.path}", level="warning")
     return render(request, '404.html', status=404)
 
 
 def custom_500(request):
+    import sentry_sdk
+    sentry_sdk.capture_exception()
     return render(request, '500.html', status=500)

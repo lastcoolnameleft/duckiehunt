@@ -26,6 +26,7 @@ urlpatterns = [
 # Serve uploaded media files (photos awaiting provider upload)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+handler403 = 'duck.views.custom_403'
 handler404 = 'duck.views.custom_404'
 handler500 = 'duck.views.custom_500'
 
