@@ -37,6 +37,11 @@ class UploadPhotoTaskTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('taskuser', 'task@test.com', 'pass')
         self.duck, self.location = _create_test_duck_and_location(self.user)
+        # Create a photo record with local_path (as views.py now does)
+        self.photo = DuckLocationPhoto.objects.create(
+            duck_location=self.location,
+            local_path='test_duck.jpg',
+        )
         # Create a temp file to simulate saved image
         self.tmp = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
         self.tmp.write(b'\xff\xd8\xff\xe0' + b'\x00' * 100)  # minimal JPEG header
@@ -47,8 +52,8 @@ class UploadPhotoTaskTest(TestCase):
             os.unlink(self.tmp.name)
 
     @patch('duck.photo_providers.get_photo_provider')
-    def test_upload_photo_creates_record(self, mock_get_provider):
-        """Successful upload creates a DuckLocationPhoto record."""
+    def test_upload_photo_updates_record(self, mock_get_provider):
+        """Successful upload updates the existing DuckLocationPhoto with provider URLs."""
         mock_provider = MagicMock()
         mock_provider.upload_from_path.return_value = {
             'id': '12345',
@@ -57,17 +62,18 @@ class UploadPhotoTaskTest(TestCase):
         mock_get_provider.return_value = mock_provider
 
         upload_photo(
-            self.location.duck_location_id,
+            self.photo.duck_location_photo_id,
             self.tmp.name,
             self.duck.duck_id,
             self.duck.name,
             'Test comments',
         )
 
-        # Verify DuckLocationPhoto was created
-        photo = DuckLocationPhoto.objects.get(duck_location=self.location)
-        self.assertEqual(photo.flickr_photo_id, 12345)
-        self.assertEqual(photo.flickr_thumbnail_url, 'https://example.com/thumb.jpg')
+        # Verify DuckLocationPhoto was updated (not a new one created)
+        self.photo.refresh_from_db()
+        self.assertEqual(self.photo.flickr_photo_id, 12345)
+        self.assertEqual(self.photo.flickr_thumbnail_url, 'https://example.com/thumb.jpg')
+        self.assertEqual(DuckLocationPhoto.objects.count(), 1)
 
         # Verify provider was called with correct args
         mock_provider.upload_from_path.assert_called_once_with(
@@ -76,32 +82,32 @@ class UploadPhotoTaskTest(TestCase):
 
     @patch('duck.photo_providers.get_photo_provider')
     def test_upload_photo_handles_provider_error(self, mock_get_provider):
-        """Provider exception is caught — no DuckLocationPhoto created, no crash."""
+        """Provider exception is caught — record keeps local_path, no Flickr URL."""
         mock_provider = MagicMock()
         mock_provider.upload_from_path.side_effect = Exception("Flickr is down")
         mock_get_provider.return_value = mock_provider
 
         # Should not raise
         upload_photo(
-            self.location.duck_location_id,
+            self.photo.duck_location_photo_id,
             self.tmp.name,
             self.duck.duck_id,
             self.duck.name,
             'Test',
         )
 
-        self.assertEqual(DuckLocationPhoto.objects.filter(duck_location=self.location).count(), 0)
+        self.photo.refresh_from_db()
+        self.assertIsNone(self.photo.flickr_photo_id)
+        self.assertEqual(self.photo.local_path, 'test_duck.jpg')
 
-    def test_upload_photo_missing_location(self):
-        """Task with non-existent location ID logs error, doesn't crash."""
-        # Should not raise
+    def test_upload_photo_missing_record(self):
+        """Task with non-existent photo ID logs error, doesn't crash."""
         upload_photo(99999, self.tmp.name, 500, 'Test', 'comments')
-        self.assertEqual(DuckLocationPhoto.objects.count(), 0)
 
     @override_settings(Q_CLUSTER={'name': 'test', 'sync': True, 'orm': 'default'})
     @patch('duck.photo_providers.get_photo_provider')
     def test_upload_photo_via_async_task(self, mock_get_provider):
-        """Task queued via async_task executes and creates the photo record."""
+        """Task queued via async_task executes and updates the photo record."""
         from django_q.tasks import async_task
 
         mock_provider = MagicMock()
@@ -111,18 +117,17 @@ class UploadPhotoTaskTest(TestCase):
         }
         mock_get_provider.return_value = mock_provider
 
-        # Queue the task — with sync=True it runs immediately
         async_task(
             'duck.tasks.upload_photo',
-            self.location.duck_location_id,
+            self.photo.duck_location_photo_id,
             self.tmp.name,
             self.duck.duck_id,
             self.duck.name,
             'Queued test',
         )
 
-        photo = DuckLocationPhoto.objects.get(duck_location=self.location)
-        self.assertEqual(photo.flickr_photo_id, 67890)
+        self.photo.refresh_from_db()
+        self.assertEqual(self.photo.flickr_photo_id, 67890)
 
 
 class ShareToSocialTaskTest(TestCase):

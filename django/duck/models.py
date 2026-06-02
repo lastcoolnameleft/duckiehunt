@@ -63,8 +63,17 @@ class DuckLocationPhoto(models.Model):
 
     @property
     def display_thumbnail_url(self):
-        """Return thumbnail URL from new field or legacy Flickr field."""
-        return self.thumbnail_url or self.flickr_thumbnail_url or ''
+        """Return the best available photo URL.
+
+        Priority: provider thumbnail > legacy Flickr URL > local file.
+        """
+        if self.thumbnail_url:
+            return self.thumbnail_url
+        if self.flickr_thumbnail_url:
+            return self.flickr_thumbnail_url
+        if self.local_path:
+            return f'/media/{self.local_path}'
+        return ''
 
     class Meta:
         db_table = 'duck_location_photo'

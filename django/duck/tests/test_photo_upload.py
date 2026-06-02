@@ -57,7 +57,7 @@ class FullImageUploadPathTest(TestCase):
     @patch('duck.views.async_task')
     @override_settings(UPLOAD_PATH=None)  # will be set in test
     def test_full_upload_path_saves_file_and_creates_record(self, mock_async, mock_flickr_api):
-        """Image goes through form validation, saves to disk, queues upload task."""
+        """Image goes through form validation, saves to disk, creates photo record, queues upload."""
         # Use the real test fixture image
         fixture_path = os.path.join(FIXTURES_DIR, 'test_duck.jpg')
         with open(fixture_path, 'rb') as f:
@@ -79,7 +79,13 @@ class FullImageUploadPathTest(TestCase):
         self.assertEqual(len(saved_files), 1)
         self.assertTrue(saved_files[0].endswith('.jpg'))
 
-        # Verify upload_photo task was queued
+        # Verify DuckLocationPhoto was created with local_path
+        photo = DuckLocationPhoto.objects.filter(duck_location__duck_id=100).first()
+        self.assertIsNotNone(photo)
+        self.assertEqual(photo.local_path, saved_files[0])
+        self.assertIsNone(photo.flickr_photo_id)  # Not yet uploaded
+
+        # Verify upload_photo task was queued with photo record ID
         task_names = [call[0][0] for call in mock_async.call_args_list]
         self.assertIn('duck.tasks.upload_photo', task_names)
 

@@ -55,9 +55,13 @@
             <div class="row g-3 align-items-center justify-content-center">
                 {% for photo in photos %}
                 <div class="col-6 col-md-4 col-lg-3 text-center">
+                    {% if photo.flickr_photo_id %}
                     <a href="https://www.flickr.com/photos/duckiehunt/{{ photo.flickr_photo_id }}" target="_blank">
-                        <img class="img-fluid rounded shadow-sm" src="{{ photo.flickr_thumbnail_url }}" alt="Duck photo" style="width: 100%; object-fit: contain;">
+                        <img class="img-fluid rounded shadow-sm" src="{{ photo.display_thumbnail_url }}" alt="Duck photo" style="width: 100%; object-fit: contain;">
                     </a>
+                    {% else %}
+                    <img class="img-fluid rounded shadow-sm" src="{{ photo.display_thumbnail_url }}" alt="Duck photo" style="width: 100%; object-fit: contain;">
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>

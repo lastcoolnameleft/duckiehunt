@@ -87,6 +87,10 @@ DATABASE_NAME = str(DB_DIR / "duckiehunt.db")
 
 UPLOAD_PATH = str(_resolve_path(os.environ.get("DJANGO_UPLOAD_DIR", str(DJANGO_DIR / "uploads"))))
 
+# Media files (user-uploaded photos served locally until provider upload completes)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = UPLOAD_PATH
+
 SETTINGS_DIR = _resolve_path(os.environ.get("DJANGO_SETTINGS_DIR", str(DJANGO_DIR / "duckiehunt" / "settings")))
 
 INSTALLED_APPS = [

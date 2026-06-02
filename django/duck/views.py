@@ -1,4 +1,6 @@
 """ Views for Django """
+import os
+
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -225,11 +227,20 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
 
             image = form.cleaned_data.get('image')
             if image:
-                # Save image to disk immediately, queue upload to photo provider
+                # Save image to disk immediately so it's viewable right away
                 image_path = marker.save_uploaded_file(image, settings.UPLOAD_PATH)
+                # Get filename relative to UPLOAD_PATH for the local_path field
+                local_filename = os.path.basename(image_path)
+                # Create photo record with local path (displays immediately)
+                duck_location_photo = DuckLocationPhoto(
+                    duck_location=duck_location,
+                    local_path=local_filename,
+                )
+                duck_location_photo.save()
+                # Queue async upload to Flickr (will update the record with Flickr URL)
                 async_task(
                     'duck.tasks.upload_photo',
-                    duck_location.duck_location_id,
+                    duck_location_photo.duck_location_photo_id,
                     image_path,
                     duck_id,
                     duck.name,
