@@ -1,7 +1,7 @@
 """Tests for the full image upload path (mocks only the Flickr API call)."""
 import os
 import tempfile
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -54,18 +54,10 @@ class FullImageUploadPathTest(TestCase):
         self.client.force_login(self.user)
 
     @patch('duck.photo_providers.flickr_api')
-    @patch('duck.marker.email_duck_location')
+    @patch('duck.views.async_task')
     @override_settings(UPLOAD_PATH=None)  # will be set in test
-    def test_full_upload_path_saves_file_and_creates_record(self, mock_email, mock_flickr_api):
-        """Image goes through form validation, saves to disk, creates DuckLocationPhoto."""
-        # Configure mock to return realistic Flickr response
-        mock_photo = MagicMock()
-        mock_photo.getInfo.return_value = {'id': 99999}
-        mock_photo.getSizes.return_value = {
-            'Small 320': {'source': 'https://flickr.com/fake/thumb.jpg'},
-        }
-        mock_flickr_api.upload.return_value = mock_photo
-
+    def test_full_upload_path_saves_file_and_creates_record(self, mock_async, mock_flickr_api):
+        """Image goes through form validation, saves to disk, queues upload task."""
         # Use the real test fixture image
         fixture_path = os.path.join(FIXTURES_DIR, 'test_duck.jpg')
         with open(fixture_path, 'rb') as f:
@@ -87,19 +79,12 @@ class FullImageUploadPathTest(TestCase):
         self.assertEqual(len(saved_files), 1)
         self.assertTrue(saved_files[0].endswith('.jpg'))
 
-        # Verify flickr_api.upload was called
-        mock_flickr_api.upload.assert_called_once()
+        # Verify upload_photo task was queued
+        task_names = [call[0][0] for call in mock_async.call_args_list]
+        self.assertIn('duck.tasks.upload_photo', task_names)
 
-        # Verify DuckLocationPhoto record was created
-        photo = DuckLocationPhoto.objects.filter(
-            duck_location__duck_id=100
-        ).first()
-        self.assertIsNotNone(photo)
-        self.assertEqual(photo.flickr_photo_id, 99999)
-        self.assertEqual(photo.flickr_thumbnail_url, 'https://flickr.com/fake/thumb.jpg')
-
-    @patch('duck.marker.email_duck_location')
-    def test_no_photo_record_created_without_image(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_no_photo_record_created_without_image(self, mock_async):
         """Submitting without an image creates no DuckLocationPhoto."""
         data = _valid_mark_data()
         response = self.client.post('/mark/', data)
@@ -108,8 +93,8 @@ class FullImageUploadPathTest(TestCase):
         photos = DuckLocationPhoto.objects.filter(duck_location__duck_id=100)
         self.assertEqual(photos.count(), 0)
 
-    @patch('duck.marker.email_duck_location')
-    def test_invalid_image_rejected_no_side_effects(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_invalid_image_rejected_no_side_effects(self, mock_async):
         """A non-image file is rejected; no location or photo is created."""
         initial_location_count = DuckLocation.objects.filter(duck_id=100).count()
 

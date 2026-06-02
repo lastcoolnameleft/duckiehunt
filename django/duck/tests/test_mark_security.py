@@ -50,9 +50,9 @@ class AnonymousWritePolicyTest(TestCase):
         self.user = User.objects.create_user('tommy', 'tommy@test.com', 'pass')
         _create_test_duck(self.user)
 
-    @patch('duck.marker.email_duck_location')
+    @patch('duck.views.async_task')
     @patch('django_recaptcha.fields.ReCaptchaField.validate', return_value=None)
-    def test_anonymous_submission_approved_by_default(self, mock_captcha, mock_email):
+    def test_anonymous_submission_approved_by_default(self, mock_captcha, mock_async):
         """Anonymous users' sightings are approved by default."""
         data = _valid_mark_data()
         data['g-recaptcha-response'] = 'PASSED'
@@ -62,12 +62,14 @@ class AnonymousWritePolicyTest(TestCase):
         location = DuckLocation.objects.filter(duck_id=100).order_by('-duck_location_id').first()
         self.assertEqual(location.approved, 'Y')
         self.assertIsNone(location.user)
-        mock_email.assert_called_once()
+        # Email is now queued as async task
+        task_names = [call[0][0] for call in mock_async.call_args_list]
+        self.assertIn('duck.tasks.send_email_notification', task_names)
 
     @patch.dict('os.environ', {'REQUIRE_ANONYMOUS_REVIEW': 'true'})
-    @patch('duck.marker.email_duck_location')
+    @patch('duck.views.async_task')
     @patch('django_recaptcha.fields.ReCaptchaField.validate', return_value=None)
-    def test_anonymous_submission_unapproved_when_env_set(self, mock_captcha, mock_email):
+    def test_anonymous_submission_unapproved_when_env_set(self, mock_captcha, mock_async):
         """Anonymous sightings are unapproved when REQUIRE_ANONYMOUS_REVIEW=true."""
         data = _valid_mark_data()
         data['g-recaptcha-response'] = 'PASSED'
@@ -77,10 +79,12 @@ class AnonymousWritePolicyTest(TestCase):
         location = DuckLocation.objects.filter(duck_id=100).order_by('-duck_location_id').first()
         self.assertEqual(location.approved, 'N')
         self.assertIsNone(location.user)
-        mock_email.assert_not_called()
+        # Email should NOT be queued for unapproved submissions
+        task_names = [call[0][0] for call in mock_async.call_args_list]
+        self.assertNotIn('duck.tasks.send_email_notification', task_names)
 
-    @patch('duck.marker.email_duck_location')
-    def test_authenticated_submission_marked_approved(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_authenticated_submission_marked_approved(self, mock_async):
         """Authenticated users' sightings are saved with approved='Y'."""
         self.client.force_login(self.user)
         response = self.client.post('/mark/', _valid_mark_data())
@@ -89,7 +93,8 @@ class AnonymousWritePolicyTest(TestCase):
         location = DuckLocation.objects.filter(duck_id=100).order_by('-duck_location_id').first()
         self.assertEqual(location.approved, 'Y')
         self.assertEqual(location.user, self.user)
-        mock_email.assert_called_once()
+        task_names = [call[0][0] for call in mock_async.call_args_list]
+        self.assertIn('duck.tasks.send_email_notification', task_names)
 
 
 @override_settings(**TEST_RECAPTCHA_SETTINGS)
@@ -109,13 +114,10 @@ class FileUploadValidationTest(TestCase):
         # Form re-renders (200) instead of redirecting (302)
         self.assertEqual(response.status_code, 200)
 
-    @patch('duck.marker.handle_uploaded_file')
-    def test_valid_image_accepted(self, mock_upload):
+    @patch('duck.views.async_task')
+    @patch('duck.marker.save_uploaded_file', return_value='/tmp/duck.png')
+    def test_valid_image_accepted(self, mock_save, mock_async):
         """Uploading a valid image file proceeds through form."""
-        mock_upload.return_value = {
-            'id': 12345,
-            'sizes': {'Small 320': {'source': 'http://example.com/thumb.jpg'}},
-        }
         # Create a minimal valid 1x1 PNG
         import struct
         import zlib
@@ -137,4 +139,7 @@ class FileUploadValidationTest(TestCase):
         data['image'] = SimpleUploadedFile('duck.png', png, content_type='image/png')
         response = self.client.post('/mark/', data)
         self.assertEqual(response.status_code, 302)
-        mock_upload.assert_called_once()
+        # Image save and async upload task queued
+        mock_save.assert_called_once()
+        task_names = [call[0][0] for call in mock_async.call_args_list]
+        self.assertIn('duck.tasks.upload_photo', task_names)

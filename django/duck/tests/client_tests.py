@@ -33,8 +33,8 @@ class SimpleTest(TestCase):
         response = self.client.get('/mark/')
         self.assertEqual(response.status_code, 200)
 
-    @patch('duck.marker.email_duck_location')
-    def test_mark_full(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_mark_full(self, mock_async):
         self.client.force_login(self.user)
         duck_id = '2'
         data = {'duck_id': duck_id, 'name': 'test duck ' + duck_id, 'location': 'northkapp',
@@ -54,8 +54,8 @@ class SimpleTest(TestCase):
         self.assertEqual(new_loc.longitude, 25.7831639)
         self.assertEqual(new_loc.comments, 'this is a comment')
 
-    @patch('duck.marker.email_duck_location')
-    def test_mark_no_name(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_mark_no_name(self, mock_async):
         self.client.force_login(self.user)
         duck_id = '2'
         data = {'duck_id': duck_id, 'location': 'northkapp', 'name': '',
@@ -69,8 +69,8 @@ class SimpleTest(TestCase):
         duck_location = DuckLocation.objects.filter(duck_id=duck_id)
         self.assertEqual(len(duck_location), 2)  # initial + new
 
-    @patch('duck.marker.email_duck_location')
-    def test_mark_no_name_rename(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_mark_no_name_rename(self, mock_async):
         """An unnamed duck gets renamed when a new name is provided."""
         self.client.force_login(self.user)
         duck_id = '2'

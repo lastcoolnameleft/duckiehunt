@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "social_django",
     "django_recaptcha",
+    "django_q",
 ]
 
 MIDDLEWARE = [
@@ -245,6 +246,18 @@ FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "")
 FB_PAGE_ACCESS_TOKEN = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
 IG_USER_ID = os.environ.get("IG_USER_ID", "")
 IG_ACCESS_TOKEN = os.environ.get("IG_ACCESS_TOKEN", "")
+
+# Django-Q2 background task queue (uses ORM/SQLite as broker)
+Q_CLUSTER = {
+    "name": "duckiehunt",
+    "workers": 2,
+    "timeout": 120,
+    "retry": 180,
+    "queue_limit": 50,
+    "bulk": 10,
+    "orm": "default",
+    "sync": _get_bool("DJANGO_Q_SYNC", default=False),  # True = run tasks synchronously (for testing)
+}
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
 SENTRY_ENVIRONMENT = os.environ.get("SENTRY_ENVIRONMENT", "development")

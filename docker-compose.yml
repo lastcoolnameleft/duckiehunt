@@ -34,3 +34,24 @@ services:
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect.redirectregex.replacement=https://$${1}"
       - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-duckiehunt}-www-redirect.redirectregex.permanent=true"
     restart: unless-stopped
+
+  worker:
+    container_name: ${COMPOSE_PROJECT_NAME:-duckiehunt}-worker
+    image: ${IMAGE:-ghcr.io/lastcoolnameleft/duckiehunt:latest}
+    command: python manage.py qcluster
+    env_file:
+      - ${ENV_FILE:-.env}
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-duckiehunt.settings}
+      DJANGO_DB_DIR: /app/db
+      DJANGO_UPLOAD_DIR: /app/uploads
+      DJANGO_SETTINGS_DIR: /app/settings
+    volumes:
+      - ${DATA_DIR:-.}/settings:/app/settings
+      - ${DATA_DIR:-.}/db:/app/db
+      - ${DATA_DIR:-.}/uploads:/app/uploads
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
+    depends_on:
+      - duckiehunt

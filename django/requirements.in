@@ -1,4 +1,5 @@
 Django
+django-q2
 requests
 gunicorn==26.0.0
 social-auth-app-django

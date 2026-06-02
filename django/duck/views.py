@@ -9,6 +9,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from django_q.tasks import async_task
+
 from duck import marker
 
 from .forms import CreateDuckForm, DuckForm, LoginForm, RegistrationForm
@@ -223,18 +225,16 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
 
             image = form.cleaned_data.get('image')
             if image:
-                try:
-                    photo_info = marker.handle_uploaded_file(image, duck_id,
-                                                            duck.name, form.cleaned_data['comments'])
-                    duck_location_photo = DuckLocationPhoto(duck_location=duck_location,
-                                                            flickr_photo_id=photo_info['id'],
-                                                            flickr_thumbnail_url=photo_info['sizes']['Small 320']['source'])
-                    duck_location_photo.save()
-                except Exception as e:
-                    import logging
-                    logger = logging.getLogger(__name__)
-                    logger.exception('Photo upload failed for duck #%s', duck_id)
-                    # Sighting is still saved — photo just won't be attached
+                # Save image to disk immediately, queue upload to photo provider
+                image_path = marker.save_uploaded_file(image, settings.UPLOAD_PATH)
+                async_task(
+                    'duck.tasks.upload_photo',
+                    duck_location.duck_location_id,
+                    image_path,
+                    duck_id,
+                    duck.name,
+                    form.cleaned_data['comments'],
+                )
 
             duck.total_distance = round(DuckLocation.objects.filter(duck_id=duck_id).aggregate(Sum('distance_to'))['distance_to__sum'], 2)
             duck.save()
@@ -242,9 +242,10 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
             # redirect to a new URL:
             new_location_url = '/location/' + str(duck_location.duck_location_id)
 
-            # Only send email notification for approved submissions
+            # Queue email and social sharing in background
             if duck_location.approved == 'Y':
-                marker.email_duck_location(duck_id, new_location_url)
+                async_task('duck.tasks.send_email_notification', duck_id, new_location_url)
+                async_task('duck.tasks.share_to_social', duck_location.duck_location_id)
 
             return HttpResponseRedirect(new_location_url)
     # if a GET (or any other method) we'll create a blank form

@@ -31,6 +31,17 @@ class PhotoProvider(abc.ABC):
         """
         ...
 
+    def upload_from_path(self, file_path, title, description, tags=None):
+        """Upload a photo from a local file path (for async tasks).
+
+        Default implementation opens the file and calls upload().
+        Providers may override for efficiency.
+        """
+        from django.core.files import File
+        with open(file_path, 'rb') as f:
+            django_file = File(f, name=os.path.basename(file_path))
+            return self.upload(django_file, title, description, tags)
+
     @abc.abstractmethod
     def get_url(self, photo_id):
         """Get the display URL for a photo by its provider ID."""
@@ -48,7 +59,9 @@ class FlickrProvider(PhotoProvider):
     def upload(self, image_file, title, description, tags=None):
         upload_path = getattr(settings, 'UPLOAD_PATH', '/tmp')
         file_path = _save_to_disk(image_file, upload_path)
+        return self.upload_from_path(file_path, title, description, tags)
 
+    def upload_from_path(self, file_path, title, description, tags=None):
         is_public = getattr(settings, 'FLICKR_PHOTO_IS_PUBLIC', '0')
         photo = flickr_api.upload(
             photo_file=file_path,

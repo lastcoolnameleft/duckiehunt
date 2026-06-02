@@ -319,8 +319,8 @@ class MarkProcessViewTest(TestCase):
             self.client.force_login(self.user)
         return self.client.post(url, data)
 
-    @patch('duck.marker.email_duck_location')
-    def test_mark_creates_new_duck_and_redirects(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_mark_creates_new_duck_and_redirects(self, mock_async):
         data = {
             'duck_id': '100',
             'name': 'New Duckie',
@@ -344,11 +344,12 @@ class MarkProcessViewTest(TestCase):
         locations = DuckLocation.objects.filter(duck_id=100)
         self.assertEqual(locations.count(), 2)
 
-        # Verify email was sent
-        mock_email.assert_called_once()
+        # Verify email was queued
+        task_names = [call[0][0] for call in mock_async.call_args_list]
+        self.assertIn('duck.tasks.send_email_notification', task_names)
 
-    @patch('duck.marker.email_duck_location')
-    def test_mark_existing_duck_adds_location(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_mark_existing_duck_adds_location(self, mock_async):
         # Create an existing duck with initial location
         Duck.objects.create(
             duck_id=50, name='Existing', create_time=timezone.now(),
@@ -383,8 +384,8 @@ class MarkProcessViewTest(TestCase):
         duck = Duck.objects.get(pk=50)
         self.assertGreater(duck.total_distance, 0)
 
-    @patch('duck.marker.email_duck_location')
-    def test_mark_renames_unnamed_duck(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_mark_renames_unnamed_duck(self, mock_async):
         Duck.objects.create(
             duck_id=60, name='Unnamed', create_time=timezone.now(),
             comments='', total_distance=0, approved='Y',
@@ -421,8 +422,8 @@ class MarkProcessViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'duck/mark.html')
 
-    @patch('duck.marker.email_duck_location')
-    def test_mark_new_duck_without_name_defaults_to_unnamed(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_mark_new_duck_without_name_defaults_to_unnamed(self, mock_async):
         data = {
             'duck_id': '200',
             'name': '',
@@ -448,8 +449,8 @@ class MarkCaptchaSkipTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('captchatest', 'cap@test.com', 'pass')
 
-    @patch('duck.marker.email_duck_location')
-    def test_logged_in_user_can_submit_without_captcha(self, mock_email):
+    @patch('duck.views.async_task')
+    def test_logged_in_user_can_submit_without_captcha(self, mock_async):
         """Authenticated user on /mark/ should succeed without g-recaptcha-response."""
         self.client.force_login(self.user)
         data = {
