@@ -53,7 +53,7 @@ class DuckForm(forms.Form):
     location = forms.CharField(label='Location', max_length=100)
     date_time = forms.DateTimeField(
         label='Date/Time',
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
         input_formats=['%Y-%m-%dT%H:%M', '%Y-%m-%dT%H:%M:%S', '%m/%d/%Y %H:%M:%S'],
     )
     lat = forms.FloatField(label='Latitude', widget=forms.HiddenInput())

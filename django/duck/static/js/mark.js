@@ -80,6 +80,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var imageStatus = document.getElementById('image_status');
     var imagePreview = document.getElementById('image_preview');
 
+    // Default date/time to the user's local "now" if empty
+    var dateTimeField = document.getElementById('id_date_time');
+    if (dateTimeField && !dateTimeField.value) {
+        var now = new Date();
+        var local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+        dateTimeField.value = local.toISOString().slice(0, 16);
+    }
+
     function showPreview(file) {
         if (!imagePreview || !file || !file.type.startsWith('image/')) return;
         var reader = new FileReader();
