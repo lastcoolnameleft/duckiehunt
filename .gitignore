@@ -69,3 +69,4 @@ auth.json
 
 # Copilot session artifacts (ephemeral)
 .copilot-tracking/
+.azure/
