@@ -33,6 +33,8 @@ urlpatterns = [
     path('api/health', apis.health, name='health'),
     # Version
     path('api/version', apis.version, name='version'),
+    # Social sharing
+    path('api/share/<int:duck_location_id>/', apis.share_sighting, name='share_sighting'),
     # Auth
     path('profile', views.profile, name='profile'),
     path('login', views.login, name='login'),

@@ -7,3 +7,4 @@ from .test_create_duck import *
 from .test_mark_security import *
 from .test_photo_upload import *
 from .test_photo_providers import *
+from .test_social import *

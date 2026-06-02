@@ -1,5 +1,10 @@
 {% extends "../base.html" %}
 
+{% block title %}{{ duck.name }} (Duck #{{ duck.duck_id }}) - Duckiehunt{% endblock %}
+{% block og_title %}{{ duck.name }} - Duck #{{ duck.duck_id }}{% endblock %}
+{% block og_description %}{{ duck.name }} has traveled {{ duck.total_distance|floatformat:-2 }} miles across {{ duck_location_list|length }} locations!{% endblock %}
+{% block og_type %}article{% endblock %}
+
 {% block content %}
 <div class="container">
     {% include "./view/dropdown.html" %}

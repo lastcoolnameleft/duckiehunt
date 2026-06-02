@@ -240,6 +240,12 @@ if FLICKR_API_KEY and FLICKR_API_SECRET:
 GIT_SHA = os.environ.get("GIT_SHA", "unknown")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# Social media sharing (see duck/social.py)
+FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "")
+FB_PAGE_ACCESS_TOKEN = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
+IG_USER_ID = os.environ.get("IG_USER_ID", "")
+IG_ACCESS_TOKEN = os.environ.get("IG_ACCESS_TOKEN", "")
+
 SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
 SENTRY_ENVIRONMENT = os.environ.get("SENTRY_ENVIRONMENT", "development")
 if SENTRY_DSN:

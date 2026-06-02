@@ -7,11 +7,19 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
+    <meta name="description" content="{% block meta_description %}Track rubber ducks around the world{% endblock %}">
     <meta name="author" content="">
 
-    <title>Duckiehunt</title>
+    <title>{% block title %}Duckiehunt{% endblock %}</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="Duckiehunt">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Duckiehunt{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Track rubber ducks around the world{% endblock %}">
+    {% block og_image %}{% endblock %}
+    {% block og_url %}{% endblock %}
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
