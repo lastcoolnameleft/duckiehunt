@@ -5,21 +5,11 @@
 Duckiehunt is a Django web application for tracking rubber duck sightings on a map. It runs in Docker on an Azure VM with Traefik as reverse proxy, backed by SQLite.
 
 - **Django app** lives in `django/` — the project is `duckiehunt`, the main app is `duck`
-- **Settings** are split by environment: `django/duckiehunt/settings/{local,staging,production,development}.py`
+- **Settings** are split by environment: `.env,.env.stg,.env.prod`
 - **Views** are function-based (not class-based) in `django/duck/views.py`
 - **APIs** return raw `JsonResponse` (no DRF) in `django/duck/apis.py`
 - **Business logic** (photo upload, distance calc, email) lives in `django/duck/marker.py`
 - **Auth** uses `social-auth-app-django` for Google and Facebook OAuth2
-- **Helm charts** in `charts/duckiehunt/` for Kubernetes deployments
-- **Docker Compose** configs in `docker-compose/` — use `mac.yaml` for local dev
-
-## Environment
-
-Always activate the virtual environment before running any Python commands:
-
-```bash
-source venv/bin/activate
-```
 
 ## Build & Run
 
