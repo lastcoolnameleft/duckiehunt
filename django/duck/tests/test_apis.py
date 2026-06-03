@@ -191,6 +191,10 @@ class DuckAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'git_sha': 'unknown'})
 
+    def test_share_api_route_removed(self):
+        response = self.client.post(f'/api/share/{self.location.duck_location_id}/')
+        self.assertEqual(response.status_code, 404)
+
 
 class DuckPhotosAPITest(TestCase):
     def setUp(self):

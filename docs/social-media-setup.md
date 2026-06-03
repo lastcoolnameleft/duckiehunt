@@ -128,17 +128,7 @@ The social sharing code lives in `django/duck/social.py`. It uses an extensible 
 - Future: TikTok (#117), LinkedIn (#118)
 
 ### Auto-posting
-When configured, the API endpoint `POST /api/share/<duck_location_id>/` triggers sharing:
-
-```bash
-# Share to all configured platforms
-curl -X POST "https://your-domain.com/api/share/42/" \
-  -H "Cookie: sessionid=your_session"
-
-# Share to a specific platform
-curl -X POST "https://your-domain.com/api/share/42/?platform=facebook" \
-  -H "Cookie: sessionid=your_session"
-```
+When configured, approved sightings are shared automatically via Django-Q background tasks after a new location is submitted.
 
 ### Without credentials
 If no `FB_PAGE_ID` or `FB_PAGE_ACCESS_TOKEN` is set, the social module simply does nothing. The app runs fine without social media configured.
