@@ -1,4 +1,5 @@
 """Tests for duck.apis JSON endpoints."""
+from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
@@ -44,14 +45,29 @@ class DuckAPITest(TestCase):
             user=self.user,
             latitude=32.95,
             longitude=-96.9,
+            location='Dallas, TX',
             comments='First spot',
             date_time=self.location_time,
+        )
+        self.photo = DuckLocationPhoto.objects.create(
+            duck_location=self.location,
+            local_path='test_duck.jpg',
+        )
+        self.earlier_location = DuckLocation.objects.create(
+            duck=self.duck,
+            user=self.user,
+            latitude=29.76,
+            longitude=-95.37,
+            location='Houston, TX',
+            comments='Earlier spot',
+            date_time=self.location_time - timedelta(days=1),
         )
         self.other_location = DuckLocation.objects.create(
             duck=self.other_duck,
             user=self.user,
             latitude=40.71,
             longitude=-74.0,
+            location='New York, NY',
             comments='Second spot',
             date_time=self.location_time,
         )
@@ -118,18 +134,37 @@ class DuckAPITest(TestCase):
             response.json(),
             [
                 {
+                    'duck_location_id': self.earlier_location.duck_location_id,
+                    'duck_id': self.duck.duck_id,
+                    'duck__name': self.duck.name,
+                    'latitude': self.earlier_location.latitude,
+                    'longitude': self.earlier_location.longitude,
+                    'location': self.earlier_location.location,
+                    'date_time': (self.location_time - timedelta(days=1)).isoformat().replace('+00:00', 'Z'),
+                    'comments': self.earlier_location.comments,
+                    'photo_thumbnail_url': '',
+                },
+                {
+                    'duck_location_id': self.location.duck_location_id,
                     'duck_id': self.duck.duck_id,
                     'duck__name': self.duck.name,
                     'latitude': self.location.latitude,
                     'longitude': self.location.longitude,
+                    'location': self.location.location,
+                    'date_time': self.location_time.isoformat().replace('+00:00', 'Z'),
                     'comments': self.location.comments,
+                    'photo_thumbnail_url': self.photo.display_thumbnail_url,
                 },
                 {
+                    'duck_location_id': self.other_location.duck_location_id,
                     'duck_id': self.other_duck.duck_id,
                     'duck__name': self.other_duck.name,
                     'latitude': self.other_location.latitude,
                     'longitude': self.other_location.longitude,
+                    'location': self.other_location.location,
+                    'date_time': self.location_time.isoformat().replace('+00:00', 'Z'),
                     'comments': self.other_location.comments,
+                    'photo_thumbnail_url': '',
                 },
             ],
         )
@@ -142,11 +177,26 @@ class DuckAPITest(TestCase):
             response.json(),
             [
                 {
+                    'duck_location_id': self.earlier_location.duck_location_id,
+                    'duck_id': self.duck.duck_id,
+                    'duck__name': self.duck.name,
+                    'latitude': self.earlier_location.latitude,
+                    'longitude': self.earlier_location.longitude,
+                    'location': self.earlier_location.location,
+                    'date_time': (self.location_time - timedelta(days=1)).isoformat().replace('+00:00', 'Z'),
+                    'comments': self.earlier_location.comments,
+                    'photo_thumbnail_url': '',
+                },
+                {
+                    'duck_location_id': self.location.duck_location_id,
                     'duck_id': self.duck.duck_id,
                     'duck__name': self.duck.name,
                     'latitude': self.location.latitude,
                     'longitude': self.location.longitude,
+                    'location': self.location.location,
+                    'date_time': self.location_time.isoformat().replace('+00:00', 'Z'),
                     'comments': self.location.comments,
+                    'photo_thumbnail_url': self.photo.display_thumbnail_url,
                 }
             ],
         )
@@ -164,11 +214,14 @@ class DuckAPITest(TestCase):
         self.assertEqual(
             response.json(),
             {
+                'duck_location_id': self.location.duck_location_id,
                 'duck_id': self.duck.duck_id,
                 'latitude': self.location.latitude,
                 'longitude': self.location.longitude,
+                'location': self.location.location,
                 'date_time': self.location_time.isoformat().replace('+00:00', 'Z'),
                 'comments': self.location.comments,
+                'photo_thumbnail_url': self.photo.display_thumbnail_url,
             },
         )
 
