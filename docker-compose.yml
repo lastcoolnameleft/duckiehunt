@@ -11,10 +11,11 @@ services:
       DJANGO_DB_DIR: /app/db
       DJANGO_UPLOAD_DIR: /app/uploads
       DJANGO_SETTINGS_DIR: /app/settings
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
     volumes:
-      - ${DATA_DIR:-.}/settings:/app/settings
-      - ${DATA_DIR:-.}/db:/app/db
-      - ${DATA_DIR:-.}/uploads:/app/uploads
+      - ${LOCAL_SETTINGS_DIR:-./django/duckiehunt/settings}:/app/settings
+      - ${LOCAL_DB_DIR:-./django/data}:/app/db
+      - ${LOCAL_UPLOAD_DIR:-./django/uploads}:/app/uploads
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "duckiehunt.env=${DEPLOY_ENV:-staging}"
@@ -46,10 +47,11 @@ services:
       DJANGO_DB_DIR: /app/db
       DJANGO_UPLOAD_DIR: /app/uploads
       DJANGO_SETTINGS_DIR: /app/settings
+      RUN_MIGRATIONS: "false"
     volumes:
-      - ${DATA_DIR:-.}/settings:/app/settings
-      - ${DATA_DIR:-.}/db:/app/db
-      - ${DATA_DIR:-.}/uploads:/app/uploads
+      - ${LOCAL_SETTINGS_DIR:-./django/duckiehunt/settings}:/app/settings
+      - ${LOCAL_DB_DIR:-./django/data}:/app/db
+      - ${LOCAL_UPLOAD_DIR:-./django/uploads}:/app/uploads
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped

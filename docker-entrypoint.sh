@@ -1,8 +1,10 @@
 #!/bin/sh
 set -e
 
-echo "Running migrations..."
-python manage.py migrate --noinput
+if [ "${RUN_MIGRATIONS:-true}" != "false" ]; then
+  echo "Running migrations..."
+  python manage.py migrate --noinput
+fi
 
 # Create/update staging test user if credentials are provided
 if [ -n "$STG_TEST_USERNAME" ] && [ -n "$STG_TEST_PASSWORD" ]; then
@@ -18,6 +20,11 @@ print(f'Test user {user.username} {\"created\" if created else \"updated\"}')
 "
 fi
 
-exec gunicorn duckiehunt.wsgi:application --bind 0.0.0.0:8000 \
-  --access-logfile - \
-  --error-logfile -
+# If a command was specified (e.g., for worker), use it; otherwise run gunicorn
+if [ $# -gt 0 ]; then
+  exec "$@"
+else
+  exec gunicorn duckiehunt.wsgi:application --bind 0.0.0.0:8000 \
+    --access-logfile - \
+    --error-logfile -
+fi

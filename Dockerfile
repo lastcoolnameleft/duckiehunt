@@ -35,4 +35,4 @@ WORKDIR /app/django
 EXPOSE 8000
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["gunicorn"]
+CMD ["gunicorn", "duckiehunt.wsgi:application", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-"]
