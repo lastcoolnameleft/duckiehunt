@@ -1,6 +1,5 @@
 """ Views for Django """
 import os
-
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -227,20 +226,17 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
 
             image = form.cleaned_data.get('image')
             if image:
-                # Save image to disk immediately so it's viewable right away
+                # Save image to disk for upload to provider
                 image_path = marker.save_uploaded_file(image, settings.UPLOAD_PATH)
-                # Get filename relative to UPLOAD_PATH for the local_path field
-                local_filename = os.path.basename(image_path)
-                # Create photo record with local path (displays immediately)
-                duck_location_photo = DuckLocationPhoto(
+                # Create a local-first photo record so the image is immediately visible.
+                photo = DuckLocationPhoto.objects.create(
                     duck_location=duck_location,
-                    local_path=local_filename,
+                    local_path=os.path.basename(image_path),
                 )
-                duck_location_photo.save()
-                # Queue async upload to Flickr (will update the record with Flickr URL)
+                # Queue async upload to provider (Flickr, Imgur, etc.).
                 async_task(
                     'duck.tasks.upload_photo',
-                    duck_location_photo.duck_location_photo_id,
+                    photo.duck_location_photo_id,
                     image_path,
                     duck_id,
                     duck.name,
@@ -390,8 +386,6 @@ def custom_403(request, exception):
 
 
 def custom_404(request, exception):
-    import sentry_sdk
-    sentry_sdk.capture_message(f"404: {request.path}", level="warning")
     return render(request, '404.html', status=404)
 
 

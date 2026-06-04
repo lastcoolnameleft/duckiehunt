@@ -6,15 +6,49 @@ gets an immediate response. Photo upload, social sharing, and email
 notifications happen asynchronously.
 """
 import logging
+import os
 
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
+def upload_photo_and_create_record(duck_location_id, image_path, duck_id, duck_name, comments):
+    """
+    Upload a photo to the configured photo provider and create the photo record.
+
+    DEPRECATED: New flow creates the photo record in views.py first, then calls
+    upload_photo. Kept for backwards compatibility with queued tasks.
+
+    Args:
+        duck_location_id: PK of the DuckLocation for this photo
+        image_path: Path to the saved image file on disk
+        duck_id: Duck ID for the photo title
+        duck_name: Duck name for the photo title
+        comments: Comments/description for the photo
+    """
+    from .models import DuckLocation, DuckLocationPhoto
+
+    try:
+        duck_location = DuckLocation.objects.get(pk=duck_location_id)
+    except DuckLocation.DoesNotExist:
+        logger.error("upload_photo_and_create_record: DuckLocation %s not found", duck_location_id)
+        return
+
+    photo = DuckLocationPhoto.objects.create(
+        duck_location=duck_location,
+        local_path=os.path.basename(image_path),
+    )
+    upload_photo(photo.duck_location_photo_id, image_path, duck_id, duck_name, comments)
+
+
 def upload_photo(photo_id, image_path, duck_id, duck_name, comments):
     """
     Upload a photo to the configured photo provider and update the record.
+
+    Upload runs asynchronously after the local record is created by views.py,
+    so users can see the local media file immediately while provider upload
+    finishes in the background.
 
     Args:
         photo_id: PK of the DuckLocationPhoto to update with provider URLs
@@ -37,12 +71,22 @@ def upload_photo(photo_id, image_path, duck_id, duck_name, comments):
 
     try:
         result = provider.upload_from_path(image_path, title, comments, tags='duckiehunt')
+        photo.photo_provider = provider.__class__.__name__
+        photo.photo_id = str(result['id'])
+        photo.thumbnail_url = result['thumbnail_url']
         photo.flickr_photo_id = result['id']
         photo.flickr_thumbnail_url = result['thumbnail_url']
-        photo.save()
+        photo.save(update_fields=[
+            'photo_provider',
+            'photo_id',
+            'thumbnail_url',
+            'flickr_photo_id',
+            'flickr_thumbnail_url',
+        ])
         logger.info("Photo uploaded for duck #%s (photo record %s)", duck_id, photo_id)
     except Exception:
         logger.exception("Photo upload failed for duck #%s (photo record %s)", duck_id, photo_id)
+
 
 
 def share_to_social(duck_location_id):

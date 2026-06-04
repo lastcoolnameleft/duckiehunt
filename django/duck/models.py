@@ -2,6 +2,8 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
+from urllib.parse import quote
 
 # Create your models here.
 
@@ -65,14 +67,16 @@ class DuckLocationPhoto(models.Model):
     def display_thumbnail_url(self):
         """Return the best available photo URL.
 
-        Priority: provider thumbnail > legacy Flickr URL > local file.
+        Priority: provider thumbnail > legacy Flickr URL > local media path.
         """
         if self.thumbnail_url:
             return self.thumbnail_url
         if self.flickr_thumbnail_url:
             return self.flickr_thumbnail_url
         if self.local_path:
-            return f'/media/{self.local_path}'
+            media_root = settings.MEDIA_URL.rstrip('/')
+            local_path = quote(self.local_path.lstrip('/'), safe='/')
+            return f'{media_root}/{local_path}'
         return ''
 
     class Meta:

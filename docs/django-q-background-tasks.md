@@ -43,7 +43,7 @@ All task functions live in `django/duck/tasks.py`:
 
 | Task Function | Triggered When | What It Does | Timeout |
 |---------------|---------------|--------------|---------|
-| `upload_photo` | User submits sighting with image | Uploads saved file to Flickr, creates DuckLocationPhoto record | 120s |
+| `upload_photo` | User submits sighting with image | Uploads saved file to Flickr/active provider, updates existing DuckLocationPhoto record | 120s |
 | `share_to_social` | Approved sighting is submitted | Posts to Facebook/Instagram (if configured) | 120s |
 | `send_email_notification` | Approved sighting is submitted | Sends email via SendGrid to configured recipients | 120s |
 
@@ -54,6 +54,7 @@ mark_process() in views.py
 │
 ├── image provided?
 │   └── Yes → save_uploaded_file() to disk
+│            → create DuckLocationPhoto(local_path=...)
 │            → async_task('duck.tasks.upload_photo', ...)
 │
 ├── approved == 'Y'?
@@ -170,7 +171,7 @@ python manage.py shell -c "from django_q.models import Success, Failure; print(f
 
 Each task function wraps its work in try/except:
 
-- **Photo upload fails** → logged as error (Sentry captures it), sighting still visible without photo
+- **Photo upload fails** → logged as error (Sentry captures it); local `/media/...` fallback remains visible while provider fields stay empty
 - **Social share fails** → logged as error, does not affect other providers or the sighting
 - **Email fails** → logged as error, sighting unaffected
 

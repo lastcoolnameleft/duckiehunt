@@ -55,7 +55,8 @@ dbs:
 
 ## Photo Backup
 
-Photos are stored on Flickr (primary/serving) and locally on the VM data disk (backup).
+Photos are stored locally first (for immediate in-app display at `/media/...`) and then
+uploaded to Flickr asynchronously. Local disk remains the fallback/backup source.
 The `sync_flickr_photos` management command downloads all photos from Flickr to the
 local `UPLOAD_PATH` directory and records the file path in the database.
 

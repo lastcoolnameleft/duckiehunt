@@ -17,16 +17,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.static import serve as static_serve
 
 urlpatterns = [
     path('', include('duck.urls')),
     path('admin/', admin.site.urls),
+    path('media/<path:path>', static_serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 
-# Serve uploaded media files (photos awaiting provider upload)
+# Keep DEBUG static helper for local dev parity.
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler403 = 'duck.views.custom_403'
 handler404 = 'duck.views.custom_404'
 handler500 = 'duck.views.custom_500'
-
