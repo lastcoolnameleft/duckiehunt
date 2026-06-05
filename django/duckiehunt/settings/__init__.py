@@ -250,6 +250,11 @@ FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "")
 FB_PAGE_ACCESS_TOKEN = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
 IG_USER_ID = os.environ.get("IG_USER_ID", "")
 IG_ACCESS_TOKEN = os.environ.get("IG_ACCESS_TOKEN", "")
+LI_ACCESS_TOKEN = os.environ.get("LI_ACCESS_TOKEN", "")
+LI_AUTHOR_URN = os.environ.get("LI_AUTHOR_URN", "")
+LI_PERSON_URN = os.environ.get("LI_PERSON_URN", "")
+LI_ORGANIZATION_URN = os.environ.get("LI_ORGANIZATION_URN", "")
+LI_API_VERSION = os.environ.get("LI_API_VERSION", "")
 
 # Django-Q2 background task queue (uses ORM/SQLite as broker)
 Q_CLUSTER = {

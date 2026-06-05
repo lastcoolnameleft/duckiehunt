@@ -8,6 +8,7 @@ added by creating a new provider class and registering it in SOCIAL_PROVIDERS.
 import logging
 
 import requests
+from requests_oauthlib import OAuth2Session
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -129,10 +130,139 @@ class InstagramProvider(BaseSocialProvider):
         return {'success': True, 'post_id': publish_data.get('id')}
 
 
+class LinkedInProvider(BaseSocialProvider):
+    """Post sightings to LinkedIn personal or organization feed."""
+    name = 'linkedin'
+
+    def is_configured(self):
+        return bool(getattr(settings, 'LI_ACCESS_TOKEN', '') and self._author_urn())
+
+    def _author_urn(self):
+        return (
+            getattr(settings, 'LI_AUTHOR_URN', '')
+            or getattr(settings, 'LI_PERSON_URN', '')
+            or getattr(settings, 'LI_ORGANIZATION_URN', '')
+        )
+
+    def _oauth_session(self):
+        return OAuth2Session(
+            token={
+                'access_token': settings.LI_ACCESS_TOKEN,
+                'token_type': 'Bearer',
+            }
+        )
+
+    def _linkedin_headers(self):
+        headers = {
+            'X-Restli-Protocol-Version': '2.0.0',
+        }
+        version = getattr(settings, 'LI_API_VERSION', '')
+        if version:
+            headers['LinkedIn-Version'] = version
+        return headers
+
+    def _response_json(self, response):
+        try:
+            return response.json()
+        except ValueError:
+            return {}
+
+    def _error_message(self, response, fallback='Unknown LinkedIn API error'):
+        data = self._response_json(response)
+        if isinstance(data, dict):
+            for key in ('message', 'error_description', 'error'):
+                value = data.get(key)
+                if value:
+                    return str(value)
+        text = (response.text or '').strip()
+        return text[:500] if text else fallback
+
+    def _upload_image(self, session, photo_url):
+        image_resp = requests.get(photo_url, timeout=30)
+        if not image_resp.ok:
+            raise SocialShareError(
+                f"LinkedIn image download failed ({image_resp.status_code}): "
+                f"{self._error_message(image_resp, 'could not download photo URL')}"
+            )
+
+        owner = self._author_urn()
+        init_resp = session.post(
+            'https://api.linkedin.com/rest/images?action=initializeUpload',
+            json={'initializeUploadRequest': {'owner': owner}},
+            headers=self._linkedin_headers(),
+            timeout=30,
+        )
+        if not init_resp.ok:
+            raise SocialShareError(
+                f"LinkedIn initializeUpload failed ({init_resp.status_code}): "
+                f"{self._error_message(init_resp)}"
+            )
+
+        init_data = self._response_json(init_resp)
+        upload_data = init_data.get('value', {}) if isinstance(init_data, dict) else {}
+        upload_url = upload_data.get('uploadUrl')
+        image_urn = upload_data.get('image')
+        if not upload_url or not image_urn:
+            raise SocialShareError("LinkedIn initializeUpload response missing uploadUrl or image URN")
+
+        upload_headers = {'Content-Type': image_resp.headers.get('Content-Type', 'application/octet-stream')}
+        put_resp = session.put(upload_url, data=image_resp.content, headers=upload_headers, timeout=30)
+        if not put_resp.ok:
+            raise SocialShareError(
+                f"LinkedIn image PUT failed ({put_resp.status_code}): "
+                f"{self._error_message(put_resp, 'upload failed')}"
+            )
+
+        return image_urn
+
+    def share_sighting(self, duck_location, photo_url=None):
+        if not self.is_configured():
+            raise SocialShareError("LinkedIn is not configured (missing token or author URN)")
+
+        caption = self._build_caption(duck_location)
+        session = self._oauth_session()
+
+        payload = {
+            'author': self._author_urn(),
+            'commentary': caption,
+            'visibility': 'PUBLIC',
+            'distribution': {
+                'feedDistribution': 'MAIN_FEED',
+                'targetEntities': [],
+                'thirdPartyDistributionChannels': [],
+            },
+            'lifecycleState': 'PUBLISHED',
+            'isReshareDisabledByAuthor': False,
+        }
+        if photo_url:
+            image_urn = self._upload_image(session, photo_url)
+            payload['content'] = {'media': {'id': image_urn}}
+
+        post_resp = session.post(
+            'https://api.linkedin.com/rest/posts',
+            json=payload,
+            headers=self._linkedin_headers(),
+            timeout=30,
+        )
+        if not post_resp.ok:
+            raise SocialShareError(
+                f"LinkedIn post failed ({post_resp.status_code}): {self._error_message(post_resp)}"
+            )
+
+        post_data = self._response_json(post_resp)
+        post_id = None
+        if isinstance(post_data, dict):
+            post_id = post_data.get('id')
+        post_id = post_id or post_resp.headers.get('x-restli-id')
+
+        return {'success': True, 'post_id': post_id}
+
+
 # Registry of available providers
 PROVIDERS = {
     'facebook': FacebookProvider(),
     'instagram': InstagramProvider(),
+    'linkedin': LinkedInProvider(),
 }
 
 
