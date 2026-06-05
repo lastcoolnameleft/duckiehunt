@@ -1,4 +1,5 @@
 """ Views for Django """
+import logging
 import os
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -19,6 +20,7 @@ from .models import Duck, DuckLocation, DuckLocationLink, DuckLocationPhoto
 
 LOGIN_RATE_LIMIT = 5
 LOGIN_RATE_WINDOW = 300
+logger = logging.getLogger(__name__)
 
 
 def _get_login_attempts_key(request):
@@ -234,13 +236,21 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
                     local_path=os.path.basename(image_path),
                 )
                 # Queue async upload to provider (Flickr, Imgur, etc.).
-                async_task(
+                photo_task_id = async_task(
                     'duck.tasks.upload_photo',
                     photo.duck_location_photo_id,
                     image_path,
                     duck_id,
                     duck.name,
                     form.cleaned_data['comments'],
+                )
+                logger.info(
+                    "Queued photo upload task %s for duck #%s (location=%s, photo=%s, local_path=%s)",
+                    photo_task_id,
+                    duck_id,
+                    duck_location.duck_location_id,
+                    photo.duck_location_photo_id,
+                    photo.local_path,
                 )
 
             duck.total_distance = round(DuckLocation.objects.filter(duck_id=duck_id).aggregate(Sum('distance_to'))['distance_to__sum'], 2)
@@ -251,8 +261,15 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
 
             # Queue email and social sharing in background
             if duck_location.approved == 'Y':
-                async_task('duck.tasks.send_email_notification', duck_id, new_location_url)
-                async_task('duck.tasks.share_to_social', duck_location.duck_location_id)
+                email_task_id = async_task('duck.tasks.send_email_notification', duck_id, new_location_url)
+                social_task_id = async_task('duck.tasks.share_to_social', duck_location.duck_location_id)
+                logger.info(
+                    "Queued notification tasks for duck #%s (location=%s, email_task=%s, social_task=%s)",
+                    duck_id,
+                    duck_location.duck_location_id,
+                    email_task_id,
+                    social_task_id,
+                )
 
             return HttpResponseRedirect(new_location_url)
     # if a GET (or any other method) we'll create a blank form

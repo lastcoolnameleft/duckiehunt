@@ -39,6 +39,13 @@ def upload_photo_and_create_record(duck_location_id, image_path, duck_id, duck_n
         duck_location=duck_location,
         local_path=os.path.basename(image_path),
     )
+    logger.info(
+        "Created fallback photo record %s for duck #%s (location=%s, local_path=%s)",
+        photo.duck_location_photo_id,
+        duck_id,
+        duck_location_id,
+        photo.local_path,
+    )
     upload_photo(photo.duck_location_photo_id, image_path, duck_id, duck_name, comments)
 
 
@@ -60,6 +67,22 @@ def upload_photo(photo_id, image_path, duck_id, duck_name, comments):
     from .models import DuckLocationPhoto
     from .photo_providers import get_photo_provider
 
+    logger.info(
+        "Starting photo upload task for duck #%s (photo=%s, image_path=%s)",
+        duck_id,
+        photo_id,
+        image_path,
+    )
+
+    if not os.path.exists(image_path):
+        logger.error(
+            "upload_photo: image path missing for duck #%s (photo=%s, image_path=%s)",
+            duck_id,
+            photo_id,
+            image_path,
+        )
+        return
+
     try:
         photo = DuckLocationPhoto.objects.get(pk=photo_id)
     except DuckLocationPhoto.DoesNotExist:
@@ -68,6 +91,13 @@ def upload_photo(photo_id, image_path, duck_id, duck_name, comments):
 
     title = f"Duck #{duck_id} ({duck_name})"
     provider = get_photo_provider()
+    logger.info(
+        "Resolved photo provider %s for duck #%s (photo=%s, local_path=%s)",
+        provider.__class__.__name__,
+        duck_id,
+        photo_id,
+        photo.local_path,
+    )
 
     try:
         result = provider.upload_from_path(image_path, title, comments, tags='duckiehunt')
@@ -83,9 +113,21 @@ def upload_photo(photo_id, image_path, duck_id, duck_name, comments):
             'flickr_photo_id',
             'flickr_thumbnail_url',
         ])
-        logger.info("Photo uploaded for duck #%s (photo record %s)", duck_id, photo_id)
+        logger.info(
+            "Photo uploaded for duck #%s (photo=%s, provider_id=%s, thumbnail_url=%s)",
+            duck_id,
+            photo_id,
+            photo.photo_id,
+            photo.thumbnail_url,
+        )
     except Exception:
-        logger.exception("Photo upload failed for duck #%s (photo record %s)", duck_id, photo_id)
+        logger.exception(
+            "Photo upload failed for duck #%s (photo=%s, image_path=%s, local_path=%s)",
+            duck_id,
+            photo_id,
+            image_path,
+            photo.local_path,
+        )
 
 
 
@@ -105,6 +147,13 @@ def share_to_social(duck_location_id):
         logger.error("share_to_social: DuckLocation %s not found", duck_location_id)
         return
 
+    logger.info(
+        "Starting social share for duck #%s (location=%s, approved=%s)",
+        duck_location.duck_id,
+        duck_location_id,
+        duck_location.approved,
+    )
+
     if duck_location.approved != 'Y':
         logger.info("Skipping social share for unapproved sighting %s", duck_location_id)
         return
@@ -114,6 +163,12 @@ def share_to_social(duck_location_id):
     photo = duck_location.ducklocationphoto_set.first()
     if photo and photo.flickr_thumbnail_url:
         photo_url = photo.flickr_thumbnail_url
+    logger.info(
+        "Social share payload for duck #%s (location=%s, photo_url_present=%s)",
+        duck_location.duck_id,
+        duck_location_id,
+        bool(photo_url),
+    )
 
     results = share_to_all(duck_location, photo_url=photo_url)
     for platform, result in results.items():
@@ -136,6 +191,12 @@ def send_email_notification(duck_id, duck_location_url):
     from django.core.mail import EmailMessage
 
     try:
+        logger.info(
+            "Preparing email notification for duck #%s (to_count=%s, backend=%s)",
+            duck_id,
+            len(settings.EMAIL_TO),
+            settings.EMAIL_BACKEND,
+        )
         msg = EmailMessage(
             f'Duckiehunt Update: Duck #{duck_id}',
             f'Duck #{duck_id} has moved!<br/>{settings.BASE_URL}{duck_location_url}',
