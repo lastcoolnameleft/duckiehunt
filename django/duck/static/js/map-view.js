@@ -46,10 +46,11 @@
 
     async function initMap() {
         var Map = (await google.maps.importLibrary("maps")).Map;
+        var initialViewport = getInitialViewport();
 
         var map = new Map(document.getElementById('map'), {
-            zoom: config.focusZoom,
-            center: { lat: config.focusLat, lng: config.focusLong }
+            zoom: initialViewport.zoom,
+            center: { lat: initialViewport.lat, lng: initialViewport.lng }
         });
         var bounds = new google.maps.LatLngBounds();
         var pathSegments = [];
@@ -315,6 +316,29 @@
         });
 
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+    }
+
+    function getInitialViewport() {
+        if (isMobileHomePage()) {
+            return {
+                lat: 40,
+                lng: -35,
+                zoom: 1,
+            };
+        }
+        return {
+            lat: config.focusLat,
+            lng: config.focusLong,
+            zoom: config.focusZoom,
+        };
+    }
+
+    function isMobileHomePage() {
+        var path = window.location.pathname;
+        if (path !== '/') {
+            return false;
+        }
+        return Boolean(window.matchMedia && window.matchMedia('(max-width: 767.98px)').matches);
     }
 
     initMap();
