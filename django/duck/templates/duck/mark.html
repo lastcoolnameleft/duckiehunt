@@ -75,11 +75,14 @@
                     </div>
 
                     <div class="mb-3 row">
-                        <label for="{{ form.image.id_for_label }}" class="col-sm-3 col-form-label">Image:</label>
+                        <label for="{{ form.image.id_for_label }}" class="col-sm-3 col-form-label">Images:</label>
                         <div class="col-sm-9">
-                            {{ form.image }}
-                            <div id="image_status" class="form-text"></div>
-                            <img id="image_preview" class="mt-2 rounded d-none" style="max-width: 200px; max-height: 200px;" alt="Preview">
+                            <div id="image_drop_zone" class="border rounded p-3 bg-light">
+                                {{ form.image }}
+                                <div class="form-text mt-2">Select up to 5 photos, or drag and drop them here.</div>
+                                <div id="image_status" class="form-text"></div>
+                                <div id="image_preview_grid" class="d-flex flex-wrap mt-2"></div>
+                            </div>
                             {{ form.image.errors }}
                         </div>
                     </div>

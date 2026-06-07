@@ -32,6 +32,25 @@ def _valid_mark_data(duck_id=100):
     }
 
 
+def _valid_png(name='test_duck.png', padded_bytes=0):
+    import struct
+    import zlib
+
+    raw_data = b'\x00\x00\x00\x00'
+    compressed = zlib.compress(raw_data)
+    png = b'\x89PNG\r\n\x1a\n'
+    ihdr_data = struct.pack('>IIBBBBB', 1, 1, 8, 2, 0, 0, 0)
+    ihdr_crc = zlib.crc32(b'IHDR' + ihdr_data) & 0xffffffff
+    png += struct.pack('>I', 13) + b'IHDR' + ihdr_data + struct.pack('>I', ihdr_crc)
+    idat_crc = zlib.crc32(b'IDAT' + compressed) & 0xffffffff
+    png += struct.pack('>I', len(compressed)) + b'IDAT' + compressed + struct.pack('>I', idat_crc)
+    iend_crc = zlib.crc32(b'IEND') & 0xffffffff
+    png += struct.pack('>I', 0) + b'IEND' + struct.pack('>I', iend_crc)
+    if padded_bytes:
+        png += b'\x00' * padded_bytes
+    return SimpleUploadedFile(name, png, content_type='image/png')
+
+
 @override_settings(**TEST_RECAPTCHA_SETTINGS)
 class FullImageUploadPathTest(TestCase):
     """Test the complete upload path: form validation → disk save → DB record.
@@ -98,6 +117,50 @@ class FullImageUploadPathTest(TestCase):
 
         photos = DuckLocationPhoto.objects.filter(duck_location__duck_id=100)
         self.assertEqual(photos.count(), 0)
+
+    @patch('duck.views.async_task')
+    def test_multiple_photos_create_multiple_records(self, mock_async):
+        """Submitting multiple images creates one photo record per image."""
+        data = _valid_mark_data()
+        data['image'] = [_valid_png('duck-1.png'), _valid_png('duck-2.png')]
+
+        with self.settings(UPLOAD_PATH=self.upload_dir):
+            response = self.client.post('/mark/', data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(DuckLocationPhoto.objects.filter(duck_location__duck_id=100).count(), 2)
+        self.assertEqual(len(os.listdir(self.upload_dir)), 2)
+        task_names = [call[0][0] for call in mock_async.call_args_list]
+        self.assertEqual(task_names.count('duck.tasks.upload_photo'), 2)
+
+    def test_more_than_five_photos_is_rejected(self):
+        """Submitting more than five images re-renders the form."""
+        data = _valid_mark_data()
+        data['image'] = [
+            _valid_png('duck-1.png'),
+            _valid_png('duck-2.png'),
+            _valid_png('duck-3.png'),
+            _valid_png('duck-4.png'),
+            _valid_png('duck-5.png'),
+            _valid_png('duck-6.png'),
+        ]
+
+        response = self.client.post('/mark/', data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(DuckLocationPhoto.objects.filter(duck_location__duck_id=100).count(), 0)
+
+    @patch('duck.views.async_task')
+    def test_oversized_photo_is_rejected(self, mock_async):
+        """Submitting a photo larger than 10MB re-renders the form."""
+        data = _valid_mark_data()
+        data['image'] = _valid_png('big-duck.png', padded_bytes=(10 * 1024 * 1024) + 1)
+
+        response = self.client.post('/mark/', data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(DuckLocationPhoto.objects.filter(duck_location__duck_id=100).count(), 0)
+        mock_async.assert_not_called()
 
     @patch('duck.views.async_task')
     def test_invalid_image_rejected_no_side_effects(self, mock_async):

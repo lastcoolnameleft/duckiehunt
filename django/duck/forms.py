@@ -6,6 +6,34 @@ from django_recaptcha.fields import ReCaptchaField
 
 
 User = get_user_model()
+MAX_PHOTOS_PER_SIGHTING = 5
+MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.ImageField):
+    widget = MultipleFileInput
+
+    def clean(self, data, initial=None):
+        if not data:
+            return [] if not self.required else super().clean(data, initial)
+
+        files = data if isinstance(data, (list, tuple)) else [data]
+        if len(files) > MAX_PHOTOS_PER_SIGHTING:
+            raise forms.ValidationError(
+                f'You can upload at most {MAX_PHOTOS_PER_SIGHTING} photos per sighting.'
+            )
+
+        cleaned_files = []
+        for uploaded_file in files:
+            cleaned_file = super().clean(uploaded_file, initial)
+            if cleaned_file and cleaned_file.size > MAX_IMAGE_SIZE_BYTES:
+                raise forms.ValidationError('Image file is too large (max 10MB). Please resize and try again.')
+            cleaned_files.append(cleaned_file)
+        return cleaned_files
 
 
 class RegistrationForm(UserCreationForm):
@@ -59,13 +87,7 @@ class DuckForm(forms.Form):
     lat = forms.FloatField(label='Latitude', widget=forms.HiddenInput())
     lng = forms.FloatField(label='Longitude', widget=forms.HiddenInput())
     comments = forms.CharField(widget=forms.Textarea(attrs={'cols': '50', 'rows': '5'}))
-    image = forms.ImageField(required=False)
-
-    def clean_image(self):
-        image = self.cleaned_data.get('image')
-        if image and image.size > 10 * 1024 * 1024:  # 10MB limit
-            raise forms.ValidationError('Image file is too large (max 10MB). Please resize and try again.')
-        return image
+    image = MultipleImageField(required=False)
 
     def __init__(self, *args, **kwargs):
         require_captcha = kwargs.pop('require_captcha', True)

@@ -226,11 +226,14 @@ def mark_process(request, duck_id, user, form_page, require_captcha=True):
                                                      form.cleaned_data['comments'],
                                                      user)
 
-            image = form.cleaned_data.get('image')
-            if image:
-                # Save image to disk for upload to provider
+            images = form.cleaned_data.get('image') or []
+            if not isinstance(images, (list, tuple)):
+                images = [images]
+
+            for image in images:
+                # Save each image to disk for upload to provider.
                 image_path = marker.save_uploaded_file(image, settings.UPLOAD_PATH)
-                # Create a local-first photo record so the image is immediately visible.
+                # Create a local-first photo record so every image is immediately visible.
                 photo = DuckLocationPhoto.objects.create(
                     duck_location=duck_location,
                     local_path=os.path.basename(image_path),

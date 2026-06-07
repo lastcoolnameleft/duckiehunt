@@ -15,6 +15,7 @@ var MAX_IMAGE_WIDTH = 1920;
 var MAX_IMAGE_HEIGHT = 1920;
 var IMAGE_QUALITY = 0.85;
 var MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+var MAX_PHOTOS_PER_SIGHTING = 5;
 
 /**
  * Compress an image file client-side before upload.
@@ -78,7 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var nameNotification = document.getElementById('name_notification');
     var imageInput = document.getElementById('id_image');
     var imageStatus = document.getElementById('image_status');
-    var imagePreview = document.getElementById('image_preview');
+    var imagePreviewGrid = document.getElementById('image_preview_grid');
+    var imageDropZone = document.getElementById('image_drop_zone');
 
     // Default date/time to the user's local "now" if empty
     var dateTimeField = document.getElementById('id_date_time');
@@ -88,56 +90,145 @@ document.addEventListener('DOMContentLoaded', function() {
         dateTimeField.value = local.toISOString().slice(0, 16);
     }
 
-    function showPreview(file) {
-        if (!imagePreview || !file || !file.type.startsWith('image/')) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            imagePreview.src = e.target.result;
-            imagePreview.classList.remove('d-none');
-        };
-        reader.readAsDataURL(file);
+    function setImageStatus(message, className) {
+        if (!imageStatus) return;
+        imageStatus.textContent = message || '';
+        imageStatus.className = 'form-text' + (className ? ' ' + className : '');
     }
 
-    // Client-side image compression on file select
+    function clearPreviews() {
+        if (imagePreviewGrid) {
+            imagePreviewGrid.innerHTML = '';
+        }
+    }
+
+    function renderPreviews(files) {
+        if (!imagePreviewGrid) return;
+        clearPreviews();
+        files.forEach(function(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'mr-2 mb-2 text-center';
+
+            var image = document.createElement('img');
+            image.className = 'border rounded';
+            image.style.width = '120px';
+            image.style.height = '120px';
+            image.style.objectFit = 'cover';
+            image.alt = file.name;
+
+            var label = document.createElement('div');
+            label.className = 'small text-muted mt-1';
+            label.textContent = file.name;
+
+            var url = window.URL.createObjectURL(file);
+            image.onload = function() {
+                window.URL.revokeObjectURL(url);
+            };
+            image.src = url;
+
+            wrapper.appendChild(image);
+            wrapper.appendChild(label);
+            imagePreviewGrid.appendChild(wrapper);
+        });
+    }
+
+    function replaceInputFiles(files) {
+        if (!imageInput || typeof DataTransfer === 'undefined') return;
+        var dt = new DataTransfer();
+        files.forEach(function(file) {
+            dt.items.add(file);
+        });
+        imageInput.files = dt.files;
+    }
+
+    function getFiles(fileList) {
+        return Array.prototype.slice.call(fileList || []);
+    }
+
+    function clearImageSelection(keepStatus) {
+        if (imageInput) {
+            imageInput.value = '';
+        }
+        clearPreviews();
+        if (!keepStatus) {
+            setImageStatus('');
+        }
+    }
+
+    function validateFiles(files) {
+        if (files.length > MAX_PHOTOS_PER_SIGHTING) {
+            setImageStatus('You can upload at most ' + MAX_PHOTOS_PER_SIGHTING + ' photos per sighting.', 'text-danger');
+            clearImageSelection(true);
+            return false;
+        }
+
+        for (var i = 0; i < files.length; i += 1) {
+            if (files[i].size > MAX_FILE_SIZE) {
+                setImageStatus('File is too large (max 10MB). Please choose a smaller image.', 'text-danger');
+                clearImageSelection(true);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function handleImageSelection(fileList) {
+        var files = getFiles(fileList);
+        if (!files.length) {
+            clearImageSelection();
+            return;
+        }
+
+        if (!validateFiles(files)) {
+            return;
+        }
+
+        var needsCompression = files.some(function(file) {
+            return file.type.startsWith('image/') && file.size > 2 * 1024 * 1024;
+        });
+
+        if (needsCompression) {
+            setImageStatus('Compressing images...', 'text-muted');
+        } else {
+            setImageStatus(files.length + ' photo' + (files.length === 1 ? '' : 's') + ' selected', 'text-muted');
+        }
+
+        Promise.all(files.map(compressImage)).then(function(compressedFiles) {
+            if (!validateFiles(compressedFiles)) {
+                return;
+            }
+
+            replaceInputFiles(compressedFiles);
+            renderPreviews(compressedFiles);
+            setImageStatus(compressedFiles.length + ' photo' + (compressedFiles.length === 1 ? '' : 's') + ' ready', 'text-success');
+        });
+    }
+
+    // Client-side image compression on file select / drop
     if (imageInput) {
         imageInput.addEventListener('change', function() {
-            var file = imageInput.files[0];
-            if (!file) {
-                if (imagePreview) imagePreview.classList.add('d-none');
-                return;
-            }
+            handleImageSelection(imageInput.files);
+        });
+    }
 
-            if (file.size > MAX_FILE_SIZE) {
-                if (imageStatus) {
-                    imageStatus.textContent = 'File is too large (max 10MB). Please choose a smaller image.';
-                    imageStatus.className = 'form-text text-danger';
-                }
-                if (imagePreview) imagePreview.classList.add('d-none');
-                imageInput.value = '';
-                return;
-            }
+    if (imageDropZone && imageInput) {
+        imageDropZone.addEventListener('dragover', function(event) {
+            event.preventDefault();
+            imageDropZone.classList.add('border-primary');
+        });
 
-            showPreview(file);
+        imageDropZone.addEventListener('dragleave', function() {
+            imageDropZone.classList.remove('border-primary');
+        });
 
-            if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) {
-                if (imageStatus) {
-                    imageStatus.textContent = 'Compressing image...';
-                    imageStatus.className = 'form-text text-muted';
-                }
-                compressImage(file).then(function(compressed) {
-                    // Replace the file input with compressed version
-                    var dt = new DataTransfer();
-                    dt.items.add(compressed);
-                    imageInput.files = dt.files;
-                    var sizeMB = (compressed.size / 1024 / 1024).toFixed(1);
-                    if (imageStatus) {
-                        imageStatus.textContent = 'Image compressed to ' + sizeMB + 'MB';
-                        imageStatus.className = 'form-text text-success';
-                    }
-                    showPreview(compressed);
-                });
-            } else if (imageStatus) {
-                imageStatus.textContent = '';
+        imageDropZone.addEventListener('drop', function(event) {
+            event.preventDefault();
+            imageDropZone.classList.remove('border-primary');
+            if (event.dataTransfer && event.dataTransfer.files) {
+                handleImageSelection(event.dataTransfer.files);
             }
         });
     }

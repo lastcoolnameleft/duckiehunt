@@ -3,7 +3,9 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
+from django.utils.datastructures import MultiValueDict
 
 from duck.forms import DuckForm, LoginForm, RegistrationForm
 
@@ -17,6 +19,24 @@ TEST_RECAPTCHA_SETTINGS = {
 
 def captcha_success_response():
     return SimpleNamespace(is_valid=True, error_codes=[], extra_data={}, action=None)
+
+
+def valid_png(name='duck.png'):
+    """Create a tiny valid PNG for upload form tests."""
+    import struct
+    import zlib
+
+    raw_data = b'\x00\x00\x00\x00'
+    compressed = zlib.compress(raw_data)
+    png = b'\x89PNG\r\n\x1a\n'
+    ihdr_data = struct.pack('>IIBBBBB', 1, 1, 8, 2, 0, 0, 0)
+    ihdr_crc = zlib.crc32(b'IHDR' + ihdr_data) & 0xffffffff
+    png += struct.pack('>I', 13) + b'IHDR' + ihdr_data + struct.pack('>I', ihdr_crc)
+    idat_crc = zlib.crc32(b'IDAT' + compressed) & 0xffffffff
+    png += struct.pack('>I', len(compressed)) + b'IDAT' + compressed + struct.pack('>I', idat_crc)
+    iend_crc = zlib.crc32(b'IEND') & 0xffffffff
+    png += struct.pack('>I', 0) + b'IEND' + struct.pack('>I', iend_crc)
+    return SimpleUploadedFile(name, png, content_type='image/png')
 
 
 @override_settings(**TEST_RECAPTCHA_SETTINGS)
@@ -51,7 +71,7 @@ class DuckFormTest(TestCase):
         self.assertIn('duck_id', form.errors)
 
     def test_duck_id_max_value(self):
-        form = DuckForm(data=self._valid_data(duck_id='3001'))
+        form = DuckForm(data=self._valid_data(duck_id='3001', **{'g-recaptcha-response': 'PASSED'}))
         self.assertFalse(form.is_valid())
         self.assertIn('duck_id', form.errors)
 
@@ -91,6 +111,31 @@ class DuckFormTest(TestCase):
         mock_submit.return_value = captcha_success_response()
         form = DuckForm(data=self._valid_data(**{'g-recaptcha-response': 'PASSED'}))
         self.assertTrue(form.is_valid(), form.errors)
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_multiple_images_allowed(self, mock_submit):
+        mock_submit.return_value = captcha_success_response()
+        files = MultiValueDict({'image': [valid_png('duck-1.png'), valid_png('duck-2.png')]})
+        form = DuckForm(data=self._valid_data(**{'g-recaptcha-response': 'PASSED'}), files=files)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(len(form.cleaned_data['image']), 2)
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_more_than_five_images_rejected(self, mock_submit):
+        mock_submit.return_value = captcha_success_response()
+        files = MultiValueDict({
+            'image': [
+                valid_png('duck-1.png'),
+                valid_png('duck-2.png'),
+                valid_png('duck-3.png'),
+                valid_png('duck-4.png'),
+                valid_png('duck-5.png'),
+                valid_png('duck-6.png'),
+            ]
+        })
+        form = DuckForm(data=self._valid_data(**{'g-recaptcha-response': 'PASSED'}), files=files)
+        self.assertFalse(form.is_valid())
+        self.assertIn('image', form.errors)
 
     def test_lat_must_be_numeric(self):
         form = DuckForm(data=self._valid_data(lat='not-a-number'))
