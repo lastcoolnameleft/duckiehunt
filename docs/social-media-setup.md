@@ -143,8 +143,9 @@ In your app:
 ### Step 3: Configure OAuth redirect URL
 
 1. Open **Auth**
-2. Under **OAuth 2.0 settings**, add a redirect URL you can use locally for one-time token generation:
-   - `http://localhost:8042/auth/linkedin/callback`
+2. Under **OAuth 2.0 settings**, add the Duckiehunt admin callback URL:
+   - `http://localhost:8042/admin/linkedin-token/callback`
+   - If you already use `LI_REDIRECT_URI=http://localhost:8042/auth/linkedin/callback`, keep that URI registered too.
 3. Save
 
 ### Step 4: Generate an access token (manual flow)
@@ -168,6 +169,18 @@ curl -X POST "https://www.linkedin.com/oauth/v2/accessToken" \
 ```
 
 LinkedIn access tokens typically expire in ~60 days.
+
+### Step 4b: One-click refresh from Duckiehunt admin
+
+After initial setup, use the built-in admin page:
+
+1. Log in as a staff/admin user
+2. Open `/admin/linkedin-token`
+3. Click **Refresh LinkedIn Token**
+
+Duckiehunt will update runtime env vars and write new values into the active env file (`ENV_FILE` when set, otherwise `.env`).
+By default, the admin flow requests `w_member_social openid profile`.  
+If your LinkedIn app is approved for refresh tokens, set `LI_SCOPES=w_member_social openid profile offline_access`.
 
 ### Optional: Use the automation script
 
@@ -211,7 +224,10 @@ You can also set:
 
 ```bash
 LI_ACCESS_TOKEN=your_linkedin_access_token
+LI_REFRESH_TOKEN=your_linkedin_refresh_token
 LI_PERSON_URN=urn:li:person:your_person_id
+# Used by admin refresh callback:
+LI_REDIRECT_URI=http://localhost:8042/admin/linkedin-token/callback
 # Optional override:
 # LI_AUTHOR_URN=urn:li:person:your_person_id
 # LI_ORGANIZATION_URN=urn:li:organization:your_org_id
