@@ -72,6 +72,7 @@ requests==2.34.2
     #   social-auth-core
 requests-oauthlib==2.0.0
     # via
+    #   -r requirements.in
     #   flickr-api
     #   social-auth-core
 sentry-sdk[django]==2.61.0

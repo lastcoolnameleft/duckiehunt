@@ -9,6 +9,7 @@ from duck.social import (
     BaseSocialProvider,
     FacebookProvider,
     InstagramProvider,
+    LinkedInProvider,
     SocialShareError,
     get_configured_providers,
     share_to,
@@ -161,9 +162,114 @@ class TestInstagramProvider(TestCase):
         self.assertEqual(mock_post.call_count, 2)
 
 
+@override_settings(LI_ACCESS_TOKEN='', LI_AUTHOR_URN='', LI_PERSON_URN='', LI_ORGANIZATION_URN='')
+class TestLinkedInProviderNotConfigured(TestCase):
+    def test_is_configured_without_credentials(self):
+        provider = LinkedInProvider()
+        self.assertFalse(provider.is_configured())
+
+    def test_share_raises_when_not_configured(self):
+        provider = LinkedInProvider()
+        duck = Duck.objects.create(create_time=timezone.now(), comments='', duck_id=99995, name='LI Duck')
+        location = DuckLocation.objects.create(duck=duck)
+        with self.assertRaises(SocialShareError):
+            provider.share_sighting(location)
+        duck.delete()
+
+
+@override_settings(LI_ACCESS_TOKEN='li-token', LI_PERSON_URN='urn:li:person:test-user')
+class TestLinkedInProvider(TestCase):
+    def setUp(self):
+        self.duck = Duck.objects.create(create_time=timezone.now(), comments='', duck_id=99994, name='LI Duck')
+        self.location = DuckLocation.objects.create(
+            duck=self.duck,
+            location='Nashville, TN',
+            comments='LinkedIn test',
+        )
+
+    def tearDown(self):
+        self.duck.delete()
+
+    def test_is_configured_with_person_urn(self):
+        provider = LinkedInProvider()
+        self.assertTrue(provider.is_configured())
+
+    @patch('duck.social.OAuth2Session')
+    def test_share_text_post(self, mock_oauth_session):
+        session = MagicMock()
+        session.post.return_value = MagicMock(ok=True, json=lambda: {'id': 'urn:li:share:123'}, headers={})
+        mock_oauth_session.return_value = session
+
+        provider = LinkedInProvider()
+        result = provider.share_sighting(self.location)
+
+        self.assertTrue(result['success'])
+        self.assertEqual(result['post_id'], 'urn:li:share:123')
+        self.assertEqual(session.post.call_count, 1)
+
+    @patch('duck.social.requests.get')
+    @patch('duck.social.OAuth2Session')
+    def test_share_with_photo_uses_three_step_upload(self, mock_oauth_session, mock_get):
+        mock_get.return_value = MagicMock(
+            ok=True,
+            status_code=200,
+            content=b'fake-image-bytes',
+            headers={'Content-Type': 'image/jpeg'},
+            text='',
+            json=lambda: {},
+        )
+        session = MagicMock()
+        session.post.side_effect = [
+            MagicMock(
+                ok=True,
+                status_code=200,
+                json=lambda: {'value': {'uploadUrl': 'https://upload.linkedin.com/abc', 'image': 'urn:li:image:42'}},
+                headers={},
+            ),
+            MagicMock(
+                ok=True,
+                status_code=201,
+                json=lambda: {'id': 'urn:li:share:456'},
+                headers={},
+            ),
+        ]
+        session.put.return_value = MagicMock(
+            ok=True,
+            status_code=201,
+            text='',
+            json=lambda: {},
+        )
+        mock_oauth_session.return_value = session
+
+        provider = LinkedInProvider()
+        result = provider.share_sighting(self.location, photo_url='https://example.com/photo.jpg')
+
+        self.assertTrue(result['success'])
+        self.assertEqual(result['post_id'], 'urn:li:share:456')
+        self.assertEqual(session.post.call_count, 2)
+        self.assertEqual(session.put.call_count, 1)
+
+    @patch('duck.social.OAuth2Session')
+    def test_share_post_error_raises(self, mock_oauth_session):
+        session = MagicMock()
+        session.post.return_value = MagicMock(
+            ok=False,
+            status_code=401,
+            text='invalid access token',
+            json=lambda: {'message': 'invalid access token'},
+            headers={},
+        )
+        mock_oauth_session.return_value = session
+
+        provider = LinkedInProvider()
+        with self.assertRaises(SocialShareError):
+            provider.share_sighting(self.location)
+
+
 @override_settings(
     FB_PAGE_ID='', FB_PAGE_ACCESS_TOKEN='',
     IG_USER_ID='', IG_ACCESS_TOKEN='',
+    LI_ACCESS_TOKEN='', LI_AUTHOR_URN='', LI_PERSON_URN='', LI_ORGANIZATION_URN='',
 )
 class TestGetConfiguredProviders(TestCase):
     def test_no_providers_configured(self):

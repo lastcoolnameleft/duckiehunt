@@ -1,0 +1,28 @@
+{% extends "../base.html" %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+  <h1 class="mt-4 mb-3">LinkedIn Token Admin</h1>
+  <p class="text-muted">One-click token refresh for LinkedIn posting integration.</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <p class="mb-2"><strong>Active env file:</strong> <code>{{ active_env_file }}</code></p>
+      <p class="mb-2"><strong>Callback URI:</strong> <code>{{ callback_uri }}</code></p>
+      <p class="mb-1"><strong>Access token configured:</strong> {{ linkedin_configured|yesno:"Yes,No" }}</p>
+      <p class="mb-0"><strong>Refresh token configured:</strong> {{ has_refresh_token|yesno:"Yes,No" }}</p>
+    </div>
+  </div>
+
+  <form method="post" action="{% url 'admin_linkedin_token_refresh' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Refresh LinkedIn Token</button>
+  </form>
+</div>
+{% endblock %}
