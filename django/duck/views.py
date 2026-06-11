@@ -1,14 +1,19 @@
 """ Views for Django """
 import logging
 import os
+import secrets
+from pathlib import Path
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core import serializers
 from django.core.cache import cache
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from django_q.tasks import async_task
@@ -16,11 +21,19 @@ from django_q.tasks import async_task
 from duck import marker
 
 from .forms import CreateDuckForm, DuckForm, LoginForm, RegistrationForm
+from .linkedin_tokens import (
+    build_linkedin_authorize_url,
+    linkedin_exchange_code_for_token,
+    linkedin_fetch_person_urn,
+    linkedin_refresh_access_token,
+    upsert_env_values,
+)
 from .models import Duck, DuckLocation, DuckLocationLink, DuckLocationPhoto
 
 LOGIN_RATE_LIMIT = 5
 LOGIN_RATE_WINDOW = 300
 logger = logging.getLogger(__name__)
+LINKEDIN_STATE_SESSION_KEY = 'linkedin_oauth_state'
 
 
 def _get_login_attempts_key(request):
@@ -400,6 +413,136 @@ def profile(request):
         'locations': locations,
         'location_count': locations.count(),
     })
+
+
+def _resolve_active_env_file():
+    project_root = Path(getattr(settings, 'PROJECT_ROOT', '.'))
+    env_file = os.environ.get('ENV_FILE', '').strip()
+    if env_file:
+        env_path = Path(env_file)
+        if not env_path.is_absolute():
+            env_path = project_root / env_path
+        return env_path
+    return project_root / '.env'
+
+
+def _linkedin_scopes():
+    return os.environ.get('LI_SCOPES', 'w_member_social openid profile')
+
+
+def _linkedin_redirect_uri(request):
+    configured_uri = getattr(settings, 'LI_REDIRECT_URI', '').strip()
+    if configured_uri:
+        return configured_uri
+    return request.build_absolute_uri(reverse('admin_linkedin_callback'))
+
+
+def _set_runtime_values(updates):
+    for key, value in updates.items():
+        os.environ[key] = value
+        setattr(settings, key, value)
+
+
+def _persist_linkedin_tokens(request, token_data):
+    updates = {
+        'LI_ACCESS_TOKEN': token_data['access_token'],
+        'LI_REDIRECT_URI': _linkedin_redirect_uri(request),
+    }
+    refresh_token = token_data.get('refresh_token')
+    if refresh_token:
+        updates['LI_REFRESH_TOKEN'] = refresh_token
+    expires_in = token_data.get('expires_in')
+    if expires_in is not None:
+        updates['LI_ACCESS_TOKEN_EXPIRES_IN'] = str(expires_in)
+
+    person_urn = linkedin_fetch_person_urn(
+        updates['LI_ACCESS_TOKEN'],
+        getattr(settings, 'LI_API_VERSION', ''),
+    )
+    if person_urn:
+        updates['LI_PERSON_URN'] = person_urn
+
+    env_path = _resolve_active_env_file()
+    upsert_env_values(env_path, updates)
+    _set_runtime_values(updates)
+    return env_path
+
+
+@staff_member_required(login_url='/admin/login/')
+def linkedin_token_admin(request):
+    return render(request, 'duck/linkedin_token_admin.html', {
+        'linkedin_configured': bool(getattr(settings, 'LI_ACCESS_TOKEN', '')),
+        'has_refresh_token': bool(getattr(settings, 'LI_REFRESH_TOKEN', '')),
+        'active_env_file': str(_resolve_active_env_file()),
+        'callback_uri': _linkedin_redirect_uri(request),
+    })
+
+
+@staff_member_required(login_url='/admin/login/')
+def linkedin_token_refresh(request):
+    if request.method != 'POST':
+        return redirect('admin_linkedin_token')
+
+    client_id = getattr(settings, 'LI_CLIENT_ID', '')
+    client_secret = getattr(settings, 'LI_CLIENT_SECRET', '')
+    if not client_id or not client_secret:
+        messages.error(request, 'Missing LI_CLIENT_ID or LI_CLIENT_SECRET.')
+        return redirect('admin_linkedin_token')
+
+    refresh_token = getattr(settings, 'LI_REFRESH_TOKEN', '')
+    if refresh_token:
+        try:
+            token_data = linkedin_refresh_access_token(refresh_token, client_id, client_secret)
+            env_path = _persist_linkedin_tokens(request, token_data)
+            messages.success(request, f'LinkedIn token refreshed. Updated {env_path}.')
+        except Exception:
+            logger.exception('LinkedIn refresh token flow failed')
+            messages.error(request, 'Refresh token flow failed. Starting OAuth consent flow instead.')
+        else:
+            return redirect('admin_linkedin_token')
+
+    state = secrets.token_urlsafe(24)
+    request.session[LINKEDIN_STATE_SESSION_KEY] = state
+    authorize_url = build_linkedin_authorize_url(
+        client_id,
+        _linkedin_redirect_uri(request),
+        _linkedin_scopes(),
+        state,
+    )
+    return redirect(authorize_url)
+
+
+@staff_member_required(login_url='/admin/login/')
+def linkedin_token_callback(request):
+    expected_state = request.session.get(LINKEDIN_STATE_SESSION_KEY, '')
+    incoming_state = request.GET.get('state', '')
+    if not expected_state or expected_state != incoming_state:
+        messages.error(request, 'LinkedIn OAuth state mismatch. Please try refresh again.')
+        return redirect('admin_linkedin_token')
+
+    request.session.pop(LINKEDIN_STATE_SESSION_KEY, None)
+    code = request.GET.get('code', '')
+    if not code:
+        messages.error(request, 'LinkedIn callback missing authorization code.')
+        return redirect('admin_linkedin_token')
+
+    client_id = getattr(settings, 'LI_CLIENT_ID', '')
+    client_secret = getattr(settings, 'LI_CLIENT_SECRET', '')
+    try:
+        token_data = linkedin_exchange_code_for_token(
+            code,
+            client_id,
+            client_secret,
+            _linkedin_redirect_uri(request),
+        )
+        env_path = _persist_linkedin_tokens(request, token_data)
+    except Exception:
+        logger.exception('LinkedIn OAuth callback token exchange failed')
+        messages.error(request, 'LinkedIn token exchange failed.')
+        return redirect('admin_linkedin_token')
+
+    messages.success(request, f'LinkedIn token updated successfully. Updated {env_path}.')
+    return redirect('admin_linkedin_token')
 
 def custom_403(request, exception):
     import sentry_sdk

@@ -1,6 +1,7 @@
 Django
 django-q2
 requests
+requests-oauthlib
 gunicorn==26.0.0
 social-auth-app-django
 social-auth-core

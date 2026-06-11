@@ -1,6 +1,6 @@
 # Social Media Posting Setup
 
-This guide explains how to configure Duckiehunt to automatically post duck sightings to Facebook and Instagram.
+This guide explains how to configure Duckiehunt to automatically post duck sightings to Facebook, Instagram, and LinkedIn.
 
 ## Facebook Page Setup
 
@@ -119,13 +119,135 @@ IG_ACCESS_TOKEN=your_page_access_token
 
 ---
 
+## LinkedIn Setup (Optional)
+
+### Prerequisites
+- A LinkedIn account (for personal posting) or admin access to a LinkedIn Company Page
+- A LinkedIn Developer app
+
+### Step 1: Create a LinkedIn app
+
+1. Go to [LinkedIn Developer Apps](https://www.linkedin.com/developers/apps)
+2. Click **Create app**
+3. Fill out app name, company page, and app logo
+4. Create the app
+
+### Step 2: Add products / scopes
+
+In your app:
+1. Open **Products**
+2. Request/enable:
+   - **Share on LinkedIn** (personal feed posting; scope `w_member_social`)
+   - If posting to company page, also enable organization posting (`w_organization_social`)
+
+### Step 3: Configure OAuth redirect URL
+
+1. Open **Auth**
+2. Under **OAuth 2.0 settings**, add the Duckiehunt admin callback URL:
+   - `http://localhost:8042/admin/linkedin-token/callback`
+   - If you already use `LI_REDIRECT_URI=http://localhost:8042/auth/linkedin/callback`, keep that URI registered too.
+3. Save
+
+### Step 4: Generate an access token (manual flow)
+
+You can use OAuth 2.0 Authorization Code flow in your browser:
+
+1. Build auth URL (replace placeholders):
+   - `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=http%3A%2F%2Flocalhost%3A8042%2Fauth%2Flinkedin%2Fcallback&scope=w_member_social%20openid%20profile%20email`
+2. Open URL, approve permissions
+3. Copy `code` from callback URL
+4. Exchange code for token:
+
+```bash
+curl -X POST "https://www.linkedin.com/oauth/v2/accessToken" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code" \
+  -d "code=YOUR_AUTH_CODE" \
+  -d "redirect_uri=http://localhost:8042/auth/linkedin/callback" \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET"
+```
+
+LinkedIn access tokens typically expire in ~60 days.
+
+### Step 4b: One-click refresh from Duckiehunt admin
+
+After initial setup, use the built-in admin page:
+
+1. Log in as a staff/admin user
+2. Open `/admin/linkedin-token`
+3. Click **Refresh LinkedIn Token**
+
+Duckiehunt will update runtime env vars and write new values into the active env file (`ENV_FILE` when set, otherwise `.env`).
+By default, the admin flow requests `w_member_social openid profile`.  
+If your LinkedIn app is approved for refresh tokens, set `LI_SCOPES=w_member_social openid profile offline_access`.
+
+### Optional: Use the automation script
+
+If you already set `LI_CLIENT_ID`, `LI_CLIENT_SECRET`, and `LI_REDIRECT_URI` in your env file,
+you can automate auth URL generation + token exchange:
+
+```bash
+./scripts/linkedin_oauth_setup.py --env-file .env --write-env
+```
+
+The script opens LinkedIn auth, exchanges the code, fetches userinfo (when permitted), and can write
+`LI_ACCESS_TOKEN` / `LI_PERSON_URN` back into your env file.
+
+To only run a LinkedIn posting smoke test using existing env vars:
+
+```bash
+./scripts/linkedin_oauth_setup.py --smoke-test-only
+```
+
+### Step 5: Get your posting URN
+
+#### Personal feed (recommended)
+
+```bash
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  "https://api.linkedin.com/v2/userinfo"
+```
+
+Use `sub` from response to build:
+- `LI_PERSON_URN=urn:li:person:SUB_VALUE`
+
+#### Company page feed
+
+Use your organization URN:
+- `LI_ORGANIZATION_URN=urn:li:organization:123456`
+
+You can also set:
+- `LI_AUTHOR_URN=urn:li:person:...` or `urn:li:organization:...`
+
+### Step 6: Configure environment variables
+
+```bash
+LI_ACCESS_TOKEN=your_linkedin_access_token
+LI_REFRESH_TOKEN=your_linkedin_refresh_token
+LI_PERSON_URN=urn:li:person:your_person_id
+# Used by admin refresh callback:
+LI_REDIRECT_URI=http://localhost:8042/admin/linkedin-token/callback
+# Optional override:
+# LI_AUTHOR_URN=urn:li:person:your_person_id
+# LI_ORGANIZATION_URN=urn:li:organization:your_org_id
+LI_API_VERSION=202504
+```
+
+### Step 7: Token renewal
+
+Set a reminder every 45 days to refresh token before expiration.
+
+---
+
 ## How It Works in Duckiehunt
 
 The social sharing code lives in `django/duck/social.py`. It uses an extensible provider pattern:
 
 - **`FacebookProvider`** — posts photos/text to your Facebook Page
 - **`InstagramProvider`** — posts photos to your Instagram Professional account
-- Future: TikTok (#117), LinkedIn (#118)
+- **`LinkedInProvider`** — posts text and image sightings via LinkedIn REST APIs
+- Future: TikTok (#117)
 
 ### Auto-posting
 When configured, approved sightings are shared automatically via Django-Q background tasks after a new location is submitted.

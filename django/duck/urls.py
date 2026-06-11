@@ -39,5 +39,9 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('register/', views.register, name='register'),
     path('logout', views.logout, name='logout'),
+    path('admin/linkedin-token', views.linkedin_token_admin, name='admin_linkedin_token'),
+    path('admin/linkedin-token/refresh', views.linkedin_token_refresh, name='admin_linkedin_token_refresh'),
+    path('admin/linkedin-token/callback', views.linkedin_token_callback, name='admin_linkedin_callback'),
+    path('auth/linkedin/callback', views.linkedin_token_callback, name='admin_linkedin_callback_legacy'),
     path('oauth/', include('social_django.urls', namespace='social'), name='logthru'),
 ]
