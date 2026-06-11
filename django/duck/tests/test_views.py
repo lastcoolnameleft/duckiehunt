@@ -46,6 +46,12 @@ class FoundViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'duck/found.html')
 
+    def test_found_generic_page(self):
+        response = self.client.get('/found')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'duck/found.html')
+        self.assertContains(response, 'Your duck ID should be on the bottom of the duck.')
+
     def test_found_nonexistent_duck(self):
         """found view handles missing duck gracefully (no 404)"""
         response = self.client.get('/found/999')
@@ -59,6 +65,10 @@ class FoundViewTest(TestCase):
     def test_found_context_duck_is_none_for_missing(self):
         response = self.client.get('/found/999')
         self.assertIsNone(response.context['duck'])
+
+    def test_found_context_generic_has_no_duck_id(self):
+        response = self.client.get('/found')
+        self.assertIsNone(response.context['duck_id'])
 
 
 class DuckDetailViewTest(TestCase):

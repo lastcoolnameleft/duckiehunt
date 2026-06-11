@@ -7,16 +7,27 @@
             <div class="card mt-5 text-center">
                 <div class="card-body py-5">
                     <h1 class="display-4 mb-3">🎉</h1>
+                    {% if duck_id %}
                     <h2>Congratulations!</h2>
                     <p class="lead">You found Duck #{{ duck_id }}!</p>
-                    {% if duck and duck.name and duck.name != "Unnamed" %}
-                    <p class="text-muted">Also known as <strong>{{ duck.name }}</strong></p>
+                        {% if duck and duck.name and duck.name != "Unnamed" %}
+                        <p class="text-muted">Also known as <strong>{{ duck.name }}</strong></p>
+                        {% endif %}
+                    {% else %}
+                    <h2>You found a Duckiehunt duck!</h2>
+                    <p class="lead">Thanks for scanning the tag. This duck is part of a travel game where every sighting helps tell its story.</p>
                     {% endif %}
                     <hr>
                     <h5>Now what?</h5>
-                    <p>Let us know where it's been! Update its location and share a photo of your adventure.</p>
-                    <p class="text-muted">After that, take it on your next adventure or hide it for someone else to find.</p>
-                    <a href="/mark/{{ duck_id }}" class="btn btn-primary btn-lg mt-3">Update Location</a>
+                    <p class="font-weight-bold">Your duck ID should be on the bottom of the duck.</p>
+                    <p>Log where you found it and add a photo so everyone can follow where these ducks travel.</p>
+                    <p class="text-muted">Then keep it moving: take it on your next adventure or hide it for someone else to discover.</p>
+                    {% if duck_id %}
+                    <a href="/mark/{{ duck_id }}" class="btn btn-primary btn-lg mt-3">Log Duck #{{ duck_id }}</a>
+                    {% else %}
+                    <a href="/mark/" class="btn btn-primary btn-lg mt-3">Log This Duck</a>
+                    {% endif %}
+                    <a href="/duck/" class="btn btn-outline-secondary btn-lg mt-3 ml-2">See Duck Travels</a>
                 </div>
             </div>
         </div>

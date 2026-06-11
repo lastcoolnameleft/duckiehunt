@@ -71,12 +71,14 @@ def index(request):
         'recent_locations': recent_locations,
     })
 
-def found(request, duck_id):
-    """ /found/# path """
-    try:
-        duck = Duck.objects.get(pk=duck_id)
-    except Duck.DoesNotExist:
-        duck = None
+def found(request, duck_id=None):
+    """ /found path (generic) and /found/# path (specific duck) """
+    duck = None
+    if duck_id is not None:
+        try:
+            duck = Duck.objects.get(pk=duck_id)
+        except Duck.DoesNotExist:
+            duck = None
 
     return render(request, 'duck/found.html', {'duck_id': duck_id, 'duck': duck})
 

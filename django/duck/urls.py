@@ -19,6 +19,7 @@ urlpatterns = [
     # ex: /view/duck/5/ (legacy URL)
     path('view/duck/<int:duck_id>', views.detail, name='detail_legacy'),
     path('duck/<int:duck_id>', views.detail, name='detail'),
+    path('found', views.found, name='found_generic'),
     path('found/<int:duck_id>', views.found, name='found'),
     # ex: /view/location/500/ (legacy URL)
     path('view/location/<int:duck_location_id>', views.location, name='location_legacy'),
