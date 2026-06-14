@@ -29,9 +29,10 @@ def is_valid_duck_number(n):
 
 
 def next_available_duck_id():
-    """Find the next available non-prime duck ID not already in use."""
+    """Find the next available non-prime duck ID not already in use (starts at 5000+)."""
+    from .forms import COMMUNITY_DUCK_MIN_ID
     existing = set(Duck.objects.values_list('duck_id', flat=True))
-    candidate = 4  # Start at 4 (first non-prime > 1)
+    candidate = COMMUNITY_DUCK_MIN_ID
     while True:
         if not is_prime(candidate) and candidate not in existing:
             return candidate

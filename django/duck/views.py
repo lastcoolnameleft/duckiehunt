@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core import serializers
 from django.core.cache import cache
-from django.db.models import Sum
+from django.db.models import Count, Sum, Subquery, OuterRef
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -161,6 +161,68 @@ def duck_list(request):
         'duck_list': ducks,
         'duck_count': ducks.count(),
     })
+
+def leaderboard(request):
+    """ /leaderboard path """
+    # Top 10 most traveled ducks
+    top_traveled = (
+        Duck.objects.annotate(location_count=Count('ducklocation'))
+        .filter(total_distance__gt=0)
+        .order_by('-total_distance')[:10]
+    )
+
+    # Top 10 most spotted ducks (by number of sightings)
+    most_spotted = (
+        Duck.objects.annotate(location_count=Count('ducklocation'))
+        .filter(location_count__gt=1)
+        .order_by('-location_count')[:10]
+    )
+
+    # Top 10 spotters (users with most sightings)
+    top_spotters = (
+        DuckLocation.objects.filter(user__isnull=False)
+        .values('user__username')
+        .annotate(
+            sighting_count=Count('duck_location_id'),
+            unique_ducks=Count('duck_id', distinct=True),
+        )
+        .order_by('-sighting_count')[:10]
+    )
+
+    # 10 most recently active ducks
+    recently_active = (
+        DuckLocation.objects.select_related('duck')
+        .filter(approved='Y')
+        .order_by('-date_time')[:10]
+    )
+
+    # Top 10 longest single jumps
+    longest_jumps_qs = (
+        DuckLocation.objects.filter(distance_to__gt=0, approved='Y')
+        .select_related('duck')
+        .order_by('-distance_to')[:10]
+    )
+    # Annotate with previous location name
+    longest_jumps = []
+    for loc in longest_jumps_qs:
+        prev = (
+            DuckLocation.objects
+            .filter(duck_id=loc.duck_id, date_time__lt=loc.date_time)
+            .order_by('-date_time')
+            .values_list('location', flat=True)
+            .first()
+        )
+        loc.prev_location = prev
+        longest_jumps.append(loc)
+
+    return render(request, 'duck/leaderboard.html', {
+        'top_traveled': top_traveled,
+        'most_spotted': most_spotted,
+        'top_spotters': top_spotters,
+        'recently_active': recently_active,
+        'longest_jumps': longest_jumps,
+    })
+
 
 def faq(request):
     """ shows faq """

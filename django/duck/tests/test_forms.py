@@ -71,7 +71,7 @@ class DuckFormTest(TestCase):
         self.assertIn('duck_id', form.errors)
 
     def test_duck_id_max_value(self):
-        form = DuckForm(data=self._valid_data(duck_id='3001', **{'g-recaptcha-response': 'PASSED'}))
+        form = DuckForm(data=self._valid_data(duck_id='100000', **{'g-recaptcha-response': 'PASSED'}))
         self.assertFalse(form.is_valid())
         self.assertIn('duck_id', form.errors)
 

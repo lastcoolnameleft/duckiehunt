@@ -100,16 +100,19 @@ class DuckForm(forms.Form):
                 field.widget.attrs['class'] = 'form-control'
 
 
+COMMUNITY_DUCK_MIN_ID = 5000
+
+
 class CreateDuckForm(forms.Form):
     """Form for registering a new duck."""
 
     duck_id = forms.IntegerField(
         label='Duck #',
         required=False,
-        min_value=2,
+        min_value=COMMUNITY_DUCK_MIN_ID,
         max_value=99999,
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Leave blank for auto-assign'}),
-        help_text='Must not be a prime number. Leave blank to get the next available number.',
+        help_text=f'Must be {COMMUNITY_DUCK_MIN_ID} or higher and not a prime number. Leave blank to get the next available number.',
     )
     name = forms.CharField(
         label='Duck name',

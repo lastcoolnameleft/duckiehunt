@@ -109,7 +109,14 @@
                 </div>
                 <div id="collapseSeven" class="collapse" role="tabpanel" aria-labelledby="headingSeven">
                   <div class="card-body">
-                    <a href="mailto:tommy@duckiehunt.com?Subject=Hello" target="_top">Send me an email</a>
+                    <a id="contact-email-link" href="#">Send me an email</a>
+                    <script>
+                      (function() {
+                        var u = "tommy", d = "lastcoolnameleft.com";
+                        var link = document.getElementById("contact-email-link");
+                        if (link) { link.href = "mailto:" + u + "@" + d + "?Subject=Hello"; }
+                      })();
+                    </script>
                      </div>
                 </div>
               </div>

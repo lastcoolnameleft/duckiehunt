@@ -1,0 +1,184 @@
+{% extends "../base.html" %}
+{% load humanize %}
+
+{% block title %}Leaderboard - Duckiehunt{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4 mb-3">🏆 Leaderboard</h1>
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active">Leaderboard</li>
+    </ol>
+
+    <div class="row">
+        <!-- Most Traveled Ducks -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🌍 Most Traveled Ducks</h5>
+                    <small>Total miles across all sightings</small>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr><th>#</th><th>Duck</th><th>Miles</th><th>Stops</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for duck in top_traveled %}
+                            <tr>
+                                <td>
+                                    {% if forloop.counter == 1 %}🥇
+                                    {% elif forloop.counter == 2 %}🥈
+                                    {% elif forloop.counter == 3 %}🥉
+                                    {% else %}{{ forloop.counter }}{% endif %}
+                                </td>
+                                <td><a href="/duck/{{ duck.duck_id }}">#{{ duck.duck_id }} {{ duck.name }}</a></td>
+                                <td>{{ duck.total_distance|floatformat:0|intcomma }}</td>
+                                <td>{{ duck.location_count }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted">No data yet</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Most Sightings (Ducks) -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">📍 Most Spotted Ducks</h5>
+                    <small>Ducks with the most logged sightings</small>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr><th>#</th><th>Duck</th><th>Sightings</th><th>Miles</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for duck in most_spotted %}
+                            <tr>
+                                <td>
+                                    {% if forloop.counter == 1 %}🥇
+                                    {% elif forloop.counter == 2 %}🥈
+                                    {% elif forloop.counter == 3 %}🥉
+                                    {% else %}{{ forloop.counter }}{% endif %}
+                                </td>
+                                <td><a href="/duck/{{ duck.duck_id }}">#{{ duck.duck_id }} {{ duck.name }}</a></td>
+                                <td>{{ duck.location_count }}</td>
+                                <td>{{ duck.total_distance|floatformat:0|intcomma }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted">No data yet</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Spotters (Users) -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">🦆 Top Duck Spotters</h5>
+                    <small>Users with the most sightings logged</small>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr><th>#</th><th>Spotter</th><th>Sightings</th><th>Unique Ducks</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for spotter in top_spotters %}
+                            <tr>
+                                <td>
+                                    {% if forloop.counter == 1 %}🥇
+                                    {% elif forloop.counter == 2 %}🥈
+                                    {% elif forloop.counter == 3 %}🥉
+                                    {% else %}{{ forloop.counter }}{% endif %}
+                                </td>
+                                <td>{{ spotter.user__username }}</td>
+                                <td>{{ spotter.sighting_count }}</td>
+                                <td>{{ spotter.unique_ducks }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted">No data yet</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newest Ducks on the Move -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🚀 Recently Active Ducks</h5>
+                    <small>Ducks spotted most recently</small>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr><th>#</th><th>Duck</th><th>Location</th><th>When</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for loc in recently_active %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href="/duck/{{ loc.duck_id }}">#{{ loc.duck_id }}</a></td>
+                                <td><a href="/location/{{ loc.duck_location_id }}">{{ loc.location|truncatechars:30 }}</a></td>
+                                <td>{{ loc.date_time|date:"M j, Y" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted">No data yet</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Longest Single Journey -->
+        <div class="col-lg-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">✈️ Longest Single Jumps</h5>
+                    <small>Greatest distance between two consecutive sightings</small>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr><th>#</th><th>Duck</th><th>From</th><th>To</th><th>Distance</th><th>When</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for jump in longest_jumps %}
+                            <tr>
+                                <td>
+                                    {% if forloop.counter == 1 %}🥇
+                                    {% elif forloop.counter == 2 %}🥈
+                                    {% elif forloop.counter == 3 %}🥉
+                                    {% else %}{{ forloop.counter }}{% endif %}
+                                </td>
+                                <td><a href="/duck/{{ jump.duck_id }}">#{{ jump.duck_id }}</a></td>
+                                <td>{{ jump.prev_location|default:"Origin"|truncatechars:25 }}</td>
+                                <td><a href="/location/{{ jump.duck_location_id }}">{{ jump.location|truncatechars:25 }}</a></td>
+                                <td><strong>{{ jump.distance_to|floatformat:0|intcomma }} mi</strong></td>
+                                <td>{{ jump.date_time|date:"M j, Y" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="6" class="text-center text-muted">No data yet</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

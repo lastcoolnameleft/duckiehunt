@@ -39,20 +39,21 @@ class IsValidDuckNumberTest(TestCase):
 
 class NextAvailableDuckIdTest(TestCase):
     def test_returns_first_non_prime_when_empty(self):
-        self.assertEqual(next_available_duck_id(), 4)
+        self.assertEqual(next_available_duck_id(), 5000)
 
     def test_skips_existing(self):
         from django.utils import timezone
-        Duck.objects.create(duck_id=4, name='Test', create_time=timezone.now(), comments='')
-        self.assertEqual(next_available_duck_id(), 6)
+        Duck.objects.create(duck_id=5000, name='Test', create_time=timezone.now(), comments='')
+        self.assertEqual(next_available_duck_id(), 5001)
 
     def test_skips_primes_and_existing(self):
         from django.utils import timezone
-        for did in [4, 6, 8, 9, 10]:
+        for did in [5000, 5001, 5002, 5004, 5006]:
             Duck.objects.create(duck_id=did, name='Test', create_time=timezone.now(), comments='')
         result = next_available_duck_id()
         self.assertFalse(is_prime(result))
         self.assertFalse(Duck.objects.filter(duck_id=result).exists())
+        self.assertGreaterEqual(result, 5000)
 
 
 class CreateDuckViewTest(TestCase):
@@ -72,9 +73,9 @@ class CreateDuckViewTest(TestCase):
 
     def test_create_with_custom_number(self):
         self.client.login(username='testuser', password='testpass')
-        response = self.client.post('/duck/new', {'duck_id': '4', 'name': 'My Duck'})
+        response = self.client.post('/duck/new', {'duck_id': '5000', 'name': 'My Duck'})
         self.assertEqual(response.status_code, 302)
-        duck = Duck.objects.get(duck_id=4)
+        duck = Duck.objects.get(duck_id=5000)
         self.assertEqual(duck.name, 'My Duck')
         self.assertEqual(duck.created_by, self.user)
 
@@ -84,19 +85,26 @@ class CreateDuckViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         duck = Duck.objects.get(name='Auto Duck')
         self.assertFalse(is_prime(duck.duck_id))
+        self.assertGreaterEqual(duck.duck_id, 5000)
         self.assertEqual(duck.created_by, self.user)
 
     def test_rejects_prime_number(self):
         self.client.login(username='testuser', password='testpass')
-        response = self.client.post('/duck/new', {'duck_id': '7', 'name': 'Prime Duck'})
+        response = self.client.post('/duck/new', {'duck_id': '5003', 'name': 'Prime Duck'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'cannot be prime')
-        self.assertFalse(Duck.objects.filter(duck_id=7).exists())
+        self.assertFalse(Duck.objects.filter(duck_id=5003).exists())
+
+    def test_rejects_number_below_minimum(self):
+        self.client.login(username='testuser', password='testpass')
+        response = self.client.post('/duck/new', {'duck_id': '100', 'name': 'Low Duck'})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Duck.objects.filter(duck_id=100).exists())
 
     def test_rejects_duplicate(self):
         from django.utils import timezone
-        Duck.objects.create(duck_id=4, name='Existing', create_time=timezone.now(), comments='')
+        Duck.objects.create(duck_id=5000, name='Existing', create_time=timezone.now(), comments='')
         self.client.login(username='testuser', password='testpass')
-        response = self.client.post('/duck/new', {'duck_id': '4', 'name': 'Dup Duck'})
+        response = self.client.post('/duck/new', {'duck_id': '5000', 'name': 'Dup Duck'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'already taken')
