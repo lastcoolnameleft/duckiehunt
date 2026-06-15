@@ -22,7 +22,7 @@
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="heading1">
                   <div class="card-body">
-                    Email me <a href="mailto:tommy@duckiehunt.com?Subject=Site_crash" target="_top">tommy@lastcoolnameleft.com</a> what you were doing and what happened!  I'll work on this ASAP!
+                    Email me <a class="obfuscated-email" href="#" data-subject="Site_crash" target="_top"></a> what you were doing and what happened!  I'll work on this ASAP!
                      </div>
                 </div>
               </div>
@@ -36,7 +36,7 @@
                 </div>
                 <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="heading2">
                   <div class="card-body">
-                    Email me <a href="mailto:tommy@duckiehunt.com?Subject=Site_crash" target="_top">tommy@lastcoolnameleft.com</a> the Duck # and the details you want to update.
+                    Email me <a class="obfuscated-email" href="#" data-subject="Site_crash" target="_top"></a> the Duck # and the details you want to update.
                      </div>
                 </div>
               </div>
@@ -50,12 +50,25 @@
                 </div>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="heading3">
                   <div class="card-body">
-                    Email me <a href="mailto:tommy@duckiehunt.com?Subject=Site_crash" target="_top">tommy@lastcoolnameleft.com</a> the details about the feature you'd like.
+                    Email me <a class="obfuscated-email" href="#" data-subject="Site_crash" target="_top"></a> the details about the feature you'd like.
                      </div>
                 </div>
               </div>
             </div>
           </div>
           <!-- /.container -->
+
+<script>
+(function() {
+    var u = "hello", d = "duckiehunt.com";
+    var addr = u + "@" + d;
+    var links = document.querySelectorAll(".obfuscated-email");
+    for (var i = 0; i < links.length; i++) {
+        var subj = links[i].getAttribute("data-subject") || "";
+        links[i].setAttribute("href", "mailto:" + addr + "?Subject=" + subj);
+        links[i].textContent = addr;
+    }
+})();
+</script>
 
 {% endblock %}
