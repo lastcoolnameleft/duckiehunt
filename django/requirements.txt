@@ -75,7 +75,7 @@ requests-oauthlib==2.0.0
     #   -r django/requirements.in
     #   flickr-api
     #   social-auth-core
-sentry-sdk[django]==2.62.0
+sentry-sdk[django]==2.63.0
     # via -r django/requirements.in
 social-auth-app-django==5.9.0
     # via -r django/requirements.in
