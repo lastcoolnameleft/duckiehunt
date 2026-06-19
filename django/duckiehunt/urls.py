@@ -16,13 +16,24 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.core.exceptions import SuspiciousFileOperation
+from django.http import HttpResponseBadRequest
 from django.urls import include, path
 from django.views.static import serve as static_serve
+
+
+def safe_media_serve(request, path, **kwargs):
+    """Wrap static_serve to return 400 on path traversal attempts."""
+    try:
+        return static_serve(request, path, **kwargs)
+    except SuspiciousFileOperation:
+        return HttpResponseBadRequest("Invalid file path.")
+
 
 urlpatterns = [
     path('', include('duck.urls')),
     path('admin/', admin.site.urls),
-    path('media/<path:path>', static_serve, {'document_root': settings.MEDIA_ROOT}),
+    path('media/<path:path>', safe_media_serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 
 # Keep DEBUG static helper for local dev parity.
