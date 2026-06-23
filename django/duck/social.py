@@ -107,7 +107,7 @@ class InstagramProvider(BaseSocialProvider):
 
         # Step 1: Create media container
         container_resp = requests.post(
-            f"https://graph.instagram.com/v25.0/{ig_user_id}/media",
+            f"https://graph.facebook.com/v25.0/{ig_user_id}/media",
             data={"image_url": photo_url, "caption": caption, "access_token": token},
             timeout=30,
         )
@@ -119,7 +119,7 @@ class InstagramProvider(BaseSocialProvider):
 
         # Step 2: Publish
         publish_resp = requests.post(
-            f"https://graph.instagram.com/v25.0/{ig_user_id}/media_publish",
+            f"https://graph.facebook.com/v25.0/{ig_user_id}/media_publish",
             data={"creation_id": container_id, "access_token": token},
             timeout=30,
         )
