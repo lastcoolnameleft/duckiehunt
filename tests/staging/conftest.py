@@ -13,8 +13,8 @@ except ImportError:
 
 def pytest_collection_modifyitems(config, items):
     """Skip Playwright tests if credentials are not available."""
-    if not os.environ.get("STG_TEST_USERNAME"):
-        skip_marker = pytest.mark.skip(reason="STG_TEST_USERNAME not set")
+    if not os.environ.get("TEST_USERNAME"):
+        skip_marker = pytest.mark.skip(reason="TEST_USERNAME not set")
         for item in items:
             if "authenticated_page" in getattr(item, "fixturenames", []):
                 item.add_marker(skip_marker)

@@ -6,14 +6,13 @@ if [ "${RUN_MIGRATIONS:-true}" != "false" ]; then
   python manage.py migrate --noinput
 fi
 
-# Create/update staging test user if credentials are provided
-if [ -n "$STG_TEST_USERNAME" ] && [ -n "$STG_TEST_PASSWORD" ]; then
-  echo "Ensuring staging test user exists..."
+# Create/update test user if credentials are provided
+if [ -n "$TEST_USERNAME" ] && [ -n "$TEST_PASSWORD" ]; then
+  echo "Ensuring test user exists..."
   python manage.py shell -c "
 from django.contrib.auth.models import User
-user, created = User.objects.get_or_create(username='$STG_TEST_USERNAME', defaults={'is_staff': True, 'is_active': True})
-user.set_password('$STG_TEST_PASSWORD')
-user.is_staff = True
+user, created = User.objects.get_or_create(username='$TEST_USERNAME', defaults={'is_active': True})
+user.set_password('$TEST_PASSWORD')
 user.is_active = True
 user.save()
 print(f'Test user {user.username} {\"created\" if created else \"updated\"}')

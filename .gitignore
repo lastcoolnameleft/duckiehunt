@@ -31,6 +31,7 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 docker-db/
 .env*
 !.env.example
+!.env.social.example
 uploads/
 tmp/
 config/minikube
