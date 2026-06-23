@@ -4,8 +4,8 @@ Tests DB write (create duck location) and read (verify via page and API).
 
 Requires environment variables:
   STG_BASE_URL - staging URL (e.g., https://stg.duckiehunt.com)
-  STG_TEST_USERNAME - Django superuser username
-  STG_TEST_PASSWORD - Django superuser password
+  TEST_USERNAME - Django superuser username
+  TEST_PASSWORD - Django superuser password
 
 Run with: pytest tests/staging/test_mark_integration.py -v
 """
@@ -26,17 +26,17 @@ def base_url():
 
 @pytest.fixture(scope="session")
 def test_username():
-    username = os.environ.get("STG_TEST_USERNAME")
+    username = os.environ.get("TEST_USERNAME")
     if not username:
-        pytest.skip("STG_TEST_USERNAME not set")
+        pytest.skip("TEST_USERNAME not set")
     return username
 
 
 @pytest.fixture(scope="session")
 def test_password():
-    password = os.environ.get("STG_TEST_PASSWORD")
+    password = os.environ.get("TEST_PASSWORD")
     if not password:
-        pytest.skip("STG_TEST_PASSWORD not set")
+        pytest.skip("TEST_PASSWORD not set")
     return password
 
 
@@ -48,21 +48,21 @@ def browser_context_args():
 
 @pytest.fixture()
 def authenticated_page(page: Page, base_url, test_username, test_password):
-    """Log in via Django admin and return an authenticated page."""
-    page.goto(f"{base_url}/admin/login/")
+    """Log in via the site login page and return an authenticated page."""
+    page.goto(f"{base_url}/login")
     # Wait for the login form to be fully rendered
     page.locator("#id_username").wait_for(state="visible", timeout=10000)
     page.locator("#id_username").click()
     page.locator("#id_username").fill(test_username)
     page.locator("#id_password").click()
     page.locator("#id_password").fill(test_password)
-    page.locator('input[type="submit"]').click()
+    page.locator('button[type="submit"]').click()
     # Wait for navigation away from login page
     page.wait_for_load_state("networkidle")
-    # If login failed, we'll still be on the login page with an error
-    if "/admin/login" in page.url:
-        error = page.locator(".errornote").text_content() or "Unknown login error"
-        raise AssertionError(f"Admin login failed: {error}")
+    # If login failed, we'll still be on the login page
+    if "/login" in page.url:
+        error = page.locator(".alert-danger").text_content() or "Unknown login error"
+        raise AssertionError(f"Login failed: {error}")
     return page
 
 

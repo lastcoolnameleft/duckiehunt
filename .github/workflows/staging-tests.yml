@@ -70,8 +70,8 @@ jobs:
         run: pytest tests/staging/test_smoke.py -v --tb=short
       - name: Run integration tests
         env:
-          STG_TEST_USERNAME: ${{ secrets.STG_TEST_USERNAME }}
-          STG_TEST_PASSWORD: ${{ secrets.STG_TEST_PASSWORD }}
+          TEST_USERNAME: ${{ secrets.STG_TEST_USERNAME }}
+          TEST_PASSWORD: ${{ secrets.STG_TEST_PASSWORD }}
         run: pytest tests/staging/test_mark_integration.py -v --tb=short
       - name: Run Playwright tests against staging
         env:
