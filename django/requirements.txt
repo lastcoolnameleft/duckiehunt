@@ -26,7 +26,7 @@ defusedxml==0.7.1
     #   social-auth-core
 django==6.0.6
     # via
-    #   -r requirements.in
+    #   -r django/requirements.in
     #   django-picklefield
     #   django-q2
     #   django-recaptcha
@@ -35,15 +35,15 @@ django==6.0.6
 django-picklefield==3.4.0
     # via django-q2
 django-q2==1.10.0
-    # via -r requirements.in
+    # via -r django/requirements.in
 django-recaptcha==4.1.0
-    # via -r requirements.in
+    # via -r django/requirements.in
 flickr-api==0.8.0
-    # via -r requirements.in
+    # via -r django/requirements.in
 gunicorn==26.0.0
-    # via -r requirements.in
+    # via -r django/requirements.in
 haversine==2.9.0
-    # via -r requirements.in
+    # via -r django/requirements.in
 idna==3.16
     # via requests
 oauthlib==3.3.1
@@ -52,8 +52,8 @@ oauthlib==3.3.1
     #   social-auth-core
 packaging==26.2
     # via gunicorn
-pillow==12.2.0
-    # via -r requirements.in
+pillow==12.3.0
+    # via -r django/requirements.in
 pycparser==3.0
     # via cffi
 pyjwt[crypto]==2.13.0
@@ -61,27 +61,27 @@ pyjwt[crypto]==2.13.0
     #   pyjwt
     #   social-auth-core
 python-dotenv==1.2.2
-    # via -r requirements.in
+    # via -r django/requirements.in
 python3-openid==3.2.0
     # via social-auth-core
 requests==2.34.2
     # via
-    #   -r requirements.in
+    #   -r django/requirements.in
     #   flickr-api
     #   requests-oauthlib
     #   social-auth-core
 requests-oauthlib==2.0.0
     # via
-    #   -r requirements.in
+    #   -r django/requirements.in
     #   flickr-api
     #   social-auth-core
 sentry-sdk[django]==2.62.0
-    # via -r requirements.in
+    # via -r django/requirements.in
 social-auth-app-django==5.9.0
-    # via -r requirements.in
+    # via -r django/requirements.in
 social-auth-core==4.9.1
     # via
-    #   -r requirements.in
+    #   -r django/requirements.in
     #   social-auth-app-django
 sqlparse==0.5.5
     # via django
@@ -90,4 +90,4 @@ urllib3==2.7.0
     #   requests
     #   sentry-sdk
 whitenoise==6.12.0
-    # via -r requirements.in
+    # via -r django/requirements.in
